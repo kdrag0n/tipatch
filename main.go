@@ -2,13 +2,13 @@ package main
 
 import (
 	"bytes"
-	"compress/gzip"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
+	gzip "github.com/klauspost/pgzip"
 	flag "github.com/spf13/pflag"
 )
 
