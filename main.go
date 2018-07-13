@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"bytes"
 	"fmt"
 	"io/ioutil"
@@ -38,7 +39,13 @@ func main() {
 	flag.StringVarP(&inputPath, "input", "i", "", "Path to the TWRP image to patch.")
 	flag.StringVarP(&outputPath, "output", "o", "", "Path to output patched image to.")
 
-	fmt.Printf("Tipatch by @kdrag0n\nLast tested with TWRP %s\n\n", LastTestedVersion)
+	fmt.Printf(`Tipatch by @kdrag0n
+TWRP patcher for internal storage backup
+Last tested with TWRP %s
+
+`, LastTestedVersion)
+
+	flag.ErrHelp = errors.New("")
 	flag.Parse()
 
 	if inputPath == "" {
