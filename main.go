@@ -1,8 +1,8 @@
 package main
 
 import (
-	"errors"
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -35,7 +35,6 @@ func main() {
 	var inputPath string
 	var outputPath string
 
-	// Italic test
 	flag.StringVarP(&inputPath, "input", "i", "", "Path to the TWRP image to patch.")
 	flag.StringVarP(&outputPath, "output", "o", "", "Path to output patched image to.")
 
