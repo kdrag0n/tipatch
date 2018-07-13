@@ -1,11 +1,12 @@
 package main
 
 import (
-	"crypto/sha1"
 	"encoding/binary"
 	"errors"
 	"os"
 	"unsafe"
+
+	"github.com/cespare/xxhash"
 )
 
 // ErrLengthMismatch is returned when a Write call did not write the corect number of bytes.
@@ -29,29 +30,15 @@ func (img *Image) WritePadding(out *os.File) (err error) {
 }
 
 // Checksum computes a checksum corresponding to all the data in the image.
-func (img *Image) Checksum(hdr *RawImage) []byte {
-	sizeBuf := make([]byte, unsafe.Sizeof(hdr.KernelSize)) // uint32
-	sha := sha1.New()
+func (img *Image) Checksum(hdr *RawImage) uint64 {
+	xxh := xxhash.New()
 
-	sha.Write(img.Kernel)
-	binary.LittleEndian.PutUint32(sizeBuf, hdr.KernelSize)
-	sha.Write(sizeBuf) // Kernel size
+	xxh.Write(img.Kernel)
+	xxh.Write(img.Ramdisk)
+	xxh.Write(img.Second)
+	xxh.Write(img.DeviceTree)
 
-	sha.Write(img.Ramdisk)
-	binary.LittleEndian.PutUint32(sizeBuf, hdr.RamdiskSize)
-	sha.Write(sizeBuf) // Ramdisk size
-
-	sha.Write(img.Second)
-	binary.LittleEndian.PutUint32(sizeBuf, hdr.SecondSize)
-	sha.Write(sizeBuf) // Second size
-
-	if hdr.DtSize > 0 {
-		sha.Write(img.DeviceTree)
-		binary.LittleEndian.PutUint32(sizeBuf, hdr.DtSize)
-		sha.Write(sizeBuf) // Device tree size
-	}
-
-	return sha.Sum(nil)
+	return xxh.Sum64()
 }
 
 // WriteHeader writes the Image's header to the provided file in Android boot format.
@@ -100,7 +87,7 @@ func (img *Image) WriteHeader(out *os.File) (err error) {
 	}
 
 	checksum := img.Checksum(&hdr)
-	copy(hdr.ID[:], checksum)
+	binary.LittleEndian.PutUint64(hdr.ID[:], checksum)
 
 	hdrBytes := *(*[unsafe.Sizeof(hdr)]byte)(unsafe.Pointer(&hdr))
 	count, err := out.Write(hdrBytes[:])
