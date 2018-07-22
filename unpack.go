@@ -38,7 +38,7 @@ func imageFromFile(fin *os.File) *Image {
 	}
 
 	if i > 512 {
-		checkMsg(errors.New("offset > 512"), "finding Android header")
+		checkMsg(errors.New("Perhaps this is not a TWRP image?"), "finding Android header")
 	}
 
 	_, err := fin.Seek(0, os.SEEK_SET)

@@ -1,17 +1,16 @@
 package main
 
 import (
-	"bytes"
+	"bufio"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
-	gzip "github.com/klauspost/pgzip"
+	"github.com/mattn/go-isatty"
+
 	flag "github.com/spf13/pflag"
-	"go4.org/bytereplacer"
 )
 
 // General command-line inteface constants
@@ -43,13 +42,25 @@ Last tested with TWRP %s
 	flag.ErrHelp = errors.New("")
 	flag.Parse()
 
+	interactive := isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd())
+	interactivePath := false
+
 	if inputPath == "" {
 		if flag.NArg() > 0 {
 			inputPath = flag.Arg(0)
 		} else {
-			fmt.Println(" ! You must provide a TWRP image to patch!")
-			fmt.Println(" ! Example: tipatch twrp-3.2.1-0-grouper.img")
-			os.Exit(2)
+			fmt.Println("Usage: tipatch {-o output} [input]")
+			flag.PrintDefaults()
+			if interactive {
+				defer func() {
+					fmt.Print("\n\nPress any key to continue...")
+					reader := bufio.NewReader(os.Stdin)
+					reader.ReadRune()
+				}()
+
+				inputPath = cliGetInputPath()
+				interactivePath = true
+			}
 		}
 	}
 
@@ -67,79 +78,29 @@ Last tested with TWRP %s
 		}
 	}
 
-	fInfo, err := os.Stat(inputPath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			fmt.Printf(" ! Input file '%s' does not exist!\n", inputPath)
-			fmt.Println(" ! Please provide a TWRP image and try again.")
-		} else {
-			checkMsg(err, "verifying file")
+	if !interactivePath {
+		fInfo, err := os.Stat(inputPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				fmt.Printf(" ! Input file '%s' does not exist!\n", inputPath)
+				fmt.Println(" ! Please provide a TWRP image and try again.")
+			} else {
+				checkMsg(err, "verifying file")
+			}
+
+			os.Exit(2)
 		}
 
-		os.Exit(2)
+		if fInfo.IsDir() {
+			fmt.Println(" ! Input is a directory!")
+			fmt.Println(" ! Please provide a TWRP image file.")
+			os.Exit(2)
+		} else if fInfo.Size() < MinImageSize {
+			fmt.Println(" ! Input is too small!")
+			fmt.Printf(" ! Are you sure '%s' is a valid TWRP image?\n", fInfo.Name())
+			os.Exit(2)
+		}
 	}
 
-	if fInfo.IsDir() {
-		fmt.Println(" ! Input is a directory!")
-		fmt.Println(" ! Please provide a TWRP image file.")
-		os.Exit(2)
-	} else if fInfo.Size() < MinImageSize {
-		fmt.Println(" ! Input is too small!")
-		fmt.Printf(" ! Are you sure '%s' is a valid TWRP image?\n", fInfo.Name())
-		os.Exit(2)
-	}
-
-	fmt.Println(" - Extracting image")
-	in, err := os.Open(inputPath)
-	checkMsg(err, "opening image for reading")
-	defer in.Close()
-
-	image := imageFromFile(in)
-
-	fmt.Println(" - Extracting ramdisk")
-	gReader, err := gzip.NewReader(bytes.NewReader(image.Ramdisk))
-	checkMsg(err, "preparing to extract ramdisk")
-	ramdisk, err := ioutil.ReadAll(gReader)
-	checkMsg(err, "extracting ramdisk")
-
-	err = gReader.Close()
-	checkMsg(err, "cleaning up ramdisk extraction")
-
-	fmt.Println(" - Patching ramdisk")
-	replacer := bytereplacer.New(
-		// Preserve /data/media
-		"\x00/media\x00", "\x00/.twrp\x00",
-		// Change text in Backup screen for English
-		"Data (excl. storage)", "Data (incl. storage)",
-		// Change orange warning text when backing up for English
-		"Backups of {1} do not include any files in internal storage such as pictures or downloads.", "Backups of {1} include files in internal storage such as pictures and downloads.          ",
-	)
-
-	ramdisk = replacer.Replace(ramdisk)
-
-	fmt.Println(" - Compressing ramdisk")
-	var gzRamdisk bytes.Buffer
-	gWriter, err := gzip.NewWriterLevel(&gzRamdisk, gzip.BestCompression)
-	checkMsg(err, "preparing to compress ramdisk")
-	_, err = gWriter.Write(ramdisk)
-	checkMsg(err, "compressing ramdisk")
-
-	err = gWriter.Flush()
-	checkMsg(err, "finishing up ramdisk compression")
-	err = gWriter.Close()
-	checkMsg(err, "cleaning up ramdisk compression")
-
-	image.Ramdisk = gzRamdisk.Bytes()
-
-	fmt.Println(" - Repacking & writing image")
-	out, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
-	checkMsg(err, "creating output file")
-	defer out.Close()
-
-	err = image.WriteHeader(out)
-	checkMsg(err, "writing output file header")
-	err = image.WriteData(out)
-	checkMsg(err, "writing output file data")
-
-	fmt.Printf(" - Finished! Output is '%s'.\n", outputPath)
+	patchImage(inputPath, outputPath)
 }
