@@ -1,12 +1,20 @@
 package com.kdrag0n.tipatch
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Context
+import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import com.kdrag0n.utils.asyncExec
 import com.kdrag0n.utils.getProp
+import eu.chainfire.libsuperuser.Shell
+import kotlinx.android.synthetic.main.activity_main.*
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity() {
     private lateinit var execPath: String
@@ -17,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
         asyncExec {
             try {
-                setupBin()
+                setupExecutable()
             } catch (err: IllegalStateException) {
                 runOnUiThread {
                     with (AlertDialog.Builder(this)) {
@@ -31,6 +39,41 @@ class MainActivity : AppCompatActivity() {
                         }
                         setCancelable(false)
                         show()
+                    }
+                }
+            }
+        }
+
+        patchBtn.setOnClickListener { _ ->
+            if (!::execPath.isInitialized) {
+                with (AlertDialog.Builder(this)) {
+                    setTitle("Status")
+                    setMessage("Tipatch has not finished setting up. Please wait a few seconds or re-open the app.")
+                    show()
+                }
+            }
+
+            val ctx = this
+            @SuppressLint("StaticFieldLeak")
+            object : AsyncTask<Unit, Unit, Unit>() {
+                private val dialog = ProgressDialog(ctx)
+
+                override fun onPreExecute() {
+                    with (dialog) {
+                        setTitle("Patching image")
+                        setMessage("Starting patcher")
+                        show()
+                    }
+                }
+
+                override fun doInBackground(vararg params: Unit?) {
+                    val proc = Runtime.getRuntime().exec(arrayOf(execPath, inputPath))
+                    val reader = BufferedReader(InputStreamReader(proc.inputStream))
+                }
+
+                override fun onPostExecute(result: Unit?) {
+                    if (dialog.isShowing) {
+                        dialog.dismiss()
                     }
                 }
             }
@@ -52,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupBin() {
+    private fun setupExecutable() {
         val arch = getArch()
 
         val res = resources.openRawResource(when (arch) {

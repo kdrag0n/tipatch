@@ -2,4 +2,5 @@
     <string name="app_name">Tipatch</string>
     <string name="contact">Contact</string>
     <string name="exit">Close App</string>
+    <string name="patch_btn">Patch TWRP</string>
 </resources>
