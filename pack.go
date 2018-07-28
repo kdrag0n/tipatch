@@ -19,8 +19,8 @@ func (img *Image) WritePadding(out *os.File) (err error) {
 		return
 	}
 
-	pageMask := img.PageSize - 1
-	pad := make([]byte, (img.PageSize-(uint32(curPos)&pageMask))&pageMask)
+	pageMask := img.pageSize - 1
+	pad := make([]byte, (img.pageSize-(uint32(curPos)&pageMask))&pageMask)
 	count, err := out.Write(pad)
 	if err == nil && count != len(pad) {
 		err = ErrLengthMismatch
@@ -64,19 +64,19 @@ func (img *Image) WriteHeader(out *os.File) (err error) {
 		Magic: magic,
 
 		KernelSize: uint32(len(img.Kernel)),
-		KernelAddr: img.Base + img.KernelOffset,
+		KernelAddr: img.base + img.kernelOffset,
 
 		RamdiskSize: uint32(len(img.Ramdisk)),
-		RamdiskAddr: img.Base + img.RamdiskOffset,
+		RamdiskAddr: img.base + img.ramdiskOffset,
 
 		SecondSize: uint32(len(img.Second)),
-		SecondAddr: img.Base + img.SecondOffset,
+		SecondAddr: img.base + img.secondOffset,
 
-		TagsAddr: img.Base + img.TagsOffset,
-		PageSize: img.PageSize,
+		TagsAddr: img.base + img.tagsOffset,
+		PageSize: img.pageSize,
 		DtSize:   uint32(len(img.DeviceTree)),
 
-		OSVersion: img.OSVersion,
+		OSVersion: img.osVersion,
 
 		Board:   board,
 		Cmdline: cmdline,

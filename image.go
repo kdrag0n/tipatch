@@ -21,14 +21,14 @@ const (
 type Image struct {
 	Board     string
 	Cmdline   string
-	OSVersion uint32
+	osVersion uint32
 
-	Base          uint32
-	KernelOffset  uint32
-	RamdiskOffset uint32
-	SecondOffset  uint32
-	TagsOffset    uint32
-	PageSize      uint32
+	base          uint32
+	kernelOffset  uint32
+	ramdiskOffset uint32
+	secondOffset  uint32
+	tagsOffset    uint32
+	pageSize      uint32
 	Kernel        []byte
 	Ramdisk       []byte
 	Second        []byte

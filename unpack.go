@@ -110,14 +110,14 @@ func UnpackImage(fin io.ReadSeeker) (*Image, error) {
 	return &Image{
 		Board:     string(header.Board[:bytes.IndexByte(header.Board[:], 0)]),
 		Cmdline:   string(header.Cmdline[:bytes.IndexByte(header.Cmdline[:], 0)]),
-		OSVersion: header.OSVersion,
+		osVersion: header.OSVersion,
 
-		Base:          baseAddr,
-		KernelOffset:  header.KernelAddr - baseAddr,
-		RamdiskOffset: header.RamdiskAddr - header.KernelAddr + 0x00008000,
-		SecondOffset:  header.SecondAddr - header.KernelAddr + 0x00008000,
-		TagsOffset:    header.TagsAddr - header.KernelAddr + 0x00008000,
-		PageSize:      header.PageSize,
+		base:          baseAddr,
+		kernelOffset:  header.KernelAddr - baseAddr,
+		ramdiskOffset: header.RamdiskAddr - header.KernelAddr + 0x00008000,
+		secondOffset:  header.SecondAddr - header.KernelAddr + 0x00008000,
+		tagsOffset:    header.TagsAddr - header.KernelAddr + 0x00008000,
+		pageSize:      header.PageSize,
 
 		Kernel:     kernel,
 		Ramdisk:    ramdisk,
