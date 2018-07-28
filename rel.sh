@@ -2,7 +2,7 @@
 
 b() {
     rm -f rel/tipatch_$3
-    GOOS=$1 GOARCH=$2 go build -ldflags='-s -w' -o rel/tipatch_$3
+    GOOS=$1 GOARCH=$2 go build -ldflags='-s -w' -o rel/tipatch_$3 ./cmd/tipatch
     $4 rel/tipatch_$3 > /dev/null
 }
 
