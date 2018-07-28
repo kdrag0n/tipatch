@@ -161,3 +161,15 @@ func ExtractRamdisk(compr []byte, cMode int) (ramdisk []byte, err error) {
 
 	return
 }
+
+// UnpackImageFd unpacks an image from the given fd.
+func UnpackImageFd(fd int) (*Image, error) {
+	fin := os.NewFile(uintptr(fd), "img.img")
+	return UnpackImage(fin)
+}
+
+// UnpackImageBytes unpacks an image from the given byte slice.
+func UnpackImageBytes(data []byte) (*Image, error) {
+	reader := bytes.NewReader(data)
+	return UnpackImage(reader)
+}
