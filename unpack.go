@@ -126,40 +126,43 @@ func UnpackImage(fin io.ReadSeeker) (*Image, error) {
 	}, nil
 }
 
-// ExtractRamdisk decompresses the provided ramdisk.
-func ExtractRamdisk(compr []byte) (ramdisk []byte, cMode int, err error) {
+// DetectCompressor detects the compressor used for the input ramdisk.
+func DetectCompressor(compr []byte) int {
 	switch fmt.Sprintf("%x%x", compr[0], compr[1]) {
 	case "425a":
-		cMode = CompBzip2
+		return CompBzip2
 	case "1f8b":
-		cMode = CompGzip
+		return CompGzip
 	case "1f9e":
-		cMode = CompGzip
+		return CompGzip
 	case "0422":
-		cMode = CompLz4
+		return CompLz4
 	case "894c":
-		cMode = CompLzo
+		return CompLzo
 	case "5d00":
-		cMode = CompLzma
+		return CompLzma
 	case "fd37":
-		cMode = CompXz
+		return CompXz
 	default:
-		cMode = CompUnknown
+		return CompUnknown
 	}
+}
 
+// ExtractRamdisk decompresses the provided ramdisk.
+func ExtractRamdisk(compr []byte, cMode int) (ramdisk []byte, err error) {
 	gReader, err := gzip.NewReader(bytes.NewReader(compr))
 	if err != nil {
-		return nil, cMode, eMsg(err, "preparing to extract ramdisk")
+		return nil, eMsg(err, "preparing to extract ramdisk")
 	}
 
 	ramdisk, err = ioutil.ReadAll(gReader)
 	if err != nil {
-		return nil, cMode, eMsg(err, "extracting ramdisk")
+		return nil, eMsg(err, "extracting ramdisk")
 	}
 
 	err = gReader.Close()
 	if err != nil {
-		return nil, cMode, eMsg(err, "cleaning up ramdisk extraction")
+		return nil, eMsg(err, "cleaning up ramdisk extraction")
 	}
 
 	return

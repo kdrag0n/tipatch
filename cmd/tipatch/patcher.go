@@ -27,7 +27,8 @@ func patchImage(inputPath, outputPath string) {
 	checkWrap(err)
 
 	fmt.Println(" - Extracting ramdisk")
-	ramdisk, cMode, err := tipatch.ExtractRamdisk(image.Ramdisk)
+	cMode := tipatch.DetectCompressor(image.Ramdisk)
+	ramdisk, err := tipatch.ExtractRamdisk(image.Ramdisk, cMode)
 	checkWrap(err)
 
 	fmt.Println(" - Patching ramdisk")
