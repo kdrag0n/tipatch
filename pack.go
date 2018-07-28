@@ -1,4 +1,4 @@
-package main
+package tipatch
 
 import (
 	"encoding/binary"
@@ -144,6 +144,23 @@ func (img *Image) WriteData(out *os.File) (err error) {
 		if err != nil {
 			return
 		}
+	}
+
+	return
+}
+
+// WriteToFd writes all the data of the Image to the provided fd.
+func (img *Image) WriteToFd(fd uintptr) (err error) {
+	out := os.NewFile(fd, "img.img")
+
+	err = img.WriteHeader(out)
+	if err != nil {
+		return
+	}
+
+	err = img.WriteData(out)
+	if err != nil {
+		return
 	}
 
 	return

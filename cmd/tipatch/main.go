@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"tipatch"
 
 	"github.com/mattn/go-isatty"
 
@@ -95,7 +96,7 @@ Last tested with TWRP %s
 			fmt.Println(" ! Input is a directory!")
 			fmt.Println(" ! Please provide a TWRP image file.")
 			os.Exit(2)
-		} else if fInfo.Size() < MinImageSize {
+		} else if fInfo.Size() < tipatch.MinImageSize {
 			fmt.Println(" ! Input is too small!")
 			fmt.Printf(" ! Are you sure '%s' is a valid TWRP image?\n", fInfo.Name())
 			os.Exit(2)

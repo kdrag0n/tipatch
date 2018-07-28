@@ -1,4 +1,4 @@
-package main
+package tipatch
 
 // Boot image format constants
 const (

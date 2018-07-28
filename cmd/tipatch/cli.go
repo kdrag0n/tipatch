@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"tipatch"
 
 	"github.com/tgulacsi/wrap"
 )
@@ -78,7 +79,7 @@ func cliGetInputPath() (path string) {
 		if fInfo.IsDir() {
 			cliPromptDrag("That's a folder, not a file.")
 			continue
-		} else if fInfo.Size() < MinImageSize {
+		} else if fInfo.Size() < tipatch.MinImageSize {
 			cliPromptDrag("That file is too small to be a TWRP image.")
 			continue
 		}
