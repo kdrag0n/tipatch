@@ -44,10 +44,8 @@ func patchImage(inputPath, outputPath string) {
 	checkMsg(err, "creating output file")
 	defer out.Close()
 
-	err = image.WriteHeader(out)
-	checkMsg(err, "writing output file header")
-	err = image.WriteData(out)
-	checkMsg(err, "writing output file data")
+	err = image.WriteToFd(int(out.Fd()))
+	checkMsg(err, "writing output file")
 
 	fmt.Printf(" - Finished! Output is '%s'.\n", outputPath)
 }

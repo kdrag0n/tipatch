@@ -12,8 +12,8 @@ import (
 // ErrLengthMismatch is returned when a Write call did not write the corect number of bytes.
 var ErrLengthMismatch = errors.New("written byte count does not match data")
 
-// WritePadding writes padding for the image's page size to the given file.
-func (img *Image) WritePadding(out *os.File) (err error) {
+// writePadding writes padding for the image's page size to the given file.
+func (img *Image) writePadding(out *os.File) (err error) {
 	curPos, err := out.Seek(0, os.SEEK_CUR)
 	if err != nil {
 		return
@@ -29,8 +29,8 @@ func (img *Image) WritePadding(out *os.File) (err error) {
 	return
 }
 
-// Checksum computes a checksum corresponding to all the data in the image.
-func (img *Image) Checksum(hdr *RawImage) uint64 {
+// checksum computes a checksum corresponding to all the data in the image.
+func (img *Image) checksum(hdr *RawImage) uint64 {
 	xxh := xxhash.New()
 
 	xxh.Write(img.Kernel)
@@ -41,8 +41,8 @@ func (img *Image) Checksum(hdr *RawImage) uint64 {
 	return xxh.Sum64()
 }
 
-// WriteHeader writes the Image's header to the provided file in Android boot format.
-func (img *Image) WriteHeader(out *os.File) (err error) {
+// writeHeader writes the Image's header to the provided file in Android boot format.
+func (img *Image) writeHeader(out *os.File) (err error) {
 	var magic [BootMagicSize]byte
 	copy(magic[:], BootMagic)
 
@@ -86,7 +86,7 @@ func (img *Image) WriteHeader(out *os.File) (err error) {
 		ExtraCmdline: extraCmdline,
 	}
 
-	checksum := img.Checksum(&hdr)
+	checksum := img.checksum(&hdr)
 	binary.LittleEndian.PutUint64(hdr.ID[:], checksum)
 
 	hdrBytes := *(*[unsafe.Sizeof(hdr)]byte)(unsafe.Pointer(&hdr))
@@ -98,7 +98,7 @@ func (img *Image) WriteHeader(out *os.File) (err error) {
 		return
 	}
 
-	err = img.WritePadding(out)
+	err = img.writePadding(out)
 	if err != nil {
 		return
 	}
@@ -106,8 +106,8 @@ func (img *Image) WriteHeader(out *os.File) (err error) {
 	return
 }
 
-// WritePaddedSection writes data to the file, then pads it to the page size.
-func (img *Image) WritePaddedSection(out *os.File, data []byte) (err error) {
+// writePaddedSection writes data to the file, then pads it to the page size.
+func (img *Image) writePaddedSection(out *os.File, data []byte) (err error) {
 	count, err := out.Write(data)
 	if err != nil {
 		return
@@ -116,31 +116,31 @@ func (img *Image) WritePaddedSection(out *os.File, data []byte) (err error) {
 		return
 	}
 
-	err = img.WritePadding(out)
+	err = img.writePadding(out)
 	return
 }
 
-// WriteData writes the data chunks (ramdisk, kernel, etc) to the output file.
-func (img *Image) WriteData(out *os.File) (err error) {
-	err = img.WritePaddedSection(out, img.Kernel)
+// writeData writes the data chunks (ramdisk, kernel, etc) to the output file.
+func (img *Image) writeData(out *os.File) (err error) {
+	err = img.writePaddedSection(out, img.Kernel)
 	if err != nil {
 		return
 	}
 
-	err = img.WritePaddedSection(out, img.Ramdisk)
+	err = img.writePaddedSection(out, img.Ramdisk)
 	if err != nil {
 		return
 	}
 
 	if len(img.Second) > 0 {
-		err = img.WritePaddedSection(out, img.Second)
+		err = img.writePaddedSection(out, img.Second)
 		if err != nil {
 			return
 		}
 	}
 
 	if len(img.DeviceTree) > 0 {
-		err = img.WritePaddedSection(out, img.DeviceTree)
+		err = img.writePaddedSection(out, img.DeviceTree)
 		if err != nil {
 			return
 		}
@@ -150,15 +150,15 @@ func (img *Image) WriteData(out *os.File) (err error) {
 }
 
 // WriteToFd writes all the data of the Image to the provided fd.
-func (img *Image) WriteToFd(fd uintptr) (err error) {
-	out := os.NewFile(fd, "img.img")
+func (img *Image) WriteToFd(fd int) (err error) {
+	out := os.NewFile(uintptr(fd), "img.img")
 
-	err = img.WriteHeader(out)
+	err = img.writeHeader(out)
 	if err != nil {
 		return
 	}
 
-	err = img.WriteData(out)
+	err = img.writeData(out)
 	if err != nil {
 		return
 	}
