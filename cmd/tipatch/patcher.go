@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"tipatch"
 
 	"github.com/hashicorp/errwrap"
@@ -11,7 +12,12 @@ import (
 func checkWrap(err error) {
 	if err != nil {
 		wrapped := err.(errwrap.Wrapper).WrappedErrors()
-		fmt.Printf(" ! Error %s!\n", wrapped[0].Error())
+		err1 := wrapped[0].Error()
+		if strings.ContainsRune(err1, ':') {
+			err1 = err1[:strings.IndexByte(err1, ':')+1]
+		}
+
+		fmt.Printf(" ! Error %s!\n", err1)
 		fmt.Printf(" ! %s\n", wrapped[1].Error())
 		os.Exit(2)
 	}

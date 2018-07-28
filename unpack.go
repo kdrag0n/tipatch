@@ -11,13 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 	"unsafe"
-
-	"github.com/hashicorp/errwrap"
 )
-
-func eMsg(err error, msg string) error {
-	return errwrap.Wrap(errors.New(msg), err)
-}
 
 // ReadPadding reads padding from the input file up to pageSize.
 func ReadPadding(fin io.Reader, itemSize uint32, pageSize uint32) (count int, err error) {
@@ -54,7 +48,7 @@ func UnpackImage(fin io.ReadSeeker) (*Image, error) {
 	}
 
 	if i > 512 {
-		return nil, errwrap.Wrapf("finding Android header", errors.New("Perhaps this is not a TWRP image?"))
+		return nil, eMsg(errors.New("Perhaps this is not a TWRP image?"), "finding Android header")
 	}
 
 	_, err := fin.Seek(0, os.SEEK_SET)

@@ -1,6 +1,10 @@
 package tipatch
 
-import "github.com/hashicorp/errwrap"
+import (
+	"errors"
+
+	"github.com/hashicorp/errwrap"
+)
 
 // GetErrors returns the wrapped errors from one error.
 func GetErrors(err error) []string {
@@ -10,4 +14,8 @@ func GetErrors(err error) []string {
 	}
 
 	return []string{}
+}
+
+func eMsg(err error, msg string) error {
+	return errwrap.Wrap(errors.New(msg+":"+err.Error()), err)
 }
