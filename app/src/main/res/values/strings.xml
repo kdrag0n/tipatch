@@ -3,4 +3,5 @@
     <string name="contact">Contact</string>
     <string name="exit">Close App</string>
     <string name="patch_btn">Patch TWRP</string>
+    <string name="ok">OK</string>
 </resources>

@@ -7,7 +7,6 @@ import android.content.Context
 import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import com.kdrag0n.utils.asyncExec
 import com.kdrag0n.utils.getProp
@@ -15,6 +14,7 @@ import eu.chainfire.libsuperuser.Shell
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
     private lateinit var execPath: String
@@ -47,13 +47,14 @@ class MainActivity : AppCompatActivity() {
         patchBtn.setOnClickListener { _ ->
             if (!::execPath.isInitialized) {
                 with (AlertDialog.Builder(this)) {
-                    setTitle("Status")
                     setMessage("Tipatch has not finished setting up. Please wait a few seconds or re-open the app.")
+                    setPositiveButton(getString(R.string.ok)) { _, _ -> }
                     show()
                 }
             }
 
             val ctx = this
+            val task =
             @SuppressLint("StaticFieldLeak")
             object : AsyncTask<Unit, Unit, Unit>() {
                 private val dialog = ProgressDialog(ctx)
@@ -67,8 +68,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun doInBackground(vararg params: Unit?) {
-                    val proc = Runtime.getRuntime().exec(arrayOf(execPath, inputPath))
-                    val reader = BufferedReader(InputStreamReader(proc.inputStream))
+                    TimeUnit.SECONDS.sleep(2)
                 }
 
                 override fun onPostExecute(result: Unit?) {
@@ -77,6 +77,8 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
+            task.execute()
         }
     }
 
