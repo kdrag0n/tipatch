@@ -1,8 +1,8 @@
 package tipatch
 
 import (
+	"bytes"
 	"encoding/binary"
-	"errors"
 	"io"
 	"os"
 	"unsafe"
@@ -10,22 +10,28 @@ import (
 	"github.com/cespare/xxhash"
 )
 
-// ErrLengthMismatch is returned when a Write call did not write the corect number of bytes.
-var ErrLengthMismatch = errors.New("written byte count does not match data")
+// paddingSize calculates the amount of padding necessary for the Image's page size.
+func (img *Image) paddingSize(dataSize int) int {
+	pageSize := int(img.pageSize)
+	pageMask := pageSize - 1
+	pbSize := dataSize & pageMask
+
+	if pbSize == 0 {
+		return 0
+	}
+
+	return pageSize - pbSize
+}
 
 // writePadding writes padding for the image's page size.
-func (img *Image) writePadding(out io.WriteSeeker) (err error) {
-	curPos, err := out.Seek(0, os.SEEK_CUR)
-	if err != nil {
+func (img *Image) writePadding(out io.Writer, dataSize int) (err error) {
+	size := img.paddingSize(dataSize)
+	if size == 0 {
 		return
 	}
 
-	pageMask := img.pageSize - 1
-	pad := make([]byte, (img.pageSize-(uint32(curPos)&pageMask))&pageMask)
-	count, err := out.Write(pad)
-	if err == nil && count != len(pad) {
-		err = ErrLengthMismatch
-	}
+	pad := make([]byte, size)
+	_, err = out.Write(pad)
 
 	return
 }
@@ -43,7 +49,7 @@ func (img *Image) checksum(hdr *RawImage) uint64 {
 }
 
 // writeHeader writes the Image's header in Android boot format.
-func (img *Image) writeHeader(out io.WriteSeeker) (err error) {
+func (img *Image) writeHeader(out io.Writer) (err error) {
 	var magic [BootMagicSize]byte
 	copy(magic[:], BootMagic)
 
@@ -94,12 +100,9 @@ func (img *Image) writeHeader(out io.WriteSeeker) (err error) {
 	count, err := out.Write(hdrBytes[:])
 	if err != nil {
 		return
-	} else if len(hdrBytes) != count {
-		err = ErrLengthMismatch
-		return
 	}
 
-	err = img.writePadding(out)
+	err = img.writePadding(out, count)
 	if err != nil {
 		return
 	}
@@ -108,21 +111,18 @@ func (img *Image) writeHeader(out io.WriteSeeker) (err error) {
 }
 
 // writePaddedSection writes data to the output, then pads it to the page size.
-func (img *Image) writePaddedSection(out io.WriteSeeker, data []byte) (err error) {
+func (img *Image) writePaddedSection(out io.Writer, data []byte) (err error) {
 	count, err := out.Write(data)
 	if err != nil {
 		return
-	} else if len(data) != count {
-		err = ErrLengthMismatch
-		return
 	}
 
-	err = img.writePadding(out)
+	err = img.writePadding(out, count)
 	return
 }
 
 // writeData writes the data chunks (ramdisk, kernel, etc) to the output.
-func (img *Image) writeData(out io.WriteSeeker) (err error) {
+func (img *Image) writeData(out io.Writer) (err error) {
 	err = img.writePaddedSection(out, img.Kernel)
 	if err != nil {
 		return
@@ -165,4 +165,29 @@ func (img *Image) WriteToFd(fd int) (err error) {
 	}
 
 	return
+}
+
+// DumpBytes dumps the Image data into a byte slice.
+func (img *Image) DumpBytes() ([]byte, error) {
+	// Calculate size for efficiency
+	ps := func(data []byte) int {
+		return len(data) + img.paddingSize(len(data))
+	}
+
+	var hdr RawImage
+	size := int(unsafe.Sizeof(hdr)) + ps(img.Kernel) + ps(img.Ramdisk) + ps(img.Second) + ps(img.DeviceTree)
+
+	buf := bytes.NewBuffer(make([]byte, 0, size))
+
+	err := img.writeHeader(buf)
+	if err != nil {
+		return nil, err
+	}
+
+	err = img.writeData(buf)
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
 }
