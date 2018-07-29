@@ -3,6 +3,7 @@ package tipatch
 import (
 	"encoding/binary"
 	"errors"
+	"io"
 	"os"
 	"unsafe"
 
@@ -12,8 +13,8 @@ import (
 // ErrLengthMismatch is returned when a Write call did not write the corect number of bytes.
 var ErrLengthMismatch = errors.New("written byte count does not match data")
 
-// writePadding writes padding for the image's page size to the given file.
-func (img *Image) writePadding(out *os.File) (err error) {
+// writePadding writes padding for the image's page size.
+func (img *Image) writePadding(out io.WriteSeeker) (err error) {
 	curPos, err := out.Seek(0, os.SEEK_CUR)
 	if err != nil {
 		return
@@ -41,8 +42,8 @@ func (img *Image) checksum(hdr *RawImage) uint64 {
 	return xxh.Sum64()
 }
 
-// writeHeader writes the Image's header to the provided file in Android boot format.
-func (img *Image) writeHeader(out *os.File) (err error) {
+// writeHeader writes the Image's header in Android boot format.
+func (img *Image) writeHeader(out io.WriteSeeker) (err error) {
 	var magic [BootMagicSize]byte
 	copy(magic[:], BootMagic)
 
@@ -106,8 +107,8 @@ func (img *Image) writeHeader(out *os.File) (err error) {
 	return
 }
 
-// writePaddedSection writes data to the file, then pads it to the page size.
-func (img *Image) writePaddedSection(out *os.File, data []byte) (err error) {
+// writePaddedSection writes data to the output, then pads it to the page size.
+func (img *Image) writePaddedSection(out io.WriteSeeker, data []byte) (err error) {
 	count, err := out.Write(data)
 	if err != nil {
 		return
@@ -120,8 +121,8 @@ func (img *Image) writePaddedSection(out *os.File, data []byte) (err error) {
 	return
 }
 
-// writeData writes the data chunks (ramdisk, kernel, etc) to the output file.
-func (img *Image) writeData(out *os.File) (err error) {
+// writeData writes the data chunks (ramdisk, kernel, etc) to the output.
+func (img *Image) writeData(out io.WriteSeeker) (err error) {
 	err = img.writePaddedSection(out, img.Kernel)
 	if err != nil {
 		return
