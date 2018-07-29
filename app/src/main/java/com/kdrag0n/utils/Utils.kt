@@ -1,7 +1,10 @@
 package com.kdrag0n.utils
 
+import android.app.Activity
 import android.os.AsyncTask
+import android.os.Build
 import android.util.Log
+import java.io.FileDescriptor
 
 const val logTag = "Tipatch"
 
@@ -20,4 +23,11 @@ fun getProp(prop: String): String? {
         Log.e(logTag, "Failed to get property via API", e)
         null
     }
+}
+
+fun FileDescriptor.raw(): Int {
+    val field = FileDescriptor::class.java.getDeclaredField("descriptor")
+    field.isAccessible = true
+
+    return field.getInt(this)
 }
