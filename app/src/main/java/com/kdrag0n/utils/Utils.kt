@@ -2,8 +2,10 @@ package com.kdrag0n.utils
 
 import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
+import android.provider.OpenableColumns
 import android.util.Log
 import eu.chainfire.libsuperuser.Shell
 import java.io.DataInputStream
@@ -23,7 +25,13 @@ fun getProp(prop: String): String? {
     return try {
         val clazz = Class.forName("android.os.SystemProperties")
         val method = clazz.getDeclaredMethod("get", java.lang.String::class.java)
-        method.invoke(null, prop) as String
+        val result = method.invoke(null, prop) as String
+
+        if (result == "") {
+            null
+        } else {
+            result
+        }
     } catch (e: Exception) {
         Log.e(logTag, "Failed to get property via API", e)
         null
@@ -69,6 +77,22 @@ fun Context.writeRootFile(path: String, data: ByteArray) {
         Shell.SU.run("cat $cacheDir/$fn > $path")
     } finally {
         tmpFile.delete()
+    }
+}
+
+fun Uri.getFileName(ctx: Context): String? {
+    if (scheme == "content") {
+        ctx.contentResolver.query(this, null, null, null, null).use {
+            if (it != null && it.moveToFirst()) {
+                return it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+            }
+        }
+    }
+
+    val sIdx = path.lastIndexOf('/')
+    return when (sIdx) {
+        -1 -> null
+        else -> path.substring(sIdx + 1)
     }
 }
 

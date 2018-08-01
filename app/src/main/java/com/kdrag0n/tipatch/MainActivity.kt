@@ -23,10 +23,14 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.io.DataInputStream
 import java.io.File
 
+private const val REQ_SAF_INPUT = 100
+private const val REQ_SAF_OUTPUT = 101
+
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     private var inputSource = ImageLocation.FILE
     private var outputDest = ImageLocation.FILE
     private lateinit var safInput: Uri
+    private lateinit var safOutput: Uri
     private lateinit var opts: SharedPreferences
     private var isRooted = false
     private var slotsPatched = 0
@@ -62,13 +66,41 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         optFrag.inputEvent = {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.type = "*/*" // .img
+            intent.type = "application/octet-stream" // no .img type
 
-            startActivityForResult(intent, 42)
+            startActivityForResult(intent, REQ_SAF_INPUT)
         }
 
         optFrag.outputEvent = {
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
 
+            intent.type = "application/octet-stream" // no .img type
+            intent.putExtra(Intent.EXTRA_TITLE, when {
+                ::safInput.isInitialized -> {
+                    val inputName = safInput.getFileName(this)
+
+                    if (inputName == null) {
+                        val devName = getProp("ro.product.device")
+                        if (devName != null) "twrp-$devName-tipatched.img" else "twrp-tipatched.img"
+                    } else {
+                        val split = inputName.split('.').toMutableList()
+
+                        if (split.size > 1) {
+                            split[split.size - 2] += "-tipatched"
+                            split.joinToString(".")
+                        } else {
+                            "$inputName-tipatched"
+                        }
+                    }
+                }
+                else -> {
+                    val devName = getProp("ro.product.device")
+                    if (devName != null) "twrp-$devName-tipatched.img" else "twrp-tipatched.img"
+                }
+            })
+
+            startActivityForResult(intent, REQ_SAF_OUTPUT)
         }
 
         patchBtn.setOnClickListener { _ ->
@@ -104,9 +136,10 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == 42 && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                safInput = data.data
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            when (requestCode) {
+                REQ_SAF_INPUT -> safInput = data.data
+                REQ_SAF_OUTPUT -> safOutput = data.data
             }
         }
     }
@@ -170,7 +203,12 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         val bytes = image.dumpBytes()
 
         progress("Writing image")
-        writer(bytes)
+        try {
+            writer(bytes)
+        } catch (e: IllegalStateException) {
+            errorDialog(e.message!!)
+            return
+        }
 
         progress("Finished!")
         runOnUiThread {
@@ -228,7 +266,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             override fun doInBackground(vararg params: Unit?) {
                 patch(
                         progress = { step ->
-                            Log.i(logTag, "step slot=$currentSlot")
+                            Log.i(logTag, "$step slot=$currentSlot")
 
                             runOnUiThread {
                                 dialog.setMessage(step)
@@ -315,7 +353,14 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun writeSafData(data: ByteArray) {
-
+        return if (::safOutput.isInitialized) {
+            val fos = contentResolver.openOutputStream(safOutput)
+            fos.use {
+                it.write(data)
+            }
+        } else {
+            throw IllegalStateException("Tipatch was unable to write the resulting image file. Please make sure you have permission to write in that folder.")
+        }
     }
 
     private fun partPath(slot: String?): String? {
