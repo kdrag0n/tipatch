@@ -1,6 +1,5 @@
 package com.kdrag0n.tipatch
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
@@ -18,21 +17,11 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.CompositePermissionListener
-import com.karumi.dexter.listener.single.PermissionListener
-import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import com.kdrag0n.utils.*
 import eu.chainfire.libsuperuser.Shell
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.BufferedReader
 import java.io.DataInputStream
 import java.io.File
-import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     private var inputSource = ImageLocation.FILE
@@ -83,25 +72,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
 
         patchBtn.setOnClickListener { _ ->
-            Dexter.withActivity(this)
-                    .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    .withListener(CompositePermissionListener(
-                            SnackbarOnDeniedPermissionListener.Builder
-                                    .with(findViewById(android.R.id.content), "Storage permission is needed to load/save files")
-                                    .withOpenSettingsButton("Grant in Settings")
-                                    .build(),
-
-                            object : PermissionListener {
-                                override fun onPermissionDenied(response: PermissionDeniedResponse?) {}
-
-                                override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                                    asyncPatch(getProp("ro.boot.slot_suffix"))
-                                }
-
-                                override fun onPermissionRationaleShouldBeShown(permission: PermissionRequest?, token: PermissionToken?) {}
-                            }
-                    ))
-                    .check()
+            asyncPatch(getProp("ro.boot.slot_suffix"))
         }
 
         if (resources.getBoolean(R.bool.isPhone)) {
