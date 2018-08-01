@@ -3,6 +3,7 @@ package com.kdrag0n.tipatch
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.SharedPreferences
@@ -16,6 +17,7 @@ import android.preference.PreferenceManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.Window
 import android.widget.Toast
 import com.kdrag0n.utils.*
 import eu.chainfire.libsuperuser.Shell
@@ -119,9 +121,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item!!.itemId) {
-            R.id.aboutOpt -> Toast.makeText(this, "TODO: about screen", Toast.LENGTH_SHORT).show()
+            R.id.aboutOpt -> showAboutActivity()
             R.id.contactOpt -> showContactDialog()
-            R.id.helpOpt -> Toast.makeText(this, "TODO: help dialog", Toast.LENGTH_SHORT).show()
+            R.id.helpOpt -> showHelpDialog()
         }
 
         return true
@@ -259,6 +261,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                         else -> "$message (slot $currentSlot)"
                     })
                     setMessage("Starting patcher")
+                    setCancelable(false)
                     show()
                 }
             }
@@ -317,7 +320,15 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun showContactDialog() {
-        Toast.makeText(applicationContext, "TODO: contact buttons", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "TODO: contact dialog", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showAboutActivity() {
+        Toast.makeText(this, "TODO: about screen", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showHelpDialog() {
+        Toast.makeText(this, "TODO: help dialog", Toast.LENGTH_SHORT).show()
     }
 
     private fun errorDialog(message: String) {
@@ -396,8 +407,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         if (key == "partition") {
             val partEnabled = pref?.getBoolean(key, false) ?: false
 
-            optFrag.preferenceManager.findPreference("input").isEnabled = !partEnabled
-            optFrag.preferenceManager.findPreference("output").isEnabled = !partEnabled
+            optFrag.preferenceManager.findPreference("input")?.isEnabled = !partEnabled
+            optFrag.preferenceManager.findPreference("output")?.isEnabled = !partEnabled
 
             inputSource = when (partEnabled) {
                 true -> ImageLocation.PARTITION
