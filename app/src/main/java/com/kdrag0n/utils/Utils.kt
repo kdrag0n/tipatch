@@ -1,10 +1,15 @@
 package com.kdrag0n.utils
 
 import android.app.Activity
+import android.content.Context
 import android.os.AsyncTask
 import android.os.Build
 import android.util.Log
+import eu.chainfire.libsuperuser.Shell
+import java.io.DataInputStream
+import java.io.File
 import java.io.FileDescriptor
+import java.util.concurrent.ThreadLocalRandom
 
 const val logTag = "Tipatch"
 
@@ -30,4 +35,58 @@ fun FileDescriptor.raw(): Int {
     field.isAccessible = true
 
     return field.getInt(this)
+}
+
+fun Context.readRootFile(path: String): ByteArray {
+    val fn = "tmp${ThreadLocalRandom.current().nextInt()}"
+    Shell.SU.run("cat $path > $cacheDir/$fn")
+
+    try {
+        val file = File("$cacheDir/$fn").inputStream()
+        val data = ByteArray(file.available())
+
+        file.use {
+            val fis = DataInputStream(it)
+            fis.readFully(data)
+        }
+
+        return data
+    } finally {
+        Shell.SU.run("rm -f $cacheDir/$fn")
+    }
+}
+
+fun Context.writeRootFile(path: String, data: ByteArray) {
+    val fn = "tmp${ThreadLocalRandom.current().nextInt()}"
+    val tmpFile = File("$cacheDir/$fn")
+
+    try {
+        val file = tmpFile.outputStream()
+        file.use {
+            file.write(data)
+        }
+
+        Shell.SU.run("cat $cacheDir/$fn > $path")
+    } finally {
+        tmpFile.delete()
+    }
+}
+
+fun findPartitionDirs(): List<File> {
+    val results = mutableListOf<File>()
+
+    fun recurse(path: String) {
+        File(path).listFiles().forEach {
+            if (it.isDirectory) {
+                if (it.name == "by-name") {
+                    results += it
+                } else {
+                    recurse(it.absolutePath)
+                }
+            }
+        }
+    }
+
+    recurse("/dev/block/platform")
+    return results
 }
