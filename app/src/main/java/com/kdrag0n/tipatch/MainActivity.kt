@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item!!.itemId) {
             R.id.aboutOpt -> showAboutActivity()
-            R.id.contactOpt -> showContactDialog()
+            R.id.contactOpt -> contactDev()
             R.id.helpOpt -> showHelpDialog()
         }
 
@@ -319,8 +319,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         task.execute()
     }
 
-    private fun showContactDialog() {
-        Toast.makeText(this, "TODO: contact dialog", Toast.LENGTH_SHORT).show()
+    private fun contactDev() {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("mailto:kdrag0n@pm.me"))
+        startActivity(intent)
     }
 
     private fun showAboutActivity() {
@@ -337,7 +338,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 setTitle("Oops...")
                 setMessage(message)
                 setPositiveButton(R.string.contact) { _, _ ->
-                    showContactDialog()
+                    contactDev()
                 }
                 setNegativeButton(R.string.exit) { _, _ ->
                     finish()
