@@ -1,16 +1,14 @@
 package com.kdrag0n.utils
 
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
-import android.os.Build
 import android.provider.OpenableColumns
 import android.util.Log
 import eu.chainfire.libsuperuser.Shell
 import java.io.DataInputStream
 import java.io.File
-import java.io.FileDescriptor
 import java.util.concurrent.ThreadLocalRandom
 
 const val logTag = "Tipatch"
@@ -21,6 +19,7 @@ fun asyncExec(func: () -> Unit) {
     }.execute()
 }
 
+@SuppressLint("PrivateApi")
 fun getProp(prop: String): String? {
     return try {
         val clazz = Class.forName("android.os.SystemProperties")
@@ -36,13 +35,6 @@ fun getProp(prop: String): String? {
         Log.e(logTag, "Failed to get property via API", e)
         null
     }
-}
-
-fun FileDescriptor.raw(): Int {
-    val field = FileDescriptor::class.java.getDeclaredField("descriptor")
-    field.isAccessible = true
-
-    return field.getInt(this)
 }
 
 fun Context.readRootFile(path: String): ByteArray {

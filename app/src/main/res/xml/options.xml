@@ -6,7 +6,7 @@
         android:summary="What TWRP image to patch"
         android:enabled="true" />
     <Preference
-        android:title="Output"
+        android:title="Output destination"
         android:summary="Where to put the resulting TWRP image"
         android:key="output"
         android:enabled="true" />

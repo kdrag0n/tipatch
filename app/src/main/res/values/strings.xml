@@ -3,11 +3,6 @@
     <string name="contact">Contact</string>
     <string name="exit">Close App</string>
     <string name="patch_btn">Patch</string>
-    <string name="input_drop">Input</string>
-    <string name="output_drop">Output</string>
     <string name="about">About</string>
     <string name="help">Help</string>
-
-    <string name="str_perm">Storage permission</string>
-    <string name="str_reason">Tipatch requires the storage permission to load image files and save patched image files.</string>
 </resources>
