@@ -6,6 +6,8 @@
     <string name="about">About</string>
     <string name="help">Help</string>
 
+    <string name="contact_mail">kdrag0n@pm.me</string>
+
     <string name="full_info"><![CDATA[
 <h4>What is Tipatch?</h4>
 <p><b>Tipatch</b> patches <a href=\"https://twrp.me/\">TWRP</a> recovery to back up your internal storage (emulated SD card), meaning your photos, music, game data, downloads, and more will be <i>saved</i> in backups.</p>

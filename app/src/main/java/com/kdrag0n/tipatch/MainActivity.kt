@@ -326,7 +326,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun contactDev() {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("mailto:kdrag0n@pm.me"))
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" +
+                resources.getString(R.string.contact_mail)))
         startActivity(intent)
     }
 
@@ -406,8 +407,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
         // time to do some hunting...
         // need API 26 for nio.Files
-        findPartitionDirs().forEach {
-            it.listFiles().forEach {
+        findPartitionDirs().forEach { dir ->
+            dir.listFiles().forEach {
                 if (it.name in partNames) {
                     return it.absolutePath
                 }
