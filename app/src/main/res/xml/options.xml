@@ -17,10 +17,4 @@
         android:summary="Whether to patch the currently installed recovery in-place (requires root)"
         android:key="partition"
         android:enabled="false"/>
-
-    <CheckBoxPreference
-        android:title="Fast mode"
-        android:defaultValue="true"
-        android:summary="Make you feel better about this app"
-        android:key="speed" />
 </PreferenceScreen>
