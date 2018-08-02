@@ -12,11 +12,13 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.preference.CheckBoxPreference
 import android.preference.PreferenceManager
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import com.kdrag0n.utils.*
@@ -24,6 +26,8 @@ import eu.chainfire.libsuperuser.Shell
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.DataInputStream
 import java.io.File
+import kotlin.reflect.KMutableProperty0
+import kotlin.reflect.KProperty
 
 private const val REQ_SAF_INPUT = 100
 private const val REQ_SAF_OUTPUT = 101
@@ -78,29 +82,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             intent.addCategory(Intent.CATEGORY_OPENABLE)
 
             intent.type = "application/octet-stream" // no .img type
-            intent.putExtra(Intent.EXTRA_TITLE, when {
-                ::safInput.isInitialized -> {
-                    val inputName = safInput.getFileName(this)
 
-                    if (inputName == null) {
-                        val devName = getProp("ro.product.device")
-                        if (devName != null) "twrp-$devName-tipatched.img" else "twrp-tipatched.img"
-                    } else {
-                        val split = inputName.split('.').toMutableList()
-
-                        if (split.size > 1) {
-                            split[split.size - 2] += "-tipatched"
-                            split.joinToString(".")
-                        } else {
-                            "$inputName-tipatched"
-                        }
-                    }
-                }
-                else -> {
-                    val devName = getProp("ro.product.device")
-                    if (devName != null) "twrp-$devName-tipatched.img" else "twrp-tipatched.img"
-                }
-            })
+            intent.putExtra(Intent.EXTRA_TITLE, outputFileName(safInput, ::safInput.isInitialized))
 
             startActivityForResult(intent, REQ_SAF_OUTPUT)
         }
@@ -177,10 +160,15 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
         if (data == null) {
             when (inputSource) {
-                ImageLocation.FILE -> errorDialog("Tipatch was unable to read your image file. Make sure you have permission to access it.")
+                ImageLocation.FILE -> errorDialog("Please select an image file to patch.")
                 ImageLocation.PARTITION ->
                     errorDialog("Tipatch was unable to find your device's recovery partition. Select an image file and flash it instead.")
             }
+            return
+        }
+
+        if (inputSource == ImageLocation.FILE && !::safInput.isInitialized) {
+            errorDialog("Please select a valid output file.")
             return
         }
 
@@ -214,13 +202,23 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         try {
             writer(bytes)
         } catch (e: IllegalStateException) {
-            errorDialog(e.message!!)
+            errorDialog(e.message!!, appIssue = true)
             return
         }
 
-        progress("Finished!")
-        runOnUiThread {
-            Toast.makeText(this, "Finished!", Toast.LENGTH_SHORT).show()
+        if (inputSource == ImageLocation.FILE) {
+            with (Snackbar.make(findViewById<View>(android.R.id.content), "Image patched!", Snackbar.LENGTH_SHORT)) {
+                setAction(R.string.share) {
+                    val intent = Intent()
+                    intent.action = Intent.ACTION_SEND
+                    intent.putExtra(Intent.EXTRA_STREAM, safOutput)
+                    intent.type = "application/octet-stream"
+
+                    startActivity(Intent.createChooser(intent, resources.getText(R.string.share)))
+                }
+
+                show()
+            }
         }
     }
 
@@ -346,17 +344,24 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         dialog.findViewById<TextView>(android.R.id.message).movementMethod = LinkMovementMethod.getInstance()
     }
 
-    private fun errorDialog(message: String) {
+    private fun errorDialog(message: String, appIssue: Boolean = false) {
         runOnUiThread {
             with (AlertDialog.Builder(this)) {
                 setTitle("Oops...")
                 setMessage(message)
-                setPositiveButton(R.string.contact) { _, _ ->
-                    contactDev()
+
+                if (appIssue) {
+                    setNegativeButton(R.string.exit) { _, _ ->
+                        finish()
+                    }
+
+                    setPositiveButton(R.string.contact) { _, _ ->
+                        contactDev()
+                    }
+                } else {
+                    setPositiveButton(android.R.string.ok) { _, _ -> }
                 }
-                setNegativeButton(R.string.exit) { _, _ ->
-                    finish()
-                }
+
                 setCancelable(false)
                 show()
             }
@@ -385,7 +390,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 it.write(data)
             }
         } else {
-            throw IllegalStateException("Tipatch was unable to write the resulting image file. Please make sure you have permission to write in that folder.")
+            throw IllegalStateException("Please select a valid output file.")
         }
     }
 
@@ -416,6 +421,32 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
 
         return null
+    }
+
+    private fun outputFileName(inputUri: Uri, isInit: Boolean): String {
+        return when {
+            isInit -> {
+                val inputName = inputUri.getFileName(this)
+
+                if (inputName == null) {
+                    val devName = getProp("ro.product.device")
+                    if (devName != null) "twrp-$devName-tipatched.img" else "twrp-tipatched.img"
+                } else {
+                    val split = inputName.split('.').toMutableList()
+
+                    if (split.size > 1) {
+                        split[split.size - 2] += "-tipatched"
+                        split.joinToString(".")
+                    } else {
+                        "$inputName-tipatched"
+                    }
+                }
+            }
+            else -> {
+                val devName = getProp("ro.product.device")
+                if (devName != null) "twrp-$devName-tipatched.img" else "twrp-tipatched.img"
+            }
+        }
     }
 
     override fun onSharedPreferenceChanged(pref: SharedPreferences?, key: String?) {
