@@ -12,6 +12,7 @@ import android.util.Log
 import eu.chainfire.libsuperuser.Shell
 import java.io.DataInputStream
 import java.io.File
+import java.lang.reflect.Field
 import java.util.concurrent.ThreadLocalRandom
 
 const val logTag = "Tipatch"
@@ -41,37 +42,38 @@ fun getProp(prop: String): String? {
 }
 
 fun Context.readRootFile(path: String): ByteArray {
-    val fn = "tmp${ThreadLocalRandom.current().nextInt()}"
-    Shell.SU.run("cat $path > $cacheDir/$fn")
+    val file = File("$cacheDir/tmp${ThreadLocalRandom.current().nextInt()}")
+    file.outputStream().close()
+
+    Shell.SU.run("cat $path > ${file.absolutePath}")
 
     try {
-        val file = File("$cacheDir/$fn").inputStream()
-        val data = ByteArray(file.available())
+        val fis = file.inputStream()
+        val data = ByteArray(fis.available())
 
-        file.use {
-            val fis = DataInputStream(it)
-            fis.readFully(data)
+        fis.use {
+            val dis = DataInputStream(it)
+            dis.readFully(data)
         }
 
         return data
     } finally {
-        Shell.SU.run("rm -f $cacheDir/$fn")
+        Shell.SU.run("rm -f ${file.absolutePath}")
     }
 }
 
 fun Context.writeRootFile(path: String, data: ByteArray) {
-    val fn = "tmp${ThreadLocalRandom.current().nextInt()}"
-    val tmpFile = File("$cacheDir/$fn")
+    val file = File("$cacheDir/tmp${ThreadLocalRandom.current().nextInt()}")
 
     try {
-        val file = tmpFile.outputStream()
-        file.use {
-            file.write(data)
+        val fos = file.outputStream()
+        fos.use {
+            fos.write(data)
         }
 
-        Shell.SU.run("cat $cacheDir/$fn > $path")
+        Shell.SU.run("cat ${file.absolutePath} > $path")
     } finally {
-        tmpFile.delete()
+        file.delete()
     }
 }
 
