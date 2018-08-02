@@ -95,7 +95,7 @@ fun findPartitionDirs(): List<File> {
     val results = mutableListOf<File>()
 
     fun recurse(path: String) {
-        File(path).listFiles().forEach {
+        File(path).listFiles()?.forEach {
             if (it.isDirectory) {
                 if (it.name == "by-name") {
                     results += it
