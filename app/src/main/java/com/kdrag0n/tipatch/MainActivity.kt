@@ -401,7 +401,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             else -> "/dev/block/bootdevice/by-name/boot$slot"
         }
 
-        if (File(bdPath).exists()) {
+        if (File(bdPath).exists() || rootExists(bdPath)) {
             return bdPath
         }
 
@@ -413,7 +413,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         // time to do some hunting...
         // need API 26 for nio.Files
         findPartitionDirs().forEach { dir ->
-            dir.listFiles().forEach {
+            File(dir).listFiles().forEach {
                 if (it.name in partNames) {
                     return it.absolutePath
                 }

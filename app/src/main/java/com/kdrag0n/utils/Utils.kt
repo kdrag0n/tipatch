@@ -91,23 +91,24 @@ fun Uri.getFileName(ctx: Context): String? {
     }
 }
 
-fun findPartitionDirs(): List<File> {
-    val results = mutableListOf<File>()
+fun findPartitionDirs(): List<String> {
+    val res = Shell.SU.run("find /dev/block/platform -type d -name 'by-name'")
 
-    fun recurse(path: String) {
-        File(path).listFiles()?.forEach {
-            if (it.isDirectory) {
-                if (it.name == "by-name") {
-                    results += it
-                } else {
-                    recurse(it.absolutePath)
-                }
-            }
-        }
+    if (res == null || res.size < 1) {
+        return listOf()
     }
 
-    recurse("/dev/block/platform")
-    return results
+    return res[0].split('\n')
+}
+
+fun rootExists(path: String): Boolean {
+    val res = Shell.SU.run("[ -e '$path' ] && echo EXISTS")
+
+    if (res == null || res.size < 1) {
+        return false
+    }
+
+    return "EXISTS" in res[0]
 }
 
 @SuppressLint("deprecation")
