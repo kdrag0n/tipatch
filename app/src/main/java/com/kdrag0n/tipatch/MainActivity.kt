@@ -13,9 +13,11 @@ import android.os.Bundle
 import android.preference.CheckBoxPreference
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import com.kdrag0n.utils.*
 import eu.chainfire.libsuperuser.Shell
@@ -109,6 +111,12 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
         if (resources.getBoolean(R.bool.isPhone)) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+        }
+
+        if (opts.getBoolean("first_run", true)) {
+            showHelpDialog()
+
+            opts.edit().putBoolean("first_run", false).apply()
         }
     }
 
@@ -327,7 +335,14 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun showHelpDialog() {
-        Toast.makeText(this, "TODO: help dialog", Toast.LENGTH_SHORT).show()
+        val dialog = with (AlertDialog.Builder(this)) {
+            setMessage(parseHtml(resources.getString(R.string.full_info)))
+            setPositiveButton(android.R.string.ok) { _, _ -> }
+            create()
+        }
+
+        dialog.show()
+        dialog.findViewById<TextView>(android.R.id.message).movementMethod = LinkMovementMethod.getInstance()
     }
 
     private fun errorDialog(message: String) {

@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
+import android.os.Build
 import android.provider.OpenableColumns
+import android.text.Html
+import android.text.Spanned
 import android.util.Log
 import eu.chainfire.libsuperuser.Shell
 import java.io.DataInputStream
@@ -105,4 +108,13 @@ fun findPartitionDirs(): List<File> {
 
     recurse("/dev/block/platform")
     return results
+}
+
+@SuppressLint("deprecation")
+fun parseHtml(html: String): Spanned {
+    return if (Build.VERSION.SDK_INT >= 24) {
+        Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
+    } else {
+        Html.fromHtml(html)
+    }
 }
