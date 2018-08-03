@@ -6,6 +6,10 @@
     <string name="about">About</string>
     <string name="help">Help</string>
     <string name="share">Share</string>
+    <string name="report">Send Report</string>
+    
+    <string name="part_not_found">Tipatch was unable to find your device\'s recovery partition. Select an image file and flash it instead.</string>
+    <string name="part_opt_report">\n\nIf you want your device to be supported in the future, send a device report with the button below. No personal information is contained.</string>
 
     <string name="contact_mail">kdrag0n@pm.me</string>
 

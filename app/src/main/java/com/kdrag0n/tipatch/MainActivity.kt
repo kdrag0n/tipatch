@@ -26,8 +26,6 @@ import eu.chainfire.libsuperuser.Shell
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.DataInputStream
 import java.io.File
-import kotlin.reflect.KMutableProperty0
-import kotlin.reflect.KProperty
 
 private const val REQ_SAF_INPUT = 100
 private const val REQ_SAF_OUTPUT = 101
@@ -135,6 +133,10 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
     }
 
+    private operator fun Int.invoke(): String {
+        return resources.getString(this)
+    }
+
     private fun hasRoot() {
         isRooted = true
 
@@ -162,7 +164,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             when (inputSource) {
                 ImageLocation.FILE -> errorDialog("Please select an image file to patch.")
                 ImageLocation.PARTITION ->
-                    errorDialog("Tipatch was unable to find your device's recovery partition. Select an image file and flash it instead.")
+                    errorDialog(R.string.part_not_found() + R.string.part_opt_report(), partition = true)
             }
             return
         }
@@ -283,14 +285,14 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                         reader = {
                             when (inputSource) {
                                 ImageLocation.FILE -> getSafData()
-                                ImageLocation.PARTITION -> readRootFile(partiPath!!)
+                                ImageLocation.PARTITION -> readRootFile(partiPath ?: return@patch null)
                             }
                         },
 
                         writer = {
                             when (inputSource) {
                                 ImageLocation.FILE -> writeSafData(it)
-                                ImageLocation.PARTITION -> writeRootFile(partiPath!!, it)
+                                ImageLocation.PARTITION -> writeRootFile(partiPath ?: throw IllegalStateException("Tipatch was unable to find your device's recovery partition. Select an image file and flash it instead."), it)
                             }
                         }
                 )
@@ -344,7 +346,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         dialog.findViewById<TextView>(android.R.id.message).movementMethod = LinkMovementMethod.getInstance()
     }
 
-    private fun errorDialog(message: String, appIssue: Boolean = false) {
+    private fun errorDialog(message: String, appIssue: Boolean = false, partition: Boolean = false) {
         runOnUiThread {
             with (AlertDialog.Builder(this)) {
                 setTitle("Oops...")
@@ -360,6 +362,12 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                     }
                 } else {
                     setPositiveButton(android.R.string.ok) { _, _ -> }
+                }
+
+                if (partition) {
+                    setNeutralButton(R.string.report) { _, _ ->
+                        Toast.makeText(this@MainActivity, "TODO: device reports", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
                 setCancelable(false)
