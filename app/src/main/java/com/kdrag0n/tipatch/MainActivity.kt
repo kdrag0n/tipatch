@@ -80,7 +80,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
             intent.type = "application/octet-stream" // no .img type
 
-            intent.putExtra(Intent.EXTRA_TITLE, outputFileName(safInput, ::safInput.isInitialized))
+            intent.putExtra(Intent.EXTRA_TITLE, outputFileName(if (::safInput.isInitialized) safInput else null))
 
             startActivityForResult(intent, REQ_SAF_OUTPUT)
         }
@@ -429,29 +429,26 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         return null
     }
 
-    private fun outputFileName(inputUri: Uri, isInit: Boolean): String {
-        return when {
-            isInit -> {
-                val inputName = inputUri.getFileName(this)
+    private fun outputFileName(inputUri: Uri?): String {
+        return if (inputUri != null) {
+            val inputName = inputUri.getFileName(this)
 
-                if (inputName == null) {
-                    val devName = getProp("ro.product.device")
-                    if (devName != null) "twrp-$devName-tipatched.img" else "twrp-tipatched.img"
-                } else {
-                    val split = inputName.split('.').toMutableList()
-
-                    if (split.size > 1) {
-                        split[split.size - 2] += "-tipatched"
-                        split.joinToString(".")
-                    } else {
-                        "$inputName-tipatched"
-                    }
-                }
-            }
-            else -> {
+            if (inputName == null) {
                 val devName = getProp("ro.product.device")
                 if (devName != null) "twrp-$devName-tipatched.img" else "twrp-tipatched.img"
+            } else {
+                val split = inputName.split('.').toMutableList()
+
+                if (split.size > 1) {
+                    split[split.size - 2] += "-tipatched"
+                    split.joinToString(".")
+                } else {
+                    "$inputName-tipatched"
+                }
             }
+        } else {
+            val devName = getProp("ro.product.device")
+            if (devName != null) "twrp-$devName-tipatched.img" else "twrp-tipatched.img"
         }
     }
 
