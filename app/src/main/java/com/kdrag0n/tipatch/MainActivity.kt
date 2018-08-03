@@ -168,7 +168,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             return
         }
 
-        if (inputSource == ImageLocation.FILE && !::safInput.isInitialized) {
+        if (inputSource == ImageLocation.FILE && !::safOutput.isInitialized) {
             errorDialog("Please select a valid output file.")
             return
         }
