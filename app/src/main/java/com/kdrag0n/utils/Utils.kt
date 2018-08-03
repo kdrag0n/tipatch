@@ -10,7 +10,7 @@ import android.provider.OpenableColumns
 import android.text.Html
 import android.text.Spanned
 import android.util.Log
-import eu.chainfire.libsuperuser.Shell
+import com.topjohnwu.superuser.Shell
 import java.io.DataInputStream
 import java.io.File
 import java.lang.reflect.Field
@@ -42,42 +42,6 @@ fun getProp(prop: String): String? {
     }
 }
 
-fun Context.readRootFile(path: String): ByteArray {
-    val file = File("$cacheDir/tmp${ThreadLocalRandom.current().nextInt()}")
-    file.outputStream().close()
-
-    Shell.SU.run("cat $path > ${file.absolutePath}")
-
-    try {
-        val fis = file.inputStream()
-        val data = ByteArray(fis.available())
-
-        fis.use {
-            val dis = DataInputStream(it)
-            dis.readFully(data)
-        }
-
-        return data
-    } finally {
-        Shell.SU.run("rm -f ${file.absolutePath}")
-    }
-}
-
-fun Context.writeRootFile(path: String, data: ByteArray) {
-    val file = File("$cacheDir/tmp${ThreadLocalRandom.current().nextInt()}")
-
-    try {
-        val fos = file.outputStream()
-        fos.use {
-            fos.write(data)
-        }
-
-        Shell.SU.run("cat ${file.absolutePath} > $path")
-    } finally {
-        file.delete()
-    }
-}
-
 fun Context.openUri(uri: String) {
     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uri)))
 }
@@ -99,23 +63,14 @@ fun Uri.getFileName(ctx: Context): String? {
 }
 
 fun findPartitionDirs(): List<String> {
-    val res = Shell.SU.run("find /dev/block/platform -type d -name 'by-name'")
+    val res = Shell.su("find /dev/block/platform -type d -name 'by-name'").exec()
 
-    if (res == null || res.size < 1) {
-        return listOf()
+    if (!res.isSuccess) {
+        val err = res.err.getOrElse(0) { "Unknown error" }
+        throw IllegalStateException("Root command failed (searching for partitions). \"$err\"")
     }
 
-    return res[0].split('\n')
-}
-
-fun rootExists(path: String): Boolean {
-    val res = Shell.SU.run("[ -e '$path' ] && echo EXISTS")
-
-    if (res == null || res.size < 1) {
-        return false
-    }
-
-    return "EXISTS" in res[0]
+    return res.out[0].split('\n')
 }
 
 @SuppressLint("deprecation")

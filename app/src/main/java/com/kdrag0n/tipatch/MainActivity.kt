@@ -20,12 +20,18 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import com.crashlytics.android.Crashlytics
 import com.kdrag0n.utils.*
-import eu.chainfire.libsuperuser.Shell
+import com.topjohnwu.superuser.Shell
+import com.topjohnwu.superuser.io.SuFile
+import com.topjohnwu.superuser.io.SuFileInputStream
+import com.topjohnwu.superuser.io.SuFileOutputStream
 import kotlinx.android.synthetic.main.activity_main.*
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.IOUtils
 import java.io.DataInputStream
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 private const val REQ_SAF_INPUT = 100
 private const val REQ_SAF_OUTPUT = 101
@@ -57,7 +63,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     .commit()
 
             asyncExec {
-                if (Shell.SU.available()) {
+                if (Shell.rootAccess()) {
                     hasRoot()
                 }
             }
@@ -285,14 +291,24 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                         reader = {
                             when (inputSource) {
                                 ImageLocation.FILE -> getSafData()
-                                ImageLocation.PARTITION -> readRootFile(partiPath ?: return@patch null)
+                                ImageLocation.PARTITION -> {
+                                    SuFileInputStream(partiPath ?: return@patch null).use {
+                                        IOUtils.toByteArray(it)
+                                    }
+                                }
                             }
                         },
 
                         writer = {
                             when (inputSource) {
                                 ImageLocation.FILE -> writeSafData(it)
-                                ImageLocation.PARTITION -> writeRootFile(partiPath ?: throw IllegalStateException("Tipatch was unable to find your device's recovery partition. Select an image file and flash it instead."), it)
+                                ImageLocation.PARTITION -> {
+                                    SuFileOutputStream(partiPath ?:
+                                    throw IllegalStateException(R.string.part_not_found())).use { fos ->
+                                        fos.write(it)
+                                        fos.flush()
+                                    }
+                                }
                             }
                         }
                 )
@@ -408,7 +424,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             else -> "/dev/block/bootdevice/by-name/boot$slot"
         }
 
-        if (File(bdPath).exists() || rootExists(bdPath)) {
+        if (SuFile(bdPath).exists()) {
             return bdPath
         }
 
