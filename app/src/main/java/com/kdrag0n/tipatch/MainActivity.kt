@@ -20,18 +20,19 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import com.crashlytics.android.Crashlytics
 import com.kdrag0n.utils.*
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuFileInputStream
 import com.topjohnwu.superuser.io.SuFileOutputStream
+import go.Seq
+import go.Universe
 import kotlinx.android.synthetic.main.activity_main.*
-import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import java.io.DataInputStream
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
+import java.io.IOException
 
 private const val REQ_SAF_INPUT = 100
 private const val REQ_SAF_OUTPUT = 101
@@ -162,7 +163,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     private fun patch(progress: (String) -> Unit, reader: () -> ByteArray?,
-                      writer: (ByteArray) -> Unit) {
+                      writer: (ByteArray) -> Unit): Boolean {
         progress("Reading image")
         val data = reader()
 
@@ -172,7 +173,8 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                 ImageLocation.PARTITION ->
                     errorDialog(R.string.part_not_found() + R.string.part_opt_report(), partition = true)
             }
-            return
+
+            return false
         }
 
         progress("Unpacking image")
@@ -206,7 +208,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             writer(bytes)
         } catch (e: IllegalStateException) {
             errorDialog(e.message!!, appIssue = true)
-            return
+            return false
         }
 
         if (inputSource == ImageLocation.FILE) {
@@ -223,6 +225,8 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                 show()
             }
         }
+
+        return true
     }
 
     private fun asyncPatch(slot: String?) {
@@ -262,6 +266,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         @SuppressLint("StaticFieldLeak")
         object : AsyncTask<Unit, Unit, Unit>() {
             private var dialog = ProgressDialog(ctx)
+            private var success = false
 
             override fun onPreExecute() {
                 val message = "Patching image"
@@ -279,39 +284,69 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             }
 
             override fun doInBackground(vararg params: Unit?) {
-                patch(
-                        progress = { step ->
-                            Log.i(logTag, "$step slot=$currentSlot")
+                success = try {
+                    patch(
+                            progress = { step ->
+                                Log.i(logTag, "$step slot=$currentSlot")
 
-                            runOnUiThread {
-                                dialog.setMessage(step)
-                            }
-                        },
+                                runOnUiThread {
+                                    dialog.setMessage(step)
+                                }
+                            },
 
-                        reader = {
-                            when (inputSource) {
-                                ImageLocation.FILE -> getSafData()
-                                ImageLocation.PARTITION -> {
-                                    SuFileInputStream(partiPath ?: return@patch null).use {
-                                        IOUtils.toByteArray(it)
+                            reader = {
+                                when (inputSource) {
+                                    ImageLocation.FILE -> getSafData()
+                                    ImageLocation.PARTITION -> {
+                                        SuFileInputStream(partiPath ?: return@patch null).use {
+                                            IOUtils.toByteArray(it)
+                                        }
+                                    }
+                                }
+                            },
+
+                            writer = {
+                                when (inputSource) {
+                                    ImageLocation.FILE -> writeSafData(it)
+                                    ImageLocation.PARTITION -> {
+                                        SuFileOutputStream(partiPath ?:
+                                        throw IllegalStateException(R.string.part_not_found())).use { fos ->
+                                            fos.write(it)
+                                            fos.flush()
+                                        }
                                     }
                                 }
                             }
-                        },
+                    )
+                } catch (e: Exception) {
+                    dialog.dismiss()
 
-                        writer = {
-                            when (inputSource) {
-                                ImageLocation.FILE -> writeSafData(it)
-                                ImageLocation.PARTITION -> {
-                                    SuFileOutputStream(partiPath ?:
-                                    throw IllegalStateException(R.string.part_not_found())).use { fos ->
-                                        fos.write(it)
-                                        fos.flush()
-                                    }
-                                }
-                            }
+                    if (e is Seq.Proxy) {
+                        if (e.message == null) {
+                            errorDialog("An unknown error occurred processing the input image.")
+                            return
                         }
-                )
+
+                        val sep = e.message!!.indexOf(';')
+                        if (sep == -1) { // our *intended* errors all have 2 parts
+                            errorDialog("An error occurred: ${e.message}", appIssue = true)
+                            return
+                        }
+
+                        with (e.message!!) {
+                            val action = slice(0 until sep)
+                            val message = slice(sep + 2 until length)
+                            val msgFirst = this[sep + 1].toUpperCase()
+
+                            errorDialog("An error occurred $action. $msgFirst$message", appIssue = false)
+                        }
+                    } else {
+                        errorDialog("An internal error of type ${e::class.java.simpleName} occurred: ${e.message}.", appIssue = true)
+                        Crashlytics.logException(e)
+                    }
+
+                    false
+                }
             }
 
             override fun onPostExecute(result: Unit?) {
@@ -319,7 +354,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     dialog.dismiss()
                 }
 
-                if (slot != null) {
+                if (success && slot != null) {
                     ++slotsPatched
 
                     if (slotsPatched >= 2) {
@@ -368,11 +403,10 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                 setMessage(message)
 
                 if (appIssue) {
-                    setNegativeButton(R.string.exit) { _, _ ->
-                        finish()
+                    setPositiveButton(android.R.string.ok) { _, _ ->
                     }
 
-                    setPositiveButton(R.string.contact) { _, _ ->
+                    setNegativeButton(R.string.contact) { _, _ ->
                         contactDev()
                     }
                 } else {
