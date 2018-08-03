@@ -168,11 +168,6 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             return
         }
 
-        if (inputSource == ImageLocation.FILE && !::safOutput.isInitialized) {
-            errorDialog("Please select a valid output file.")
-            return
-        }
-
         progress("Unpacking image")
         val image = Tipatch.unpackImageBytes(data)
 
@@ -224,6 +219,11 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     private fun asyncPatch(slot: String?) {
+        if (inputSource == ImageLocation.FILE && !::safOutput.isInitialized) {
+            errorDialog("Please select an output file.")
+            return
+        }
+
         val parti = when (inputSource) {
             ImageLocation.PARTITION -> partPath(slot) ?: {
                 errorDialog("Tipatch was unable to find your device's recovery partition. Select an image file and flash it instead.")
