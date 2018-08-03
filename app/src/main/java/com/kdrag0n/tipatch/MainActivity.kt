@@ -324,6 +324,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     if (e is Seq.Proxy) {
                         if (e.message == null) {
                             errorDialog("An unknown error occurred processing the input image.")
+                            Crashlytics.logException(e)
                             return
                         }
 
