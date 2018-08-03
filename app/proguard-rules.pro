@@ -116,3 +116,9 @@
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
 -keep public class * extends java.lang.Exception
+
+# Go
+-keep class com.kdrag0n.tipatch.Image {*;}
+-keep class com.kdrag0n.tipatch.RawImage {*;}
+-keep class com.kdrag0n.tipatch.Tipatch {*;}
+-keep class go.* {*;}
