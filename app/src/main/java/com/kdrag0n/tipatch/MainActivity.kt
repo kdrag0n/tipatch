@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
             fragmentManager
                     .beginTransaction()
-                    .add(R.id.optContainer, optFrag)
+                    .add(R.id.opt_container, optFrag)
                     .commit()
 
             asyncExec {
@@ -326,13 +326,12 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun contactDev() {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" +
-                resources.getString(R.string.contact_mail)))
-        startActivity(intent)
+        openUri("mailto:" + R.string.contact_mail().replace(" (at) ", "@"))
     }
 
     private fun showAboutActivity() {
-        Toast.makeText(this, "TODO: about screen", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, AboutActivity::class.java)
+        startActivity(intent)
     }
 
     private fun showHelpDialog() {

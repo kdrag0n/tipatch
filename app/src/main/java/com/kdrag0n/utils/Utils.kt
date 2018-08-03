@@ -2,6 +2,7 @@ package com.kdrag0n.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
@@ -75,6 +76,10 @@ fun Context.writeRootFile(path: String, data: ByteArray) {
     } finally {
         file.delete()
     }
+}
+
+fun Context.openUri(uri: String) {
+    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uri)))
 }
 
 fun Uri.getFileName(ctx: Context): String? {

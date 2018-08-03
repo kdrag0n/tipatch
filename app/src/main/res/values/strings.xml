@@ -7,11 +7,17 @@
     <string name="help">Help</string>
     <string name="share">Share</string>
     <string name="report">Send Report</string>
-    
+
     <string name="part_not_found">Tipatch was unable to find your device\'s recovery partition. Select an image file and flash it instead.</string>
     <string name="part_opt_report">\n\nIf you want your device to be supported in the future, send a device report with the button below. No personal information is contained.</string>
 
-    <string name="contact_mail">kdrag0n@pm.me</string>
+    <string name="contact_mail">kdrag0n (at) pm.me</string>
+    <string name="source_uri">https://github.com/kdrag0n/tipatch</string>
+    <string name="donate_uri">https://paypal.me/dragon5232</string>
+    
+    <string name="telegram_uri">https://t.me/kdrag0n</string>
+    <string name="github_uri">https://github.com/kdrag0n</string>
+    <string name="xda_uri">https://forum.xda-developers.com/member.php?u=7291478</string>
 
     <string name="full_info"><![CDATA[
 <h4>What is Tipatch?</h4>
