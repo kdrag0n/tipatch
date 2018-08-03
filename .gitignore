@@ -7,3 +7,6 @@
 /captures
 .externalNativeBuild
 *.aar
+google-services.json
+*.apk
+output.json

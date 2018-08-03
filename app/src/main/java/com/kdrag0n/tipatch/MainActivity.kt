@@ -20,6 +20,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import com.crashlytics.android.Crashlytics
 import com.kdrag0n.utils.*
 import eu.chainfire.libsuperuser.Shell
 import kotlinx.android.synthetic.main.activity_main.*
