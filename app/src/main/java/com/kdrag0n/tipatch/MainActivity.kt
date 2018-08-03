@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.preference.CheckBoxPreference
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.Menu
@@ -30,7 +29,7 @@ import java.io.File
 private const val REQ_SAF_INPUT = 100
 private const val REQ_SAF_OUTPUT = 101
 
-class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
+class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListener {
     private var inputSource = ImageLocation.FILE
     private var outputDest = ImageLocation.FILE
     private lateinit var safInput: Uri

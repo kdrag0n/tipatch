@@ -1,9 +1,9 @@
 package com.kdrag0n.tipatch
 
-import android.support.v7.app.AppCompatActivity
+import android.app.Activity
 import android.os.Bundle
 
-class AboutActivity : AppCompatActivity() {
+class AboutActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
@@ -18,6 +18,6 @@ class AboutActivity : AppCompatActivity() {
                     .commit()
         }
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.setDisplayHomeAsUpEnabled(true)
     }
 }
