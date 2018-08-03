@@ -17,5 +17,5 @@ func GetErrors(err error) []string {
 }
 
 func eMsg(err error, msg string) error {
-	return errwrap.Wrap(errors.New(msg+":"+err.Error()), err)
+	return errwrap.Wrap(errors.New(msg+";"+err.Error()), err)
 }

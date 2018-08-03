@@ -13,8 +13,8 @@ func checkWrap(err error) {
 	if err != nil {
 		wrapped := err.(errwrap.Wrapper).WrappedErrors()
 		err1 := wrapped[0].Error()
-		if strings.ContainsRune(err1, ':') {
-			err1 = err1[:strings.IndexByte(err1, ':')+1]
+		if strings.ContainsRune(err1, ';') {
+			err1 = err1[:strings.IndexByte(err1, ';')+1]
 		}
 
 		fmt.Printf(" ! Error %s!\n", err1)
