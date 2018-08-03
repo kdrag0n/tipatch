@@ -27,12 +27,10 @@ import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuFileInputStream
 import com.topjohnwu.superuser.io.SuFileOutputStream
 import go.Seq
-import go.Universe
 import kotlinx.android.synthetic.main.activity_main.*
 import org.apache.commons.io.IOUtils
 import java.io.DataInputStream
 import java.io.File
-import java.io.IOException
 
 private const val REQ_SAF_INPUT = 100
 private const val REQ_SAF_OUTPUT = 101
@@ -281,6 +279,8 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     setCancelable(false)
                     show()
                 }
+
+                patchBtn.isEnabled = false
             }
 
             override fun doInBackground(vararg params: Unit?) {
@@ -353,6 +353,8 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                 if (dialog.isShowing) {
                     dialog.dismiss()
                 }
+
+                patchBtn.isEnabled = true
 
                 if (success && slot != null) {
                     ++slotsPatched
