@@ -21,6 +21,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import com.crashlytics.android.Crashlytics
+import com.kdrag0n.jni.tipatch.Tipatch
 import com.kdrag0n.utils.*
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
