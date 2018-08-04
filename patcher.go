@@ -2,6 +2,7 @@ package tipatch
 
 import (
 	"fmt"
+
 	"go4.org/bytereplacer"
 )
 
@@ -17,7 +18,7 @@ type replList struct {
 
 func newRepl(size int) *replList {
 	return &replList{
-		replacements: make([]string, 0, size * 2),
+		replacements: make([]string, 0, size*2),
 	}
 }
 
@@ -27,13 +28,13 @@ func (r *replList) add(from string, to string, direction int) {
 	}
 
 	var pair [2]string
-	switch (direction) {
+	switch direction {
 	case ReplNormal:
 		pair[0] = from
 		pair[1] = to
 	case ReplReverse:
-		pair[1] = to
-		pair[0] = from
+		pair[0] = to
+		pair[1] = from
 	default:
 		panic(fmt.Sprintf("unknown direction for replacement: %d", direction))
 	}
@@ -57,8 +58,8 @@ func PatchRamdisk(ramdisk []byte, dir int) []byte {
 
 	// Change orange warning text when backing up for English
 	r.add("Backups of {1} do not include any files in internal storage such as pictures or downloads.",
-		  "Backups of {1} include files in internal storage such as pictures and downloads.          ",
-		  dir)
+		"Backups of {1} include files in internal storage such as pictures and downloads.          ",
+		dir)
 
 	return r.create().Replace(ramdisk)
 }
