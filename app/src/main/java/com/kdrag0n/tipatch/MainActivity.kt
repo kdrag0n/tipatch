@@ -186,7 +186,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         progress("Unpacking image")
         val image = Tipatch.unpackImageBytes(data)
 
-        val cMode = Tipatch.detectCompressor(image.ramdisk)
+        val cMode = image.detectCompressor()
         val cName = when (cMode) {
             Tipatch.CompGzip -> "gzip"
             Tipatch.CompLz4 -> "lz4"
@@ -198,7 +198,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
 
         progress("Decompressing ramdisk of type $cName")
-        var ramdisk = Tipatch.extractRamdisk(image.ramdisk, cMode)
+        image.decompressRamdisk(cMode)
 
         val direction = when (reversePref.isChecked) {
             true -> Tipatch.ReplReverse
@@ -211,10 +211,10 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             progress("Patching ramdisk")
         }
 
-        ramdisk = Tipatch.patchRamdisk(ramdisk, direction)
+        image.patchRamdisk(direction)
 
         progress("Compressing ramdisk")
-        image.ramdisk = Tipatch.compressRamdisk(ramdisk, cMode)
+        image.compressRamdisk(cMode)
 
         progress("Repacking image")
         val bytes = image.dumpBytes()
