@@ -3,7 +3,6 @@ package tipatch
 import (
 	"bytes"
 	"encoding/binary"
-	"io"
 	"os"
 	"unsafe"
 
@@ -24,7 +23,7 @@ func (img *Image) paddingSize(dataSize int) int {
 }
 
 // writePadding writes padding for the image's page size.
-func (img *Image) writePadding(out io.Writer, dataSize int) (err error) {
+func (img *Image) writePadding(out Writer, dataSize int) (err error) {
 	size := img.paddingSize(dataSize)
 	if size == 0 {
 		return
@@ -48,8 +47,8 @@ func (img *Image) checksum(hdr *RawImage) uint64 {
 	return xxh.Sum64()
 }
 
-// writeHeader writes the Image's header in Android boot format.
-func (img *Image) writeHeader(out io.Writer) (err error) {
+// WriteHeader writes the Image's header in Android boot format.
+func (img *Image) WriteHeader(out Writer) (err error) {
 	var magic [BootMagicSize]byte
 	copy(magic[:], BootMagic)
 
@@ -111,7 +110,7 @@ func (img *Image) writeHeader(out io.Writer) (err error) {
 }
 
 // writePaddedSection writes data to the output, then pads it to the page size.
-func (img *Image) writePaddedSection(out io.Writer, data []byte) (err error) {
+func (img *Image) writePaddedSection(out Writer, data []byte) (err error) {
 	count, err := out.Write(data)
 	if err != nil {
 		return
@@ -121,8 +120,8 @@ func (img *Image) writePaddedSection(out io.Writer, data []byte) (err error) {
 	return
 }
 
-// writeData writes the data chunks (ramdisk, kernel, etc) to the output.
-func (img *Image) writeData(out io.Writer) (err error) {
+// WriteData writes the data chunks (ramdisk, kernel, etc) to the output.
+func (img *Image) WriteData(out Writer) (err error) {
 	err = img.writePaddedSection(out, img.Kernel)
 	if err != nil {
 		return
@@ -154,12 +153,12 @@ func (img *Image) writeData(out io.Writer) (err error) {
 func (img *Image) WriteToFd(fd int) (err error) {
 	out := os.NewFile(uintptr(fd), "img.img")
 
-	err = img.writeHeader(out)
+	err = img.WriteHeader(out)
 	if err != nil {
 		return
 	}
 
-	err = img.writeData(out)
+	err = img.WriteData(out)
 	if err != nil {
 		return
 	}
@@ -179,15 +178,22 @@ func (img *Image) DumpBytes() ([]byte, error) {
 
 	buf := bytes.NewBuffer(make([]byte, 0, size))
 
-	err := img.writeHeader(buf)
+	err := img.WriteHeader(buf)
 	if err != nil {
 		return nil, err
 	}
 
-	err = img.writeData(buf)
+	err = img.WriteData(buf)
 	if err != nil {
 		return nil, err
 	}
 
 	return buf.Bytes(), nil
+}
+
+// Writer is the interface that inplements the basic Write method.
+// See the io package for full documentation.
+// This exists as a stub for binding purposes.
+type Writer interface {
+	Write(p []byte) (n int, err error)
 }
