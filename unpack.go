@@ -162,6 +162,17 @@ func ExtractRamdisk(compr []byte, cMode int) (ramdisk []byte, err error) {
 	return
 }
 
+// DecompressRamdisk decompresses the Image's ramdisk.
+func (img *Image) DecompressRamdisk(cMode int) (err error) {
+	rd, err := ExtractRamdisk(img.Ramdisk, cMode)
+	if err != nil {
+		return
+	}
+
+	img.Ramdisk = rd
+	return
+}
+
 // UnpackImageFd unpacks an image from the given fd.
 func UnpackImageFd(fd int) (*Image, error) {
 	fin := os.NewFile(uintptr(fd), "img.img")

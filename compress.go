@@ -66,3 +66,14 @@ func CompressRamdisk(ramdisk []byte, cMode int) ([]byte, error) {
 
 	return buf.Bytes(), nil
 }
+
+// CompressRamdisk compresses the Image's ramdisk.
+func (img *Image) CompressRamdisk(cMode int) (err error) {
+	rd, err := CompressRamdisk(img.Ramdisk, cMode)
+	if err != nil {
+		return
+	}
+
+	img.Ramdisk = rd
+	return
+}

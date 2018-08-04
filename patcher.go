@@ -63,3 +63,8 @@ func PatchRamdisk(ramdisk []byte, dir int) []byte {
 
 	return r.create().Replace(ramdisk)
 }
+
+// PatchRamdisk applies Tipatch patches on the Image's ramdisk.
+func (img *Image) PatchRamdisk(dir int) {
+	img.Ramdisk = PatchRamdisk(img.Ramdisk, dir)
+}
