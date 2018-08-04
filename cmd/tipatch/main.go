@@ -30,9 +30,11 @@ func checkMsg(err error, msg string) {
 func main() {
 	var inputPath string
 	var outputPath string
+	var reverse bool
 
 	flag.StringVarP(&inputPath, "input", "i", "", "Path to the TWRP image to patch.")
 	flag.StringVarP(&outputPath, "output", "o", "", "Path to output patched image to.")
+	flag.BoolVarP(&reverse, "revert", "r", false, "Revert a previously patched image.")
 
 	fmt.Printf(`Tipatch by @kdrag0n
 TWRP patcher for internal storage backup
@@ -103,5 +105,5 @@ Last tested with TWRP %s
 		}
 	}
 
-	patchImage(inputPath, outputPath)
+	patchImage(inputPath, outputPath, reverse)
 }

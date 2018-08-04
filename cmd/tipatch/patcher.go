@@ -23,7 +23,7 @@ func checkWrap(err error) {
 	}
 }
 
-func patchImage(inputPath, outputPath string) {
+func patchImage(inputPath, outputPath string, reverse bool) {
 	fmt.Println(" - Extracting image")
 	in, err := os.Open(inputPath)
 	checkMsg(err, "opening image for reading")
@@ -37,8 +37,17 @@ func patchImage(inputPath, outputPath string) {
 	ramdisk, err := tipatch.ExtractRamdisk(image.Ramdisk, cMode)
 	checkWrap(err)
 
-	fmt.Println(" - Patching ramdisk")
-	ramdisk = tipatch.PatchRamdisk(ramdisk)
+	if reverse {
+		fmt.Println(" - Unpatching ramdisk")
+	} else {
+		fmt.Println(" - Patching ramdisk")
+	}
+
+	dir := tipatch.ReplNormal
+	if reverse {
+		dir = tipatch.ReplReverse
+	}
+	ramdisk = tipatch.PatchRamdisk(ramdisk, dir)
 
 	fmt.Println(" - Compressing ramdisk")
 	ramdisk, err = tipatch.CompressRamdisk(ramdisk, cMode)
