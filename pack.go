@@ -3,6 +3,7 @@ package tipatch
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"os"
 	"unsafe"
 
@@ -191,9 +192,31 @@ func (img *Image) DumpBytes() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+// WrapWriter wraps a Writer to error when count is -1.
+// Useful for bindings via gobind.
+func WrapWriter(orig Writer) Writer {
+	return writerWrapper{
+		orig: orig,
+	}
+}
+
 // Writer is the interface that inplements the basic Write method.
 // See the io package for full documentation.
 // This exists as a stub for binding purposes.
 type Writer interface {
 	Write(p []byte) (n int, err error)
+}
+
+// writerWrapper implements the Writer interface for error handling purposes.
+type writerWrapper struct {
+	orig Writer
+}
+
+func (wr writerWrapper) Write(p []byte) (n int, err error) {
+	n, err = wr.orig.Write(p)
+	if n == -1 {
+		err = errors.New("WriteError: n -1")
+	}
+
+	return
 }
