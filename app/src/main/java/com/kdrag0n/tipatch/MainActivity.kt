@@ -122,6 +122,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         when (item!!.itemId) {
             R.id.aboutOpt -> showAboutActivity()
             R.id.contactOpt -> contactDev()
+            R.id.donateOpt -> openUri(R.string.donate_uri())
             R.id.helpOpt -> showHelpDialog()
         }
 

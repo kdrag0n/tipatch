@@ -7,6 +7,9 @@
         android:id="@+id/contactOpt"
         android:title="@string/contact" />
     <item
+        android:id="@+id/donateOpt"
+        android:title="@string/donate" />
+    <item
         android:id="@+id/helpOpt"
         android:icon="@android:drawable/ic_dialog_info"
         android:title="@string/help" />

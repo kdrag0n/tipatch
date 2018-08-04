@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/about">
         <Preference
-            android:title="Tipatch"
+            android:title="@string/app_name"
             android:key="version"/>
         <Preference
             android:title="View the source code"
@@ -10,7 +10,7 @@
             android:key="source"/>
 
         <Preference
-            android:title="Donate"
+            android:title="@string/donate"
             android:summary="Support future development (apps, kernels, etc)"
             android:key="donate"/>
     </PreferenceCategory>
