@@ -218,8 +218,9 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         image.compressRamdisk(cMode)
 
         progress("Repacking & writing image")
-        image.writeHeader(writer)
-        image.writeData(writer)
+        val wrapped = Tipatch.wrapWriter(writer)
+        image.writeHeader(wrapped)
+        image.writeData(wrapped)
 
         if (inputSource == ImageLocation.FILE) {
             with (Snackbar.make(findViewById<View>(android.R.id.content), "Image patched!", Snackbar.LENGTH_SHORT)) {
