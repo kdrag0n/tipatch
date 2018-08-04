@@ -31,6 +31,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.apache.commons.io.IOUtils
 import java.io.DataInputStream
 import java.io.File
+import java.io.OutputStream
 
 private const val REQ_SAF_INPUT = 100
 private const val REQ_SAF_OUTPUT = 101
@@ -169,7 +170,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     private fun patch(progress: (String) -> Unit, reader: () -> ByteArray?,
-                      writer: (ByteArray) -> Unit): Boolean {
+                      writer: (ByteArray) -> Long): Boolean {
         progress("Reading image")
         val data = reader()
 
@@ -216,16 +217,9 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         progress("Compressing ramdisk")
         image.compressRamdisk(cMode)
 
-        progress("Repacking image")
-        val bytes = image.dumpBytes()
-
-        progress("Writing image")
-        try {
-            writer(bytes)
-        } catch (e: IllegalStateException) {
-            errorDialog(e.message!!, appIssue = true)
-            return false
-        }
+        progress("Repacking & writing image")
+        image.writeHeader(writer)
+        image.writeData(writer)
 
         if (inputSource == ImageLocation.FILE) {
             with (Snackbar.make(findViewById<View>(android.R.id.content), "Image patched!", Snackbar.LENGTH_SHORT)) {
@@ -302,6 +296,19 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             }
 
             override fun doInBackground(vararg params: Unit?) {
+                val fos = try {
+                    when (inputSource) {
+                        ImageLocation.FILE -> openSafOutput()
+                        ImageLocation.PARTITION -> {
+                            SuFileOutputStream(partiPath ?:
+                            throw IllegalStateException(R.string.part_not_found()))
+                        }
+                    }
+                } catch (e: IllegalStateException) {
+                    errorDialog(e.message!!, appIssue = true)
+                    return
+                }
+
                 success = try {
                     patch(
                             progress = { step ->
@@ -324,15 +331,13 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                             },
 
                             writer = {
-                                when (inputSource) {
-                                    ImageLocation.FILE -> writeSafData(it)
-                                    ImageLocation.PARTITION -> {
-                                        SuFileOutputStream(partiPath ?:
-                                        throw IllegalStateException(R.string.part_not_found())).use { fos ->
-                                            fos.write(it)
-                                            fos.flush()
-                                        }
-                                    }
+                                try {
+                                    fos.write(it)
+                                    it.size.toLong()
+                                } catch (e: Exception) {
+                                    errorDialog("An error occurred writing the image: ${e.message}.")
+
+                                    -1
                                 }
                             }
                     )
@@ -365,6 +370,17 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     }
 
                     false
+                } finally {
+                    try {
+                        fos.flush()
+                        fos.close()
+                    } catch (ex: Exception) {
+                        if (dialog.isShowing) {
+                            dialog.dismiss()
+                        }
+
+                        errorDialog("An error occurred cleaning up the written image: ${ex.message}.")
+                    }
                 }
             }
 
@@ -461,12 +477,9 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
     }
 
-    private fun writeSafData(data: ByteArray) {
+    private fun openSafOutput(): OutputStream {
         return if (::safOutput.isInitialized) {
-            val fos = contentResolver.openOutputStream(safOutput)
-            fos.use {
-                it.write(data)
-            }
+            contentResolver.openOutputStream(safOutput)
         } else {
             throw IllegalStateException("Please select a valid output file.")
         }
