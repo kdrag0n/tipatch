@@ -162,6 +162,11 @@ func DecompressRamdisk(compr []byte, cMode int) (ramdisk []byte, err error) {
 	return
 }
 
+// DetectCompressor detects the compressor used for the Image's ramdisk.
+func (img *Image) DetectCompressor() int {
+	return DetectCompressor(img.Ramdisk)
+}
+
 // DecompressRamdisk decompresses the Image's ramdisk.
 func (img *Image) DecompressRamdisk(cMode int) (err error) {
 	rd, err := DecompressRamdisk(img.Ramdisk, cMode)
