@@ -398,6 +398,8 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
                     if (slotsPatched >= 2) {
                         slotsPatched = 0
+                        Snackbar.make(findViewById<View>(android.R.id.content), "Recovery in both slots patched!", Snackbar.LENGTH_SHORT)
+                                .show()
                         return
                     }
 
@@ -408,6 +410,12 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     }
 
                     asyncPatch(otherSlot)
+                    return
+                }
+
+                if (success && inputSource == ImageLocation.PARTITION) {
+                    Snackbar.make(findViewById<View>(android.R.id.content), "Recovery patched!", Snackbar.LENGTH_SHORT)
+                            .show()
                 }
             }
         }
