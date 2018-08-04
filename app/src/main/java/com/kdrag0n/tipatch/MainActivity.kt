@@ -41,6 +41,8 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     private lateinit var safInput: Uri
     private lateinit var safOutput: Uri
     private lateinit var opts: SharedPreferences
+    private val reversePref: CheckBoxPreference
+        get() = optFrag.preferenceManager.findPreference("reverse") as CheckBoxPreference
     private var isRooted = false
     private var slotsPatched = 0
 
@@ -86,7 +88,12 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
             intent.type = "application/octet-stream" // no .img type
 
-            intent.putExtra(Intent.EXTRA_TITLE, outputFileName(if (::safInput.isInitialized) safInput else null))
+            var outName = outputFileName(if (::safInput.isInitialized) safInput else null)
+            if (reversePref.isChecked) {
+                outName = outName.replace("-tipatched", "")
+            }
+
+            intent.putExtra(Intent.EXTRA_TITLE, outName)
 
             startActivityForResult(intent, REQ_SAF_OUTPUT)
         }
@@ -192,8 +199,18 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         progress("Decompressing ramdisk of type $cName")
         var ramdisk = Tipatch.extractRamdisk(image.ramdisk, cMode)
 
-        progress("Patching ramdisk")
-        ramdisk = Tipatch.patchRamdisk(ramdisk)
+        val direction = when (reversePref.isChecked) {
+            true -> Tipatch.ReplReverse
+            false -> Tipatch.ReplNormal
+        }
+
+        if (reversePref.isChecked) {
+            progress("Reversing ramdisk patches")
+        } else {
+            progress("Patching ramdisk")
+        }
+
+        ramdisk = Tipatch.patchRamdisk(ramdisk, direction)
 
         progress("Compressing ramdisk")
         image.ramdisk = Tipatch.compressRamdisk(ramdisk, cMode)

@@ -17,4 +17,10 @@
         android:summary="Whether to patch the currently installed recovery in-place (requires root)"
         android:key="partition"
         android:enabled="false"/>
+
+    <CheckBoxPreference
+        android:title="Reverse patch"
+        android:defaultValue="false"
+        android:summary="Revert the patch, excluding internal storage again"
+        android:key="reverse"/>
 </PreferenceScreen>
