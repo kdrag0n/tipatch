@@ -142,21 +142,21 @@ func DetectCompressor(compr []byte) int {
 	}
 }
 
-// ExtractRamdisk decompresses the provided ramdisk.
-func ExtractRamdisk(compr []byte, cMode int) (ramdisk []byte, err error) {
+// DecompressRamdisk decompresses the provided ramdisk.
+func DecompressRamdisk(compr []byte, cMode int) (ramdisk []byte, err error) {
 	gReader, err := gzip.NewReader(bytes.NewReader(compr))
 	if err != nil {
-		return nil, eMsg(err, "preparing to extract ramdisk")
+		return nil, eMsg(err, "preparing to decompress ramdisk")
 	}
 
 	ramdisk, err = ioutil.ReadAll(gReader)
 	if err != nil {
-		return nil, eMsg(err, "extracting ramdisk")
+		return nil, eMsg(err, "decompressing ramdisk")
 	}
 
 	err = gReader.Close()
 	if err != nil {
-		return nil, eMsg(err, "cleaning up ramdisk extraction")
+		return nil, eMsg(err, "cleaning up ramdisk decompression")
 	}
 
 	return
@@ -164,7 +164,7 @@ func ExtractRamdisk(compr []byte, cMode int) (ramdisk []byte, err error) {
 
 // DecompressRamdisk decompresses the Image's ramdisk.
 func (img *Image) DecompressRamdisk(cMode int) (err error) {
-	rd, err := ExtractRamdisk(img.Ramdisk, cMode)
+	rd, err := DecompressRamdisk(img.Ramdisk, cMode)
 	if err != nil {
 		return
 	}

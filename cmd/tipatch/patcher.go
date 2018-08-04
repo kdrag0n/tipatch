@@ -24,7 +24,7 @@ func checkWrap(err error) {
 }
 
 func patchImage(inputPath, outputPath string, reverse bool) {
-	fmt.Println(" - Extracting image")
+	fmt.Println(" - Unpacking image")
 	in, err := os.Open(inputPath)
 	checkMsg(err, "opening image for reading")
 	defer in.Close()
@@ -32,7 +32,7 @@ func patchImage(inputPath, outputPath string, reverse bool) {
 	image, err := tipatch.UnpackImage(in)
 	checkWrap(err)
 
-	fmt.Println(" - Extracting ramdisk")
+	fmt.Println(" - Decompressing ramdisk")
 	cMode := tipatch.DetectCompressor(image.Ramdisk)
 	ramdisk, err := tipatch.ExtractRamdisk(image.Ramdisk, cMode)
 	checkWrap(err)
