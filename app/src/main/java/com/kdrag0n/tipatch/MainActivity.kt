@@ -16,7 +16,6 @@ import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import com.commonsware.cwac.crossport.design.widget.Snackbar
@@ -242,7 +241,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     private fun snack(text: String): Snackbar {
-        return Snackbar.make(findViewById<View>(android.R.id.content), text, Snackbar.LENGTH_SHORT)
+        return Snackbar.make(rootCoordinator, text, Snackbar.LENGTH_SHORT)
     }
 
     private fun asyncPatch(slot: String?) {
