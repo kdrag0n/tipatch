@@ -12,7 +12,6 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.preference.CheckBoxPreference
 import android.preference.PreferenceManager
-import com.commonsware.cwac.crossport.design.widget.Snackbar
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.Menu
@@ -20,6 +19,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import com.commonsware.cwac.crossport.design.widget.Snackbar
 import com.crashlytics.android.Crashlytics
 import com.kdrag0n.jni.tipatch.Tipatch
 import com.kdrag0n.utils.*
@@ -397,7 +397,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
                 patchBtn.isEnabled = true
 
-                if (success && slot != null) {
+                if (success && parti != null && slot != null) {
                     ++slotsPatched
 
                     if (slotsPatched >= 2) {
