@@ -33,7 +33,7 @@
 # known to have issues, but the list may not be complete or up to date. (The "arithmetic"
 # optimization can be used if you are only targeting Android 2.0 or later.)  Make sure you test
 # thoroughly if you go this route.
--optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+-optimizations *
 -optimizationpasses 5
 -allowaccessmodification
 
