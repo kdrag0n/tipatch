@@ -12,7 +12,7 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.preference.CheckBoxPreference
 import android.preference.PreferenceManager
-import android.support.design.widget.Snackbar
+import com.commonsware.cwac.crossport.design.widget.Snackbar
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.Menu
@@ -224,7 +224,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         image.writeData(wrapped)
 
         if (inputSource == ImageLocation.FILE) {
-            with (Snackbar.make(findViewById<View>(android.R.id.content), "Image patched!", Snackbar.LENGTH_SHORT)) {
+            with (snack("Image patched!")) {
                 setAction(R.string.share) {
                     val intent = Intent()
                     intent.action = Intent.ACTION_SEND
@@ -239,6 +239,10 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
 
         return true
+    }
+
+    private fun snack(text: String): Snackbar {
+        return Snackbar.make(findViewById<View>(android.R.id.content), text, Snackbar.LENGTH_SHORT)
     }
 
     private fun asyncPatch(slot: String?) {
@@ -398,8 +402,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
                     if (slotsPatched >= 2) {
                         slotsPatched = 0
-                        Snackbar.make(findViewById<View>(android.R.id.content), "Recovery in both slots patched!", Snackbar.LENGTH_SHORT)
-                                .show()
+                        snack("Recovery in both slots patched!").show()
                         return
                     }
 
@@ -414,8 +417,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                 }
 
                 if (success && inputSource == ImageLocation.PARTITION) {
-                    Snackbar.make(findViewById<View>(android.R.id.content), "Recovery patched!", Snackbar.LENGTH_SHORT)
-                            .show()
+                    snack("Recovery patched!").show()
                 }
             }
         }

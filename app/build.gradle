@@ -23,12 +23,19 @@ android {
     }
 }
 
+def supportVer = '27.1.1'
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation fileTree(include: ['*.aar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    api "com.android.support:support-annotations:$supportVer"
+    api "com.android.support:support-compat:$supportVer"
+    api "com.android.support:support-core-utils:$supportVer"
+    api "com.android.support:support-core-ui:$supportVer"
+
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
-    implementation 'com.android.support:design:27.1.1'
     implementation 'com.github.topjohnwu:libsu:2.0.0'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
     implementation 'commons-io:commons-io:2.6'
