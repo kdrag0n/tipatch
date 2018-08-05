@@ -22,10 +22,11 @@ import com.commonsware.cwac.crossport.design.widget.Snackbar
 import com.crashlytics.android.Crashlytics
 import com.kdrag0n.jni.tipatch.Tipatch
 import com.kdrag0n.utils.*
+import com.topjohnwu.superuser.BusyBox
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuFileInputStream
-import com.topjohnwu.superuser.io.SuFileOutputStream
+import com.topjohnwu.superuser.io.SuProcessFileOutputStream
 import go.Seq
 import kotlinx.android.synthetic.main.activity_main.*
 import org.apache.commons.io.IOUtils
@@ -66,6 +67,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
             asyncExec {
                 if (Shell.rootAccess()) {
+                    BusyBox.setup(this)
                     hasRoot()
                 }
             }
@@ -306,7 +308,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     when (inputSource) {
                         ImageLocation.FILE -> openSafOutput()
                         ImageLocation.PARTITION -> {
-                            SuFileOutputStream(partiPath ?:
+                            SuProcessFileOutputStream(partiPath ?:
                             throw IllegalStateException(R.string.part_not_found()))
                         }
                     }
