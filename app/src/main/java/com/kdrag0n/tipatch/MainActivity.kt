@@ -24,7 +24,7 @@ import com.kdrag0n.jni.tipatch.Tipatch
 import com.kdrag0n.utils.*
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
-import com.topjohnwu.superuser.io.SuFileInputStream
+import com.topjohnwu.superuser.io.SuProcessFileInputStream
 import com.topjohnwu.superuser.io.SuProcessFileOutputStream
 import go.Seq
 import kotlinx.android.synthetic.main.activity_main.*
@@ -315,7 +315,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                                 when (inputSource) {
                                     ImageLocation.FILE -> getSafData()
                                     ImageLocation.PARTITION -> {
-                                        SuFileInputStream(partiPath ?: return@patch null).use {
+                                        SuProcessFileInputStream(partiPath ?: return@patch null).use {
                                             IOUtils.toByteArray(it)
                                         }
                                     }
