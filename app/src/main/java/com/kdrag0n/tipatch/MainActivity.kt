@@ -22,7 +22,6 @@ import com.commonsware.cwac.crossport.design.widget.Snackbar
 import com.crashlytics.android.Crashlytics
 import com.kdrag0n.jni.tipatch.Tipatch
 import com.kdrag0n.utils.*
-import com.topjohnwu.superuser.BusyBox
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuFileInputStream
@@ -67,7 +66,6 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
             asyncExec {
                 if (Shell.rootAccess()) {
-                    BusyBox.setup(this)
                     hasRoot()
                 }
             }
