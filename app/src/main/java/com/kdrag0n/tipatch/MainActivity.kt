@@ -222,21 +222,6 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         image.writeHeader(wrapped)
         image.writeData(wrapped)
 
-        if (inputSource == ImageLocation.FILE) {
-            with (snack("Image patched!")) {
-                setAction(R.string.share) {
-                    val intent = Intent()
-                    intent.action = Intent.ACTION_SEND
-                    intent.putExtra(Intent.EXTRA_STREAM, safOutput)
-                    intent.type = "application/octet-stream"
-
-                    startActivity(Intent.createChooser(intent, resources.getText(R.string.share)))
-                }
-
-                show()
-            }
-        }
-
         return true
     }
 
@@ -402,27 +387,48 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
                 patchBtn.isEnabled = true
 
-                if (success && parti != null && slot != null) {
-                    ++slotsPatched
-
-                    if (slotsPatched >= 2) {
-                        slotsPatched = 0
-                        snack("Recovery in both slots patched!").show()
-                        return
-                    }
-
-                    val otherSlot = when (currentSlot) {
-                        "A" -> "_b"
-                        "B" -> "_a"
-                        else -> return
-                    }
-
-                    asyncPatch(otherSlot)
+                if (!success) {
                     return
                 }
 
-                if (success && inputSource == ImageLocation.PARTITION) {
-                    snack("Recovery patched!").show()
+                when (inputSource) {
+                    ImageLocation.FILE -> {
+                        with (snack("Image patched!")) {
+                            setAction(R.string.share) {
+                                val intent = Intent()
+                                intent.action = Intent.ACTION_SEND
+                                intent.putExtra(Intent.EXTRA_STREAM, safOutput)
+                                intent.type = "application/octet-stream"
+
+                                startActivity(Intent.createChooser(intent, resources.getText(R.string.share)))
+                            }
+
+                            show()
+                        }
+                    }
+
+                    ImageLocation.PARTITION -> {
+                        if (parti != null && slot != null) {
+                            ++slotsPatched
+
+                            if (slotsPatched >= 2) {
+                                slotsPatched = 0
+                                snack("Recovery in both slots patched!").show()
+                                return
+                            }
+
+                            val otherSlot = when (currentSlot) {
+                                "A" -> "_b"
+                                "B" -> "_a"
+                                else -> return
+                            }
+
+                            asyncPatch(otherSlot)
+                            return
+                        } else {
+                            snack("Recovery patched!").show()
+                        }
+                    }
                 }
             }
         }
