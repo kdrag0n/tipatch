@@ -282,6 +282,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         object : AsyncTask<Unit, Unit, Unit>() {
             private var dialog = ProgressDialog(ctx)
             private var success = false
+            private var currentStep = ""
 
             override fun onPreExecute() {
                 val message = "Patching image"
@@ -318,6 +319,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     patch(
                             progress = { step ->
                                 Log.i(logTag, "$step slot=$currentSlot")
+                                currentStep = step
 
                                 runOnUiThread {
                                     dialog.setMessage(step)
@@ -350,6 +352,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     dialog.dismiss()
 
                     if (e is Seq.Proxy) {
+                        Crashlytics.log("Native error: ${e.message}")
                         if (e.message == null) {
                             errorDialog("An unknown error occurred processing the input image.")
                             Crashlytics.logException(e)
@@ -373,6 +376,9 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                         errorDialog("An internal error of type ${e::class.java.simpleName} occurred: ${e.message}.", appIssue = true)
                         Crashlytics.logException(e)
                     }
+
+                    Crashlytics.log("Last step: $currentStep")
+                    currentStep = ""
 
                     false
                 } finally {
