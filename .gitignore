@@ -10,3 +10,4 @@
 google-services.json
 *.apk
 output.json
+redex-src-strings-map.txt
