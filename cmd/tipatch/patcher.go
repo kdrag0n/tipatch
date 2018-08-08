@@ -34,7 +34,7 @@ func patchImage(inputPath, outputPath string, reverse bool) {
 
 	fmt.Println(" - Decompressing ramdisk")
 	cMode := tipatch.DetectCompressor(image.Ramdisk)
-	ramdisk, err := tipatch.ExtractRamdisk(image.Ramdisk, cMode)
+	ramdisk, err := tipatch.DecompressRamdisk(image.Ramdisk, cMode)
 	checkWrap(err)
 
 	if reverse {
