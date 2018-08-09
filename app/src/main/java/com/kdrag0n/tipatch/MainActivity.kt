@@ -520,7 +520,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
 
         val partNames = when (slot) {
-            null -> setOf("recovery", "RECOVERY", "SOS")
+            null -> setOf("recovery", "RECOVERY", "SOS", "recovery_ramdisk")
             else -> setOf("boot$slot", "BOOT$slot")
         }
 
