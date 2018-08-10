@@ -13,34 +13,34 @@ class AboutFragment : PreferenceFragment() {
 
         with (preferenceManager) {
             val ver = findPreference("version")
-            ver.summary = "Version ${BuildConfig.VERSION_NAME}"
+            ver?.summary = "Version ${BuildConfig.VERSION_NAME}"
 
-            findPreference("source").setOnPreferenceClickListener {
+            findPreference("source")?.setOnPreferenceClickListener {
                 activity.openUri(R.string.source_uri())
                 return@setOnPreferenceClickListener true
             }
 
-            findPreference("donate").setOnPreferenceClickListener {
+            findPreference("donate")?.setOnPreferenceClickListener {
                 activity.openUri(R.string.donate_uri())
                 return@setOnPreferenceClickListener true
             }
 
-            findPreference("telegram").setOnPreferenceClickListener {
+            findPreference("telegram")?.setOnPreferenceClickListener {
                 activity.openUri(R.string.telegram_uri())
                 return@setOnPreferenceClickListener true
             }
 
-            findPreference("github").setOnPreferenceClickListener {
+            findPreference("github")?.setOnPreferenceClickListener {
                 activity.openUri(R.string.github_uri())
                 return@setOnPreferenceClickListener true
             }
 
-            findPreference("xda").setOnPreferenceClickListener {
+            findPreference("xda")?.setOnPreferenceClickListener {
                 activity.openUri(R.string.xda_uri())
                 return@setOnPreferenceClickListener true
             }
 
-            findPreference("email").setOnPreferenceClickListener {
+            findPreference("email")?.setOnPreferenceClickListener {
                 activity.openUri("mailto:" + R.string.contact_mail().replace(" (at) ", "@"))
                 return@setOnPreferenceClickListener true
             }
@@ -54,6 +54,6 @@ class AboutFragment : PreferenceFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        view.findViewById<ListView>(android.R.id.list).divider = null
+        view?.findViewById<ListView>(android.R.id.list)?.divider = null
     }
 }
