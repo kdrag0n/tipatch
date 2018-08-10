@@ -17,32 +17,32 @@ class AboutFragment : PreferenceFragment() {
 
             findPreference("source")?.setOnPreferenceClickListener {
                 activity.openUri(R.string.source_uri())
-                return@setOnPreferenceClickListener true
+                 true
             }
 
             findPreference("donate")?.setOnPreferenceClickListener {
                 activity.openUri(R.string.donate_uri())
-                return@setOnPreferenceClickListener true
+                 true
             }
 
             findPreference("telegram")?.setOnPreferenceClickListener {
                 activity.openUri(R.string.telegram_uri())
-                return@setOnPreferenceClickListener true
+                 true
             }
 
             findPreference("github")?.setOnPreferenceClickListener {
                 activity.openUri(R.string.github_uri())
-                return@setOnPreferenceClickListener true
+                 true
             }
 
             findPreference("xda")?.setOnPreferenceClickListener {
                 activity.openUri(R.string.xda_uri())
-                return@setOnPreferenceClickListener true
+                 true
             }
 
             findPreference("email")?.setOnPreferenceClickListener {
                 activity.openUri("mailto:" + R.string.contact_mail().replace(" (at) ", "@"))
-                return@setOnPreferenceClickListener true
+                 true
             }
         }
     }
