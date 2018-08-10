@@ -5,13 +5,13 @@
             android:title="@string/app_name"
             android:key="version"/>
         <Preference
-            android:title="View the source code"
-            android:summary="On GitHub"
+            android:title="@string/about_src"
+            android:summary="@string/about_src_desc"
             android:key="source"/>
 
         <Preference
             android:title="@string/donate"
-            android:summary="Support future development (apps, kernels, etc)"
+            android:summary="@string/about_donate_desc"
             android:key="donate"/>
     </PreferenceCategory>
 

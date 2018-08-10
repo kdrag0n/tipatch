@@ -47,6 +47,10 @@
     <string name="pref_reverse">Reverse patch</string>
     <string name="pref_reverse_desc">Undo the internal storage patch</string>
 
+    <string name="about_src">View the source code</string>
+    <string name="about_src_desc">On GitHub</string>
+    <string name="about_donate_desc">Support future development (apps, kernels, etc)</string>
+
     <string name="contact_mail">kdrag0n (at) pm.me</string>
     <string name="source_uri">https://github.com/kdrag0n/tipatch</string>
     <string name="donate_uri">https://paypal.me/dragon5232</string>
