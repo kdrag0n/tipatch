@@ -8,8 +8,35 @@
     <string name="report">Send Report</string>
     <string name="donate">Donate</string>
 
+    <string name="err_generic">Oops…</string>
+    <string name="err_native_empty">An unknown error occurred processing the input image.</string>
+    <string name="err_native_unwrapped">An error occurred: %s.</string>
+    <string name="err_native_wrapped">An error occurred %s. %s%s</string>
+    <string name="err_java">An internal error of type %s occurred: %s.</string>
+    <string name="err_close_output">An error occurred cleaning up the written image: %s.</string>
+
     <string name="part_not_found">Tipatch was unable to find your device\'s recovery partition. Select an image file and flash it instead.</string>
     <string name="part_opt_report">\n\nIf you want your device to be supported in the future, send a device report with the button below. No personal information is contained.</string>
+    <string name="part_complete_slot">Recovery in both slots patched!</string>
+    <string name="part_complete">Recovery patched!</string>
+
+    <string name="file_select_input">Please select an image file to patch.</string>
+    <string name="file_select_output">Please select an output file.</string>
+    <string name="file_error_output">Unable to write to output file.</string>
+    <string name="file_complete">Image patched!</string>
+
+    <string name="header_patching">Patching image</string>
+    <string name="header_patching_unknown_slot">Patching image (unknown slot)</string>
+    <string name="header_patching_slot">Patching image (slot %s)</string>
+
+    <string name="step0_start">Preparing to patch</string>
+    <string name="step1_read">Reading image</string>
+    <string name="step2_unpack">Unpacking image</string>
+    <string name="step3_decompress">Decompressing ramdisk of type %s</string>
+    <string name="step4_patch_rev">Reversing ramdisk patches</string>
+    <string name="step4_patch">Patching ramdisk</string>
+    <string name="step5_compress">Compressing ramdisk</string>
+    <string name="step6_pack_write">Repacking &amp; writing image</string>
 
     <string name="contact_mail">kdrag0n (at) pm.me</string>
     <string name="source_uri">https://github.com/kdrag0n/tipatch</string>
@@ -19,6 +46,7 @@
     <string name="github_uri">https://github.com/kdrag0n</string>
     <string name="xda_uri">https://forum.xda-developers.com/member.php?u=7291478</string>
 
+    <!-- Line breaks and margins don't work properly in plain XML -->
     <string name="full_info"><![CDATA[
 <h4>What is Tipatch?</h4>
 <p><b>Tipatch</b> patches <a href=\"https://twrp.me/\">TWRP</a> recovery to back up your internal storage (emulated SD card), meaning your photos, music, game data, downloads, and more will be <i>saved</i> in backups.</p>

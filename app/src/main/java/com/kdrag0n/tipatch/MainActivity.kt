@@ -155,8 +155,8 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
     }
 
-    private operator fun Int.invoke(): String {
-        return resources.getString(this)
+    private operator fun Int.invoke(vararg fmt: Any): String {
+        return resources.getString(this, *fmt)
     }
 
     private fun hasRoot() {
@@ -179,12 +179,12 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
     private fun patch(progress: (String) -> Unit, reader: () -> ByteArray?,
                       writer: (ByteArray) -> Long): Boolean {
-        progress("Reading image")
+        progress(R.string.step1_read())
         val data = reader()
 
         if (data == null) {
             when (inputSource) {
-                ImageLocation.FILE -> errorDialog("Please select an image file to patch.")
+                ImageLocation.FILE -> errorDialog(R.string.file_select_input())
                 ImageLocation.PARTITION ->
                     errorDialog(R.string.part_not_found() + R.string.part_opt_report(), partition = true)
             }
@@ -192,7 +192,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             return false
         }
 
-        progress("Unpacking image")
+        progress(R.string.step2_unpack())
         val image = Tipatch.unpackImageBytes(data)
 
         val cMode = image.detectCompressor()
@@ -206,7 +206,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             else -> "unknown"
         }
 
-        progress("Decompressing ramdisk of type $cName")
+        progress(R.string.step3_decompress(cName))
         image.decompressRamdisk(cMode)
 
         val direction = when (reversePref.isChecked) {
@@ -215,17 +215,17 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
 
         if (reversePref.isChecked) {
-            progress("Reversing ramdisk patches")
+            progress(R.string.step4_patch_rev())
         } else {
-            progress("Patching ramdisk")
+            progress(R.string.step4_patch())
         }
 
         image.patchRamdisk(direction)
 
-        progress("Compressing ramdisk")
+        progress(R.string.step5_compress())
         image.compressRamdisk(cMode)
 
-        progress("Repacking & writing image")
+        progress(R.string.step6_pack_write())
         val wrapped = Tipatch.wrapWriter(writer)
         image.writeHeader(wrapped)
         image.writeData(wrapped)
@@ -237,15 +237,25 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         return Snackbar.make(rootCoordinator, text, Snackbar.LENGTH_SHORT)
     }
 
+    private fun snack(textRes: Int): Snackbar {
+        return snack(textRes())
+    }
+
     private fun asyncPatch(slot: String?) {
-        if (inputSource == ImageLocation.FILE && !::safOutput.isInitialized) {
-            errorDialog("Please select an output file.")
-            return
+        if (inputSource == ImageLocation.FILE) {
+            if (!::safInput.isInitialized) {
+                errorDialog(R.string.file_select_input())
+                return
+            } else if (!::safOutput.isInitialized) {
+                errorDialog(R.string.file_select_output())
+                return
+            }
+
         }
 
         val parti = when (inputSource) {
             ImageLocation.PARTITION -> partPath(slot) ?: {
-                errorDialog("Tipatch was unable to find your device's recovery partition. Select an image file and flash it instead.")
+                errorDialog(R.string.part_not_found())
             }()
             else -> null
         }
@@ -278,15 +288,13 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             private var currentStep = ""
 
             override fun onPreExecute() {
-                val message = "Patching image"
-
                 with (dialog) {
                     setTitle(when (currentSlot) {
-                        null -> message
-                        "unknown" -> "$message (unknown slot)"
-                        else -> "$message (slot $currentSlot)"
+                        null -> R.string.header_patching()
+                        "unknown" -> R.string.header_patching_unknown_slot()
+                        else -> R.string.header_patching_slot(currentSlot)
                     })
-                    setMessage("Starting patcher")
+                    setMessage(R.string.step0_start())
                     setCancelable(false)
                     show()
                 }
@@ -347,26 +355,28 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     if (e is Seq.Proxy) {
                         Crashlytics.log("Native error: ${e.message}")
                         if (e.message == null) {
-                            errorDialog("An unknown error occurred processing the input image.")
+                            errorDialog(R.string.err_native_empty())
                             Crashlytics.logException(e)
                             return
                         }
 
-                        val sep = e.message!!.indexOf(';')
+                        val msg = e.message!!
+
+                        val sep = msg.indexOf(';')
                         if (sep == -1) { // our *intended* errors all have 2 parts
-                            errorDialog("An error occurred: ${e.message}", appIssue = true)
+                            errorDialog(R.string.err_native_unwrapped(msg), appIssue = true)
                             return
                         }
 
-                        with (e.message!!) {
+                        with (msg) {
                             val action = slice(0 until sep)
-                            val message = slice(sep + 2 until length)
+                            val desc = slice(sep + 2 until length)
                             val msgFirst = this[sep + 1].toUpperCase()
 
-                            errorDialog("An error occurred $action. $msgFirst$message", appIssue = false)
+                            errorDialog(R.string.err_native_wrapped(action, msgFirst, desc), appIssue = false)
                         }
                     } else {
-                        errorDialog("An internal error of type ${e::class.java.simpleName} occurred: ${e.message}.", appIssue = true)
+                        errorDialog(R.string.err_java(e::class.java.simpleName, e.message ?: "null"), appIssue = true)
                         Crashlytics.logException(e)
                     }
 
@@ -383,7 +393,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                             dialog.dismiss()
                         }
 
-                        errorDialog("An error occurred cleaning up the written image: ${ex.message}.")
+                        errorDialog(R.string.err_close_output(ex.message ?: "null"))
                     }
                 }
             }
@@ -401,7 +411,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
                 when (inputSource) {
                     ImageLocation.FILE -> {
-                        with (snack("Image patched!")) {
+                        with (snack(R.string.file_complete)) {
                             setAction(R.string.share) {
                                 val intent = Intent()
                                 intent.action = Intent.ACTION_SEND
@@ -421,7 +431,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
                             if (slotsPatched >= 2) {
                                 slotsPatched = 0
-                                snack("Recovery in both slots patched!").show()
+                                snack(R.string.part_complete_slot).show()
                                 return
                             }
 
@@ -434,7 +444,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                             asyncPatch(otherSlot)
                             return
                         } else {
-                            snack("Recovery patched!").show()
+                            snack(R.string.part_complete).show()
                         }
                     }
                 }
@@ -467,7 +477,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     private fun errorDialog(message: String, appIssue: Boolean = false, partition: Boolean = false) {
         runOnUiThread {
             with (AlertDialog.Builder(this)) {
-                setTitle("Oops...")
+                setTitle(R.string.err_generic)
                 setMessage(message)
 
                 if (appIssue) {
@@ -510,9 +520,9 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
     private fun openSafOutput(): OutputStream {
         return if (::safOutput.isInitialized) {
-            contentResolver.openOutputStream(safOutput) ?: throw IllegalStateException("Unable to write to output file.")
+            contentResolver.openOutputStream(safOutput) ?: throw IllegalStateException(R.string.file_error_output())
         } else {
-            throw IllegalStateException("Please select a valid output file.")
+            throw IllegalStateException(R.string.file_select_output())
         }
     }
 
