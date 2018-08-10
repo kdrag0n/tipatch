@@ -149,8 +149,8 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
             when (requestCode) {
-                REQ_SAF_INPUT -> safInput = data.data
-                REQ_SAF_OUTPUT -> safOutput = data.data
+                REQ_SAF_INPUT -> safInput = data.data ?: return
+                REQ_SAF_OUTPUT -> safOutput = data.data ?: return
             }
         }
     }
@@ -165,11 +165,11 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         runOnUiThread {
             with (optFrag.preferenceManager) {
                 val optPart = findPreference("partition")
-                optPart.isEnabled = true
-                (optPart as CheckBoxPreference).isChecked = true
+                optPart?.isEnabled = true
+                (optPart as CheckBoxPreference?)?.isChecked = true
 
-                findPreference("input").isEnabled = false
-                findPreference("output").isEnabled = false
+                findPreference("input")?.isEnabled = false
+                findPreference("output")?.isEnabled = false
 
                 inputSource = ImageLocation.PARTITION
                 outputDest = ImageLocation.PARTITION
@@ -496,7 +496,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     private fun getSafData(): ByteArray? {
         return if (::safInput.isInitialized) {
             val fis = contentResolver.openInputStream(safInput)
-            val buf = ByteArray(fis.available())
+            val buf = ByteArray(fis?.available() ?: return null)
 
             DataInputStream(fis).use {
                 it.readFully(buf)
@@ -510,7 +510,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
     private fun openSafOutput(): OutputStream {
         return if (::safOutput.isInitialized) {
-            contentResolver.openOutputStream(safOutput)
+            contentResolver.openOutputStream(safOutput) ?: throw IllegalStateException("Unable to write to output file.")
         } else {
             throw IllegalStateException("Please select a valid output file.")
         }
