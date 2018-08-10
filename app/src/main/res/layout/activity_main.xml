@@ -20,7 +20,7 @@
         android:layout_marginBottom="16dp"
         android:layout_gravity="end|bottom"
         android:tooltipText="@string/patch_btn"
-        android:src="@drawable/ic_patch"
+        android:src="@drawable/ic_apply"
         tools:targetApi="o" />
 
 </android.support.design.widget.CoordinatorLayout>
