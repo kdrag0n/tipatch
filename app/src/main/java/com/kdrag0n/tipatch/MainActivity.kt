@@ -584,6 +584,13 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
     companion object {
         lateinit var optFrag: OptionFragment
-        fun isFragInit() = ::optFrag.isInitialized
+        fun isFragInit(): Boolean {
+            return try {
+                optFrag
+                true
+            } catch (_: UninitializedPropertyAccessException) {
+                false
+            }
+        }
     }
 }
