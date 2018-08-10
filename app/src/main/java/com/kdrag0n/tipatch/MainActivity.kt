@@ -9,6 +9,7 @@ import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.preference.CheckBoxPreference
 import android.preference.PreferenceManager
@@ -101,6 +102,13 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
         patchBtn.setOnClickListener { _ ->
             asyncPatch(getProp("ro.boot.slot_suffix"))
+        }
+
+        if (Build.VERSION.SDK_INT < 26) {
+            patchBtn.setOnLongClickListener { _ ->
+                Toast.makeText(this, R.string.patch_btn, Toast.LENGTH_SHORT).show()
+                true
+            }
         }
 
         if (resources.getBoolean(R.bool.isPhone)) {
