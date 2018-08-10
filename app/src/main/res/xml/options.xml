@@ -12,7 +12,7 @@
         android:enabled="true" />
 
     <CheckBoxPreference
-        android:title="In-place patching (root)"
+        android:title="In-place patching"
         android:defaultValue="false"
         android:summary="Whether to patch the currently installed recovery in-place (requires root)"
         android:key="partition"
