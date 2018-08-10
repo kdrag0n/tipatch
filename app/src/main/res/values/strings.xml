@@ -49,25 +49,22 @@
     <!-- Line breaks and margins don't work properly in plain XML -->
     <string name="full_info"><![CDATA[
 <h4>What is Tipatch?</h4>
-<p><b>Tipatch</b> patches <a href=\"https://twrp.me/\">TWRP</a> recovery to back up your internal storage (emulated SD card), meaning your photos, music, game data, downloads, and more will be <i>saved</i> in backups.</p>
+<p><b>Tipatch</b> patches <a href=\"https://twrp.me/\">TWRP</a> recovery to back up your internal storage (emulated SD card), meaning your photos, music, game data, downloads, and more will be <i>saved</i> in backups instead of excluded.</p>
 
 <h4>How do I use Tipatch?</h4>
-<p>If your device is <b>rooted</b>, you can patch your currently-installed recovery (both slots if your device is A/B) in-place, without having to download or flash any images.</p>
+<p>If your device is <b>rooted</b>, you can patch your current recovery (both slots on A/B) with one tap.</p>
 
-<p>If you\'re <b>not rooted</b>, don\'t worry! You can still use Tipatch. Simply download your device\'s recovery image, open it in Tipatch, and save the resulting patched image. Then, flash or boot this final image like any other one.</p>
+<p>If you\'re <b>not rooted</b>, download your device\'s recovery image and patch that. Then flash or boot the patched image as usual.</p>
 
 <h4>Effects</h4>
-To confirm whether it worked, boot into TWRP. Signs of success are:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;• \"Data (incl. storage)\" on Backup screen<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;• \"Backups of Data include…\" while backing up<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;• Bigger Data size on Backup screen<br/>
 
-&nbsp;&nbsp;&nbsp;&nbsp;• "Data (excl. storage)" becoming "Data (incl. storage)"<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;• "Backups of Data do not include…" when backing up becoming "Backups of Data include…"<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;• Bigger calculated size of Data in Backup screen, because more is included<br/>
-
-<p>Restoring backups with internal storage does <b>not</b> require a Tipatched recovery. It will restore all the data in any recovery.</p>
+<p>Restoring backups with internal storage does <b>not</b> require a patched recovery.</p>
 
 <h4>Problems?</h4>
-<p>If Tipatch does not work properly on your device (any of the above signs aren\'t present, or it doesn\'t actually back up the data), please let me know! You can find a Contact button in the menu.</p>
-
-<p><b>Enjoy!</b></p>]]>
+<p>If Tipatch does not work properly on your device in any way, please let me know via the Contact menu option.</p>
+]]>
     </string>
 </resources>
