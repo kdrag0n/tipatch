@@ -16,12 +16,12 @@ class OptionFragment : PreferenceFragment() {
         with (preferenceManager) {
             findPreference("input")?.setOnPreferenceClickListener {
                 inputEvent()
-                return@setOnPreferenceClickListener true
+                true
             }
 
             findPreference("output")?.setOnPreferenceClickListener {
                 outputEvent()
-                return@setOnPreferenceClickListener true
+                true
             }
         }
     }
