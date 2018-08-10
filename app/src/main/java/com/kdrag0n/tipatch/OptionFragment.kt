@@ -2,6 +2,7 @@ package com.kdrag0n.tipatch
 
 import android.os.Bundle
 import android.preference.PreferenceFragment
+import android.widget.ListView
 
 class OptionFragment : PreferenceFragment() {
     lateinit var inputEvent: () -> Unit
@@ -23,5 +24,11 @@ class OptionFragment : PreferenceFragment() {
                 return@setOnPreferenceClickListener true
             }
         }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        view.findViewById<ListView>(android.R.id.list).divider = null
     }
 }

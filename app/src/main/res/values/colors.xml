@@ -1,0 +1,6 @@
+<resources>
+    <color name="background_dark">#202028</color>
+
+    <color name="status_dark">#283593</color>
+    <color name="action_dark">#3949ab</color>
+</resources>
