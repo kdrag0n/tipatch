@@ -63,8 +63,9 @@ To confirm whether it worked, boot into TWRP. Signs of success are:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;• "Backups of Data do not include…" when backing up becoming "Backups of Data include…"<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;• Bigger calculated size of Data in Backup screen, because more is included<br/>
 
-<h4>Problems?</h4>
+<p>Restoring backups with internal storage does <b>not</b> require a Tipatched recovery. It will restore all the data in any recovery.</p>
 
+<h4>Problems?</h4>
 <p>If Tipatch does not work properly on your device (any of the above signs aren\'t present, or it doesn\'t actually back up the data), please let me know! You can find a Contact button in the menu.</p>
 
 <p><b>Enjoy!</b></p>]]>
