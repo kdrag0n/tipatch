@@ -1,7 +1,7 @@
 <resources>
     <color name="background_dark">#24242d</color>
 
-    <color name="status_dark">#1a6eff</color>
+    <color name="status_dark">#0f67ff</color>
     <color name="action_dark">#2979ff</color>
     <color name="accent">#448aff</color>
 </resources>
