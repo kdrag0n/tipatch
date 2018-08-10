@@ -2,6 +2,7 @@ package com.kdrag0n.tipatch
 
 import android.os.Bundle
 import android.preference.PreferenceFragment
+import android.widget.ListView
 import com.kdrag0n.utils.openUri
 
 class AboutFragment : PreferenceFragment() {
@@ -48,5 +49,11 @@ class AboutFragment : PreferenceFragment() {
 
     private operator fun Int.invoke(): String {
         return resources.getString(this)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        view.findViewById<ListView>(android.R.id.list).divider = null
     }
 }
