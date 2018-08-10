@@ -56,7 +56,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         opts.registerOnSharedPreferenceChangeListener(this)
 
         // could end up with overlapping fragments
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null && !isFragInit()) {
             optFrag = OptionFragment()
             optFrag.retainInstance = true
 
@@ -584,5 +584,6 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
     companion object {
         lateinit var optFrag: OptionFragment
+        fun isFragInit() = ::optFrag.isInitialized
     }
 }
