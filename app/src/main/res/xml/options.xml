@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <Preference
-        android:title="Input source"
-        android:key="input"
-        android:summary="What TWRP image to patch"
-        android:enabled="true" />
+        android:title="@string/pref_file_input"
+        android:summary="@string/pref_file_input_desc"
+        android:enabled="true"
+        android:key="input" />
     <Preference
-        android:title="Output destination"
-        android:summary="Where to put the resulting TWRP image"
-        android:key="output"
-        android:enabled="true" />
+        android:title="@string/pref_file_output"
+        android:summary="@string/pref_file_output_desc"
+        android:enabled="true"
+        android:key="output" />
 
     <CheckBoxPreference
-        android:title="In-place patching"
+        android:title="@string/pref_partition"
+        android:summary="@string/pref_partition_desc"
         android:defaultValue="false"
-        android:summary="Whether to patch the currently installed recovery in-place (requires root)"
-        android:key="partition"
-        android:enabled="false"/>
+        android:enabled="false"
+        android:key="partition" />
 
     <CheckBoxPreference
-        android:title="Reverse patch"
+        android:title="@string/pref_reverse"
+        android:summary="@string/pref_reverse_desc"
         android:defaultValue="false"
-        android:summary="Revert the patch, excluding internal storage again"
-        android:key="reverse"/>
+        android:key="reverse" />
 </PreferenceScreen>
