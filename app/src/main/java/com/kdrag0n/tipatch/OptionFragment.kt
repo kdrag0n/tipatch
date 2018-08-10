@@ -14,12 +14,12 @@ class OptionFragment : PreferenceFragment() {
         addPreferencesFromResource(R.xml.options)
 
         with (preferenceManager) {
-            findPreference("input").setOnPreferenceClickListener {
+            findPreference("input")?.setOnPreferenceClickListener {
                 inputEvent()
                 return@setOnPreferenceClickListener true
             }
 
-            findPreference("output").setOnPreferenceClickListener {
+            findPreference("output")?.setOnPreferenceClickListener {
                 outputEvent()
                 return@setOnPreferenceClickListener true
             }
@@ -29,6 +29,6 @@ class OptionFragment : PreferenceFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        view.findViewById<ListView>(android.R.id.list).divider = null
+        view?.findViewById<ListView>(android.R.id.list)?.divider = null
     }
 }
