@@ -121,30 +121,54 @@ func (img *Image) writePaddedSection(out Writer, data []byte) (err error) {
 	return
 }
 
-// WriteData writes the data chunks (ramdisk, kernel, etc) to the output.
-func (img *Image) WriteData(out Writer) (err error) {
+// WriteKernel writes this Image's kernel to the output.
+func (img *Image) WriteKernel(out Writer) (err error) {
 	err = img.writePaddedSection(out, img.Kernel)
-	if err != nil {
-		return
-	}
+	return
+}
 
+// WriteRamdisk writes this Image's ramdisk to the output.
+func (img *Image) WriteRamdisk(out Writer) (err error) {
 	err = img.writePaddedSection(out, img.Ramdisk)
-	if err != nil {
-		return
-	}
+	return
+}
 
+// WriteSecond writes this Image's second-stage loader to the output.
+func (img *Image) WriteSecond(out Writer) (err error) {
 	if len(img.Second) > 0 {
 		err = img.writePaddedSection(out, img.Second)
-		if err != nil {
-			return
-		}
 	}
+	return
+}
 
+// WriteDeviceTree writes this Image's device tree to the output.
+func (img *Image) WriteDeviceTree(out Writer) (err error) {
 	if len(img.DeviceTree) > 0 {
 		err = img.writePaddedSection(out, img.DeviceTree)
-		if err != nil {
-			return
-		}
+	}
+	return
+}
+
+// WriteData writes the data chunks (ramdisk, kernel, etc) to the output.
+func (img *Image) WriteData(out Writer) (err error) {
+	err = img.WriteKernel(out)
+	if err != nil {
+		return
+	}
+
+	err = img.WriteRamdisk(out)
+	if err != nil {
+		return
+	}
+
+	err = img.WriteSecond(out)
+	if err != nil {
+		return
+	}
+
+	err = img.WriteDeviceTree(out)
+	if err != nil {
+		return
 	}
 
 	return
