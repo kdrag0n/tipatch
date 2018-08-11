@@ -10,8 +10,8 @@ import (
 	"github.com/cespare/xxhash"
 )
 
-// paddingSize calculates the amount of padding necessary for the Image's page size.
-func (img *Image) paddingSize(dataSize int) int {
+// PaddingSize calculates the amount of padding necessary for the Image's page size.
+func (img *Image) PaddingSize(dataSize int) int {
 	pageSize := int(img.pageSize)
 	pageMask := pageSize - 1
 	pbSize := dataSize & pageMask
@@ -25,7 +25,7 @@ func (img *Image) paddingSize(dataSize int) int {
 
 // writePadding writes padding for the image's page size.
 func (img *Image) writePadding(out Writer, dataSize int) (err error) {
-	size := img.paddingSize(dataSize)
+	size := img.PaddingSize(dataSize)
 	if size == 0 {
 		return
 	}
@@ -201,7 +201,7 @@ func (img *Image) WriteToFd(fd int) (err error) {
 func (img *Image) DumpBytes() ([]byte, error) {
 	// Calculate size for efficiency
 	ps := func(data []byte) int {
-		return len(data) + img.paddingSize(len(data))
+		return len(data) + img.PaddingSize(len(data))
 	}
 
 	var hdr RawImage
