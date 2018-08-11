@@ -133,6 +133,12 @@ func (img *Image) WriteRamdisk(out Writer) (err error) {
 	return
 }
 
+// WriteRamdiskRaw writes this Image's ramdisk without padding to the output.
+func (img *Image) WriteRamdiskRaw(out Writer) (err error) {
+	_, err = out.Write(img.Ramdisk)
+	return
+}
+
 // WriteSecond writes this Image's second-stage loader to the output.
 func (img *Image) WriteSecond(out Writer) (err error) {
 	if len(img.Second) > 0 {
