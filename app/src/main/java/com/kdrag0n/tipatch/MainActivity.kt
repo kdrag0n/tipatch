@@ -44,6 +44,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     private lateinit var safOutput: Uri
     private lateinit var opts: SharedPreferences
     private lateinit var optFrag: OptionFragment
+    private var firstRun = false
     private val reversePref: CheckBoxPreference
         get() = optFrag.preferenceManager.findPreference("reverse") as CheckBoxPreference
     private var isRooted = false
@@ -66,8 +67,14 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
         if (savedInstanceState == null) {
             asyncExec {
-                if (Shell.rootAccess()) {
-                    hasRoot()
+                try {
+                    if (Shell.rootAccess()) {
+                        hasRoot()
+                    } else {
+                        noRoot()
+                    }
+                } catch (e: Exception) {
+                    noRoot()
                 }
             }
         } else {
@@ -116,6 +123,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
 
         if (opts.getBoolean("first_run", true)) {
+            firstRun = true
             showHelpDialog()
 
             opts.edit().putBoolean("first_run", false).apply()
@@ -166,13 +174,35 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             with (optFrag.preferenceManager) {
                 val optPart = findPreference("partition")
                 optPart?.isEnabled = true
-                (optPart as CheckBoxPreference?)?.isChecked = true
 
-                findPreference("input")?.isEnabled = false
-                findPreference("output")?.isEnabled = false
+                if (firstRun || opts.getBoolean("partition", false)) {
+                    findPreference("input")?.isEnabled = false
+                    findPreference("output")?.isEnabled = false
 
-                inputSource = ImageLocation.PARTITION
-                outputDest = ImageLocation.PARTITION
+                    (optPart as CheckBoxPreference?)?.isChecked = true
+                    inputSource = ImageLocation.PARTITION
+                    outputDest = ImageLocation.PARTITION
+                }
+            }
+        }
+    }
+
+    private fun noRoot() {
+        isRooted = false
+
+        runOnUiThread {
+            with (optFrag.preferenceManager) {
+                val optPart = findPreference("partition")
+                optPart?.isEnabled = false
+                (optPart as CheckBoxPreference?)?.isChecked = false
+
+                findPreference("input")?.isEnabled = true
+                findPreference("output")?.isEnabled = true
+
+                inputSource = ImageLocation.FILE
+                outputDest = ImageLocation.FILE
+
+                opts.edit().putBoolean("partition", false).apply()
             }
         }
     }
