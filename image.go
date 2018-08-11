@@ -33,6 +33,8 @@ type Image struct {
 	Ramdisk       []byte
 	Second        []byte
 	DeviceTree    []byte
+
+	OriginalRamdiskSize int
 }
 
 // RawImage directly correlates to the Android boot image header.

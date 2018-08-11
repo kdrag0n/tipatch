@@ -169,6 +169,8 @@ func (img *Image) DetectCompressor() int {
 
 // DecompressRamdisk decompresses the Image's ramdisk.
 func (img *Image) DecompressRamdisk(cMode int) (err error) {
+	img.OriginalRamdiskSize = len(img.Ramdisk)
+
 	rd, err := DecompressRamdisk(img.Ramdisk, cMode)
 	if err != nil {
 		return
