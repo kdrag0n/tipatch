@@ -283,7 +283,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         val task =
         @SuppressLint("StaticFieldLeak")
         object : AsyncTask<Unit, Unit, Unit>() {
-            private var dialog = ProgressDialog(ctx)
+            private var dialog = ProgressDialog(ctx, R.style.DialogTheme)
             private var success = false
             private var currentStep = ""
 
@@ -464,7 +464,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     private fun showHelpDialog() {
-        val dialog = with (AlertDialog.Builder(this)) {
+        val dialog = with (AlertDialog.Builder(this, R.style.DialogTheme)) {
             setMessage(parseHtml(resources.getString(R.string.full_info)))
             setPositiveButton(android.R.string.ok) { _, _ -> }
             create()
@@ -476,7 +476,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
     private fun errorDialog(message: String, appIssue: Boolean = false, partition: Boolean = false) {
         runOnUiThread {
-            with (AlertDialog.Builder(this)) {
+            with (AlertDialog.Builder(this, R.style.DialogTheme)) {
                 setTitle(R.string.err_generic)
                 setMessage(message)
 
