@@ -1,7 +1,9 @@
 <resources>
     <color name="background_dark">#24242d</color>
+    <color name="card_dark">#292933</color>
 
     <color name="status_dark">#0f67ff</color>
     <color name="action_dark">#2979ff</color>
     <color name="accent">#448aff</color>
+    <color name="about_ic_color">#BEBEC0</color>
 </resources>

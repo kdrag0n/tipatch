@@ -16,4 +16,18 @@
         <item name="android:colorAccent">@color/accent</item>
         <item name="android:background">@color/background_dark</item>
     </style>
+
+    <style name="AboutTheme" parent="Theme.Mal.Dark">
+        <item name="android:colorPrimary">@color/action_dark</item>
+        <item name="android:colorPrimaryDark">@color/status_dark</item>
+        <item name="android:colorAccent">@color/accent</item>
+
+        <item name="android:windowBackground">@color/background_dark</item>
+        <item name="mal_toolbarTheme">@style/ToolbarTheme</item>
+        <item name="mal_card_background">@color/card_dark</item>
+    </style>
+
+    <style name="ToolbarTheme" parent="@android:style/ThemeOverlay.Material.Dark">
+        <item name="android:background">@color/action_dark</item>
+    </style>
 </resources>

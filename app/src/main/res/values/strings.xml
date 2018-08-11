@@ -7,6 +7,11 @@
     <string name="share">Share</string>
     <string name="report">Send Report</string>
     <string name="donate">Donate</string>
+    <string name="author">Author</string>
+    <string name="version">Version %s</string>
+
+    <string name="author_name">Khronodragon</string>
+    <string name="author_nick">\"kdrag0n\"</string>
 
     <string name="err_generic">Oops…</string>
     <string name="err_native_empty">An unknown error occurred processing the input image.</string>
