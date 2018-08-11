@@ -21,7 +21,6 @@
 
         <activity android:name=".AboutActivity"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AboutTheme"
             android:label="@string/about"/>
     </application>
 

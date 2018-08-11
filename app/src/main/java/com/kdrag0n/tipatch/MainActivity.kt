@@ -131,6 +131,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater
         menuInflater.inflate(R.menu.actions, menu ?: return true)
         return true
     }
