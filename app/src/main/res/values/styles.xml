@@ -1,5 +1,5 @@
 <resources>
-    <style name="AppTheme" parent="@android:style/Theme.Material">
+    <style name="AppTheme" parent="android:Theme.Material">
         <item name="android:colorPrimary">@color/action_dark</item>
         <item name="android:colorPrimaryDark">@color/status_dark</item>
         <item name="android:colorAccent">@color/accent</item>
@@ -9,16 +9,16 @@
         <item name="cardStyle">@style/CardTheme</item>
     </style>
 
-    <style name="MenuTheme" parent="@android:style/Theme.Material">
+    <style name="MenuTheme" parent="android:Theme.Material">
         <item name="android:colorBackground">@color/background_dark</item>
     </style>
     
-    <style name="DialogTheme" parent="@android:style/Theme.Material.Dialog.Alert">
+    <style name="DialogTheme" parent="android:Theme.Material.Dialog.Alert">
         <item name="android:colorAccent">@color/accent</item>
         <item name="android:background">@color/background_dark</item>
     </style>
 
-    <style name="ToolbarTheme" parent="@android:style/ThemeOverlay.Material.Dark">
+    <style name="ToolbarTheme" parent="android:ThemeOverlay.Material.Dark">
         <item name="android:background">@color/action_dark</item>
     </style>
 
