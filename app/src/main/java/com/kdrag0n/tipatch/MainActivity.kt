@@ -71,9 +71,9 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                 }
             }
         } else {
-            isRooted = savedInstanceState?.getBoolean("rooted", false) ?: false
-            inputSource = ImageLocation.valueOf(savedInstanceState?.getString("input") ?: "FILE")
-            outputDest = ImageLocation.valueOf(savedInstanceState?.getString("output") ?: "FILE")
+            isRooted = savedInstanceState.getBoolean("rooted", false)
+            inputSource = ImageLocation.valueOf(savedInstanceState.getString("input", "FILE"))
+            outputDest = ImageLocation.valueOf(savedInstanceState.getString("output", "FILE"))
         }
 
         optFrag.inputEvent = {
