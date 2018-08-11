@@ -2,7 +2,6 @@ package com.kdrag0n.tipatch
 
 import android.content.Context
 import android.net.Uri
-import android.os.Bundle
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder as ItemBuilder
 import com.danielstone.materialaboutlibrary.MaterialAboutActivity
 import com.danielstone.materialaboutlibrary.items.MaterialAboutActionItem
