@@ -11,10 +11,6 @@ import android.text.Html
 import android.text.Spanned
 import android.util.Log
 import com.topjohnwu.superuser.Shell
-import java.io.DataInputStream
-import java.io.File
-import java.lang.reflect.Field
-import java.util.concurrent.ThreadLocalRandom
 
 const val logTag = "Tipatch"
 

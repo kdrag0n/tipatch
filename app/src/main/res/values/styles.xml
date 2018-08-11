@@ -18,10 +18,6 @@
         <item name="android:background">@color/background_dark</item>
     </style>
 
-    <style name="ToolbarTheme" parent="android:ThemeOverlay.Material.Dark">
-        <item name="android:background">@color/action_dark</item>
-    </style>
-
     <style name="CardTheme" parent="CardView.Dark">
         <item name="cardBackgroundColor">@color/card_dark</item>
     </style>
