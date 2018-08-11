@@ -123,12 +123,12 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.actions, menu)
+        menuInflater.inflate(R.menu.actions, menu ?: return true)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item!!.itemId) {
+        when (item?.itemId) {
             R.id.aboutOpt -> showAboutActivity()
             R.id.contactOpt -> contactDev()
             R.id.donateOpt -> openUri(R.string.donate_uri())
