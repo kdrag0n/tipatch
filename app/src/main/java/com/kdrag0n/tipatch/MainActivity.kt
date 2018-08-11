@@ -228,7 +228,10 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         progress(R.string.step6_pack_write())
         val wrapped = Tipatch.wrapWriter(writer)
         image.writeHeader(wrapped)
-        image.writeData(wrapped)
+        image.writeKernel(wrapped)
+        image.writeRamdisk(wrapped)
+        image.writeSecond(wrapped)
+        image.writeDeviceTree(wrapped)
 
         return true
     }
