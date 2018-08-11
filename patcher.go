@@ -61,6 +61,9 @@ func PatchRamdisk(ramdisk []byte, dir int) []byte {
 		"Backups of {1} include files in internal storage such as pictures and downloads.          ",
 		dir)
 
+	// Change text shown when wiping "Data"
+	r.add("Wiping data without wiping /data/media ...", "Wiping data and internal storage...       ", dir)
+
 	return r.create().Replace(ramdisk)
 }
 
