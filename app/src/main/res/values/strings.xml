@@ -74,6 +74,10 @@
 &nbsp;&nbsp;&nbsp;&nbsp;• \"Backups of Data include…\" while backing up<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;• Bigger Data size on Backup screen<br/>
 
+<p>Side effect: Wiping Data <b>will also</b> wipe internal storage.</p>
+
+<p>If you use a theme or a language other than English, the text <b>will not</b> change. Revert to the default theme and/or change to English to confirm.</p>
+
 <p>Restoring backups with internal storage does <b>not</b> require a patched recovery.</p>
 
 <h4>Problems?</h4>
