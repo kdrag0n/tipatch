@@ -13,6 +13,7 @@
     </style>
     
     <style name="DialogTheme" parent="@android:style/Theme.Material.Dialog.Alert">
+        <item name="android:colorAccent">@color/accent</item>
         <item name="android:background">@color/background_dark</item>
     </style>
 </resources>
