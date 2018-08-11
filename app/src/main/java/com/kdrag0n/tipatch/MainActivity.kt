@@ -43,6 +43,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     private lateinit var safInput: Uri
     private lateinit var safOutput: Uri
     private lateinit var opts: SharedPreferences
+    private lateinit var optFrag: OptionFragment
     private val reversePref: CheckBoxPreference
         get() = optFrag.preferenceManager.findPreference("reverse") as CheckBoxPreference
     private var isRooted = false
@@ -55,16 +56,15 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         opts = PreferenceManager.getDefaultSharedPreferences(baseContext)
         opts.registerOnSharedPreferenceChangeListener(this)
 
-        // could end up with overlapping fragments
-        if (savedInstanceState == null || !isFragInit()) {
-            optFrag = OptionFragment()
-            optFrag.retainInstance = true
+        optFrag = OptionFragment()
+        optFrag.retainInstance = true
 
-            fragmentManager
-                    .beginTransaction()
-                    .add(R.id.opt_container, optFrag)
-                    .commit()
+        fragmentManager
+                .beginTransaction()
+                .add(R.id.opt_container, optFrag)
+                .commit()
 
+        if (savedInstanceState == null) {
             asyncExec {
                 if (Shell.rootAccess()) {
                     hasRoot()
@@ -588,18 +588,6 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             inputSource = when (partEnabled) {
                 true -> ImageLocation.PARTITION
                 false -> ImageLocation.FILE
-            }
-        }
-    }
-
-    companion object {
-        lateinit var optFrag: OptionFragment
-        fun isFragInit(): Boolean {
-            return try {
-                optFrag
-                true
-            } catch (_: UninitializedPropertyAccessException) {
-                false
             }
         }
     }
