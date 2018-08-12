@@ -22,6 +22,7 @@ import android.widget.Toast
 import com.commonsware.cwac.crossport.design.widget.Snackbar
 import com.crashlytics.android.Crashlytics
 import com.kdrag0n.jni.tipatch.Tipatch
+import com.kdrag0n.tipatch.jni.Image
 import com.kdrag0n.utils.*
 import com.squareup.leakcanary.LeakCanary
 import com.topjohnwu.superuser.Shell
@@ -135,6 +136,9 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
             opts.edit().putBoolean("first_run", false).apply()
         }
+
+        val i = Image(null)
+        Toast.makeText(this, "${i.handle}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -3,30 +3,21 @@
 #include <string>
 #include "image.h"
 
-/*
- * // Image represents the contents of a boot image.
-type Image struct {
-	Board     string
-	Cmdline   string
-	osVersion uint32
-
-	base          uint32
-	kernelOffset  uint32
-	ramdiskOffset uint32
-	secondOffset  uint32
-	tagsOffset    uint32
-	pageSize      uint32
-	Kernel        []byte
-	Ramdisk       []byte
-	Second        []byte
-	DeviceTree    []byte
-
-	OriginalRamdiskSize int
-	OverrideRamdiskSize int
-}
-*/
-
 class Image {
 public:
-    Image(char* data);
+    std::string board;
+    std::string cmdline;
+    uint32_t os_version;
+
+    uint32_t base;
+    uint32_t kernel_offset;
+    uint32_t ramdisk_offset;
+    uint32_t second_offset;
+    uint32_t tags_offset;
+    uint32_t page_size;
+
+    std::string kernel;
+    std::string ramdisk;
+    std::string second;
+    std::string device_tree;
 };
