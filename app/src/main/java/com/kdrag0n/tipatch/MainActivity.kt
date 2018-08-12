@@ -631,4 +631,10 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             }
         }
     }
+
+    companion object {
+        init {
+            System.loadLibrary("tipatch")
+        }
+    }
 }

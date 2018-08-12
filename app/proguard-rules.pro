@@ -120,3 +120,6 @@
 # Go
 -keep class com.kdrag0n.jni.*.* {*;}
 -keep class go.* {*;}
+
+# C++
+-keep class com.kdrag0n.tipatch.jni.** { *; }
