@@ -23,6 +23,7 @@ import com.commonsware.cwac.crossport.design.widget.Snackbar
 import com.crashlytics.android.Crashlytics
 import com.kdrag0n.jni.tipatch.Tipatch
 import com.kdrag0n.utils.*
+import com.squareup.leakcanary.LeakCanary
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuProcessFileInputStream
@@ -52,6 +53,12 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            return
+        }
+        LeakCanary.install(application)
+
         setContentView(R.layout.activity_main)
 
         opts = PreferenceManager.getDefaultSharedPreferences(baseContext)
