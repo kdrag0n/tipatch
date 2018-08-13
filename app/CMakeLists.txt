@@ -16,6 +16,8 @@ find_library( # Defines the name of the path variable that stores the
               # CMake needs to locate.
               log )
 
+find_library(zlib z)
+
 # Specifies a library name, specifies whether the library is STATIC or
 # SHARED, and provides relative paths to the source code. You can
 # define multiple libraries by adding multiple add_library() commands,
@@ -30,11 +32,8 @@ add_library( # Specifies the name of the library.
              # Provides a relative path to your source file(s).
              src/main/cpp/tipatch.cpp
              src/main/cpp/jni.cpp
-             src/main/cpp/util.cpp )
+             src/main/cpp/util.cpp
+             src/main/cpp/gzip.cpp )
 
 # Links your native library against one or more other native libraries.
-target_link_libraries( # Specifies the target library.
-                       tipatch
-
-                       # Links the log library to the target library.
-                       ${log-lib} )
+target_link_libraries(tipatch ${log-lib} ${zlib})
