@@ -167,8 +167,8 @@ extern "C" JNIEXPORT jbyte JNICALL
 Java_com_kdrag0n_tipatch_jni_Image__1detectCompressor(JNIEnv, jobject, jlong handle) {
     Image *image = (Image*) handle;
     auto data = image->ramdisk->data();
-    auto b1 = data[0];
-    auto b2 = data[1];
+    int b1 = data[0];
+    int b2 = data[1];
 
     if (b1 == 0x42 && b2 == 0x5a) {
         return comp::bzip2;
