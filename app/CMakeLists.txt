@@ -35,7 +35,8 @@ add_library( # Specifies the name of the library.
              src/main/cpp/io.cpp
              src/main/cpp/gzip.cpp
              src/main/cpp/decompress.cpp
-             src/main/cpp/const.cpp )
+             src/main/cpp/const.cpp
+             src/main/cpp/patcher.cpp )
 
 # Links your native library against one or more other native libraries.
 target_link_libraries(tipatch ${log-lib} ${zlib})

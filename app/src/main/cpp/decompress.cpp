@@ -58,4 +58,3 @@ Java_com_kdrag0n_tipatch_jni_Image__1decompressRamdisk(JNIEnv *env, jobject, jlo
         rethrow(env);
     }
 }
-

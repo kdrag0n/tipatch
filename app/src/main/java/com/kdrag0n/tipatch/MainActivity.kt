@@ -230,10 +230,10 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
         progress(R.string.step2_decompress(cName))
         image.decompressRamdisk(cMode)
-/*
+
         val direction = when (reversePref.isChecked) {
-            true -> Tipatch.ReplReverse
-            false -> Tipatch.ReplNormal
+            true -> Image.REPL_REVERSE
+            false -> Image.REPL_NORMAL
         }
 
         if (reversePref.isChecked) {
@@ -243,7 +243,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
 
         image.patchRamdisk(direction)
-
+/*
         progress(R.string.step4_compress())
         image.compressRamdisk(cMode)
 

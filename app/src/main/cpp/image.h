@@ -11,6 +11,7 @@ public:
 class Image {
 public:
     void decompress_ramdisk(char comp_mode);
+    void patch_ramdisk(char direction);
 
     boot_img_hdr hdr;
 

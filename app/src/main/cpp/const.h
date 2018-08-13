@@ -13,3 +13,8 @@ namespace comp {
 
     std::string name(const char mode);
 }
+
+namespace repl {
+    const char normal   = 0;
+    const char reverse  = 1;
+}
