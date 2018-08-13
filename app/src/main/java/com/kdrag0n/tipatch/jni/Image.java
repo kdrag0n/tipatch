@@ -3,13 +3,13 @@ package com.kdrag0n.tipatch.jni;
 import java.io.InputStream;
 
 public class Image {
-    public static final byte CompGzip = 0;
-    public static final byte CompLz4 = 1;
-    public static final byte CompLzo = 2;
-    public static final byte CompXz = 3;
-    public static final byte CompBzip2 = 4;
-    public static final byte CompLzma = 5;
-    public static final byte CompUnknown = 6;
+    public static final byte COMP_GZIP = 0;
+    public static final byte COMP_LZ4 = 1;
+    public static final byte COMP_LZO = 2;
+    public static final byte COMP_XZ = 3;
+    public static final byte COMP_BZIP2 = 4;
+    public static final byte COMP_LZMA = 5;
+    public static final byte COMP_UNKNOWN = 6;
 
     private long handle;
 

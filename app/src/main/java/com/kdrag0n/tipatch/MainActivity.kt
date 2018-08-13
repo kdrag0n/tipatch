@@ -219,12 +219,12 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
         val cMode = image.detectCompressor()
         val cName = when (cMode) {
-            Image.CompGzip -> "gzip"
-            Image.CompLz4 -> "lz4"
-            Image.CompLzo -> "lzo"
-            Image.CompXz -> "xz"
-            Image.CompLzma -> "lzma"
-            Image.CompBzip2 -> "bzip2"
+            Image.COMP_GZIP -> "gzip"
+            Image.COMP_LZ4 -> "lz4"
+            Image.COMP_LZO -> "lzo"
+            Image.COMP_XZ -> "xz"
+            Image.COMP_LZMA -> "lzma"
+            Image.COMP_BZIP2 -> "bzip2"
             else -> "unknown"
         }
 
