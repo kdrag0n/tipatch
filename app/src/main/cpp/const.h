@@ -1,11 +1,15 @@
 #pragma once
 
+#include <string>
+
 namespace comp {
-    const auto gzip       = 0;
-    const auto lz4        = 1;
-    const auto lzo        = 2;
-    const auto xz         = 3;
-    const auto bzip2      = 4;
-    const auto lzma       = 5;
-    const auto unknown    = 6;
+    const char gzip       = 0;
+    const char lz4        = 1;
+    const char lzo        = 2;
+    const char xz         = 3;
+    const char bzip2      = 4;
+    const char lzma       = 5;
+    const char unknown    = 6;
+
+    std::string name(const char mode);
 }

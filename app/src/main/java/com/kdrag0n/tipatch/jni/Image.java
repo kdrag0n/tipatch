@@ -25,7 +25,12 @@ public class Image {
         return _detectCompressor(handle);
     }
 
+    public void decompressRamdisk(byte compMode) {
+        _decompressRamdisk(handle, compMode);
+    }
+
     private native long init(InputStream fis);
     private native void free(long handle);
     private native byte _detectCompressor(long handle);
+    private native void _decompressRamdisk(long handle, byte compMode);
 }

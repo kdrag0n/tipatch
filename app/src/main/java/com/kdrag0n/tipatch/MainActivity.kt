@@ -228,11 +228,9 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             else -> "unknown"
         }
 
-        /*
-
         progress(R.string.step2_decompress(cName))
         image.decompressRamdisk(cMode)
-
+/*
         val direction = when (reversePref.isChecked) {
             true -> Tipatch.ReplReverse
             false -> Tipatch.ReplNormal
