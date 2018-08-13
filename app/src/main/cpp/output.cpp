@@ -16,7 +16,8 @@ Java_com_kdrag0n_tipatch_jni_Image__1write(JNIEnv *env, jobject, jlong handle, j
 
         // checksum
         auto hash = image->hash();
-        memcpy(image->hdr.id, hash, 8);
+        if (hash != NULL)
+            memcpy(image->hdr.id, hash, 8);
 
         // write it all out
         char *hdr_data = (char *) &image->hdr;
