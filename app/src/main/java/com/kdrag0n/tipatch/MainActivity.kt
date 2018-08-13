@@ -21,19 +21,17 @@ import android.widget.TextView
 import android.widget.Toast
 import com.commonsware.cwac.crossport.design.widget.Snackbar
 import com.crashlytics.android.Crashlytics
-import com.kdrag0n.jni.tipatch.Tipatch
 import com.kdrag0n.tipatch.jni.Image
+import com.kdrag0n.tipatch.jni.ImageException
 import com.kdrag0n.utils.*
 import com.squareup.leakcanary.LeakCanary
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuProcessFileInputStream
 import com.topjohnwu.superuser.io.SuProcessFileOutputStream
-import go.Seq
 import kotlinx.android.synthetic.main.activity_main.*
-import org.apache.commons.io.IOUtils
-import java.io.DataInputStream
 import java.io.File
+import java.io.InputStream
 import java.io.OutputStream
 
 private const val REQ_SAF_INPUT = 100
@@ -136,9 +134,6 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
             opts.edit().putBoolean("first_run", false).apply()
         }
-
-        val i = Image(null)
-        Toast.makeText(this, "${i.handle}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -218,36 +213,24 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
     }
 
-    private fun patch(progress: (String) -> Unit, reader: () -> ByteArray?,
-                      writer: (ByteArray) -> Long): Boolean {
-        progress(R.string.step1_read())
-        val data = reader()
-
-        if (data == null) {
-            when (inputSource) {
-                ImageLocation.FILE -> errorDialog(R.string.file_select_input())
-                ImageLocation.PARTITION ->
-                    errorDialog(R.string.part_not_found() + R.string.part_opt_report(), partition = true)
-            }
-
-            return false
-        }
-
-        progress(R.string.step2_unpack())
-        val image = Tipatch.unpackImageBytes(data)
+    private fun patch(progress: (String) -> Unit, fis: InputStream, fos: OutputStream): Boolean {
+        progress(R.string.step1_read_unpack())
+        val image = Image(fis)
 
         val cMode = image.detectCompressor()
         val cName = when (cMode) {
-            Tipatch.CompGzip -> "gzip"
-            Tipatch.CompLz4 -> "lz4"
-            Tipatch.CompLzo -> "lzo"
-            Tipatch.CompXz -> "xz"
-            Tipatch.CompLzma -> "lzma"
-            Tipatch.CompBzip2 -> "bzip2"
+            Image.CompGzip -> "gzip"
+            Image.CompLz4 -> "lz4"
+            Image.CompLzo -> "lzo"
+            Image.CompXz -> "xz"
+            Image.CompLzma -> "lzma"
+            Image.CompBzip2 -> "bzip2"
             else -> "unknown"
         }
 
-        progress(R.string.step3_decompress(cName))
+        /*
+
+        progress(R.string.step2_decompress(cName))
         image.decompressRamdisk(cMode)
 
         val direction = when (reversePref.isChecked) {
@@ -256,23 +239,23 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
 
         if (reversePref.isChecked) {
-            progress(R.string.step4_patch_rev())
+            progress(R.string.step3_patch_rev())
         } else {
-            progress(R.string.step4_patch())
+            progress(R.string.step3_patch())
         }
 
         image.patchRamdisk(direction)
 
-        progress(R.string.step5_compress())
+        progress(R.string.step4_compress())
         image.compressRamdisk(cMode)
 
-        progress(R.string.step6_pack_write())
+        progress(R.string.step5_pack_write())
         val wrapped = Tipatch.wrapWriter(writer)
         image.writeHeader(wrapped)
         image.writeKernel(wrapped)
         image.writeRamdisk(wrapped)
         image.writeSecond(wrapped)
-        image.writeDeviceTree(wrapped)
+        image.writeDeviceTree(wrapped)*/
 
         return true
     }
@@ -294,32 +277,28 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                 errorDialog(R.string.file_select_output())
                 return
             }
-
         }
 
-        val parti = when (inputSource) {
-            ImageLocation.PARTITION -> partPath(slot) ?: {
+        val partiPath = if (inputSource == ImageLocation.PARTITION) {
+            val pp = partPath(slot)
+            if (pp == null) {
                 errorDialog(R.string.part_not_found())
-            }()
-            else -> null
-        }
-
-        if (parti == Unit) {
-            return
-        }
-
-        val partiPath = parti as String?
-
-        val currentSlot = when (slot) {
-            null -> null
-            else -> {
-                when {
-                    inputSource == ImageLocation.FILE -> null
-                    slot.equals("_a", true) -> "A"
-                    slot.equals("_b", true) -> "B"
-                    else -> "unknown"
-                }
+                return
             }
+
+            pp
+        } else {
+            null
+        }
+
+        val currentSlot = if (slot != null && inputSource == ImageLocation.PARTITION) {
+            when {
+                slot.equals("_a", true) -> "A"
+                slot.equals("_b", true) -> "B"
+                else -> "unknown"
+            }
+        } else {
+            null
         }
 
         val ctx = this
@@ -347,6 +326,11 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             }
 
             override fun doInBackground(vararg params: Unit?) {
+                val fis = when (inputSource) {
+                    ImageLocation.FILE -> openSafInput()
+                    ImageLocation.PARTITION -> SuProcessFileInputStream(partiPath!!)
+                }
+
                 val fos = try {
                     when (inputSource) {
                         ImageLocation.FILE -> openSafOutput()
@@ -356,7 +340,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                         }
                     }
                 } catch (e: IllegalStateException) {
-                    errorDialog(e.message!!, appIssue = true)
+                    errorDialog(e.message!!, appIssue = inputSource == ImageLocation.PARTITION)
                     return
                 }
 
@@ -371,32 +355,13 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                                 }
                             },
 
-                            reader = {
-                                when (inputSource) {
-                                    ImageLocation.FILE -> getSafData()
-                                    ImageLocation.PARTITION -> {
-                                        SuProcessFileInputStream(partiPath ?: return@patch null).use {
-                                            IOUtils.toByteArray(it)
-                                        }
-                                    }
-                                }
-                            },
-
-                            writer = {
-                                try {
-                                    fos.write(it)
-                                    it.size.toLong()
-                                } catch (e: Exception) {
-                                    errorDialog("An error occurred writing the image: ${e.message}.")
-
-                                    -1
-                                }
-                            }
+                            fis = fis,
+                            fos = fos
                     )
                 } catch (e: Exception) {
                     dialog.dismiss()
 
-                    if (e is Seq.Proxy) {
+                    if (e is ImageException) {
                         Crashlytics.log("Native error: ${e.message}")
                         if (e.message == null) {
                             errorDialog(R.string.err_native_empty())
@@ -404,21 +369,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                             return
                         }
 
-                        val msg = e.message!!
-
-                        val sep = msg.indexOf(';')
-                        if (sep == -1) { // our *intended* errors all have 2 parts
-                            errorDialog(R.string.err_native_unwrapped(msg), appIssue = true)
-                            return
-                        }
-
-                        with (msg) {
-                            val action = slice(0 until sep)
-                            val desc = slice(sep + 2 until length)
-                            val msgFirst = this[sep + 1].toUpperCase()
-
-                            errorDialog(R.string.err_native_wrapped(action, msgFirst, desc), appIssue = false)
-                        }
+                        errorDialog(e.message!!)
                     } else {
                         errorDialog(R.string.err_java(e::class.java.simpleName, e.message ?: "null"), appIssue = true)
                         Crashlytics.logException(e)
@@ -470,7 +421,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     }
 
                     ImageLocation.PARTITION -> {
-                        if (parti != null && slot != null) {
+                        if (slot != null) {
                             ++slotsPatched
 
                             if (slotsPatched >= 2) {
@@ -518,7 +469,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         dialog.findViewById<TextView>(android.R.id.message).movementMethod = LinkMovementMethod.getInstance()
     }
 
-    private fun errorDialog(message: String, appIssue: Boolean = false, partition: Boolean = false) {
+    private fun errorDialog(message: String, appIssue: Boolean = false) {
         runOnUiThread {
             with (AlertDialog.Builder(this, R.style.DialogTheme)) {
                 setTitle(R.string.err_generic)
@@ -535,39 +486,20 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     setPositiveButton(android.R.string.ok) { _, _ -> }
                 }
 
-                if (partition) {
-                    setNeutralButton(R.string.report) { _, _ ->
-                        Toast.makeText(this@MainActivity, "TODO: device reports", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
                 setCancelable(false)
                 show()
             }
         }
     }
 
-    private fun getSafData(): ByteArray? {
-        return if (::safInput.isInitialized) {
-            val fis = contentResolver.openInputStream(safInput)
-            val buf = ByteArray(fis?.available() ?: return null)
-
-            DataInputStream(fis).use {
-                it.readFully(buf)
-            }
-
-            buf
-        } else {
-            null
-        }
+    private fun openSafInput(): InputStream {
+        return contentResolver.openInputStream(safInput) ?:
+        throw IllegalStateException(R.string.file_error_input())
     }
 
     private fun openSafOutput(): OutputStream {
-        return if (::safOutput.isInitialized) {
-            contentResolver.openOutputStream(safOutput) ?: throw IllegalStateException(R.string.file_error_output())
-        } else {
-            throw IllegalStateException(R.string.file_select_output())
-        }
+        return contentResolver.openOutputStream(safOutput) ?:
+        throw IllegalStateException(R.string.file_error_output())
     }
 
     private fun partPath(slot: String?): String? {

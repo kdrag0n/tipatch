@@ -51,10 +51,10 @@ fun Uri.getFileName(ctx: Context): String? {
         }
     }
 
-    val sIdx = path.lastIndexOf('/')
+    val sIdx = path?.lastIndexOf('/') ?: -1
     return when (sIdx) {
         -1 -> null
-        else -> path.substring(sIdx + 1)
+        else -> path?.substring(sIdx + 1)
     }
 }
 

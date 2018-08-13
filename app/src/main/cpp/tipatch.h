@@ -5,19 +5,10 @@
 
 class Image {
 public:
-    std::string board;
-    std::string cmdline;
-    uint32_t os_version;
+    boot_img_hdr hdr;
 
-    uint32_t base;
-    uint32_t kernel_offset;
-    uint32_t ramdisk_offset;
-    uint32_t second_offset;
-    uint32_t tags_offset;
-    uint32_t page_size;
-
-    std::string kernel;
-    std::string ramdisk;
-    std::string second;
-    std::string device_tree;
+    std::shared_ptr<std::string> kernel;
+    std::shared_ptr<std::string> ramdisk;
+    std::shared_ptr<std::string> second;
+    std::shared_ptr<std::string> device_tree;
 };
