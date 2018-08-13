@@ -1,6 +1,7 @@
 #include "const.h"
 #include "image.h"
 #include "java.h"
+#include "util.h"
 
 void do_replace(std::shared_ptr<std::string> input, std::string from, std::string to) {
     if (from.length() != to.length()) {
@@ -43,6 +44,8 @@ void repl_dir(std::shared_ptr<std::string> input, std::string from, std::string 
 }
 
 void Image::patch_ramdisk(char dir) {
+    Timer tmr;
+
     // Preserve /data/media
     repl_dir(ramdisk,
              "\x00/media\x00",
@@ -66,6 +69,8 @@ void Image::patch_ramdisk(char dir) {
              "Wiping data without wiping /data/media ...",
              "Wiping data and internal storage...       ",
              dir);
+
+    dbg("replacing took %f ms", tmr.elapsed());
 }
 
 extern "C" JNIEXPORT void JNICALL

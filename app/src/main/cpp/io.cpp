@@ -1,4 +1,5 @@
 #include "io.h"
+#include "util.h"
 #include <functional>
 
 jv_bytes::jv_bytes(JNIEnv *env, jbyteArray array, jbyte *jbytes, unsigned int len) {
@@ -21,15 +22,6 @@ std::string jv_bytes::string() {
     this->~jv_bytes();
     return ret;
 }
-
-class finally  {
-    std::function<void(void)> functor;
-public:
-    finally(const std::function<void(void)> &functor) : functor(functor) {}
-    ~finally() {
-        functor();
-    }
-};
 
 jv_bytes read_bytes(JNIEnv *env, jobject fis, unsigned int count) {
     // create the buffer
