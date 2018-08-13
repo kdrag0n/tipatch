@@ -22,7 +22,7 @@ Java_com_kdrag0n_tipatch_jni_Image__1write(JNIEnv *env, jobject, jlong handle, j
         char *hdr_data = (char *) &image->hdr;
         write_bytes(env, fos, hdr_data, sizeof(boot_img_hdr));
         write_padding(env, fos, sizeof(boot_img_hdr), image->hdr.page_size);
-        
+
         write_bytes(env, fos, image->kernel->data(), image->kernel->length());
         write_padding(env, fos, image->kernel->length(), image->hdr.page_size);
 

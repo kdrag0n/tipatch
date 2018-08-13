@@ -17,7 +17,7 @@ void Image::compress_ramdisk(char comp_mode) {
 }
 
 void Image::compress_ramdisk_gzip() {
-    gzip::Comp comp(gzip::Comp::Level::Max);
+    gzip::Comp comp(gzip::Comp::Level::Max, true);
     if (!comp.IsSucc()) {
         throw img_exception("Error preparing to compress gzip ramdisk.");
     }
