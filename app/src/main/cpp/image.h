@@ -11,6 +11,7 @@ public:
 class Image {
 public:
     void decompress_ramdisk(char comp_mode);
+    void compress_ramdisk(char comp_mode);
     void patch_ramdisk(char direction);
 
     boot_img_hdr hdr;
@@ -24,4 +25,8 @@ private:
     void decompress_ramdisk_gzip();
     void decompress_ramdisk_lzo();
     void decompress_ramdisk_xz();
+
+    void compress_ramdisk_gzip();
+    void compress_ramdisk_lzo();
+    void compress_ramdisk_xz();
 };

@@ -32,6 +32,10 @@ public class Image {
         _decompressRamdisk(handle, compMode);
     }
 
+    public void compressRamdisk(byte compMode) {
+        _compressRamdisk(handle, compMode);
+    }
+
     public void patchRamdisk(byte direction) {
         _patchRamdisk(handle, direction);
     }
@@ -40,5 +44,6 @@ public class Image {
     private native void free(long handle);
     private native byte _detectCompressor(long handle);
     private native void _decompressRamdisk(long handle, byte compMode);
+    private native void _compressRamdisk(long handle, byte compMode);
     private native void _patchRamdisk(long handle, byte direction);
 }

@@ -35,6 +35,7 @@ add_library( # Specifies the name of the library.
              src/main/cpp/io.cpp
              src/main/cpp/gzip.cpp
              src/main/cpp/decompress.cpp
+             src/main/cpp/compress.cpp
              src/main/cpp/const.cpp
              src/main/cpp/patcher.cpp )
 

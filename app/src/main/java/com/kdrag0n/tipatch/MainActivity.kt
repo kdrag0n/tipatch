@@ -243,10 +243,10 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
 
         image.patchRamdisk(direction)
-/*
+
         progress(R.string.step4_compress())
         image.compressRamdisk(cMode)
-
+/*
         progress(R.string.step5_pack_write())
         val wrapped = Tipatch.wrapWriter(writer)
         image.writeHeader(wrapped)
