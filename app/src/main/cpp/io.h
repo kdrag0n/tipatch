@@ -18,5 +18,10 @@ private:
     unsigned int len;
 };
 
+// read
 jv_bytes read_bytes(JNIEnv *env, jobject fis, unsigned int count);
 void read_padding(JNIEnv *env, jobject fis, unsigned int item_size, unsigned int page_size);
+
+// write
+void write_bytes(JNIEnv *env, jobject fos, char *data, unsigned long length);
+void write_padding(JNIEnv *env, jobject fos, unsigned long item_size, unsigned int page_size);

@@ -1,6 +1,7 @@
 package com.kdrag0n.tipatch.jni;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public class Image {
     public static final byte COMP_GZIP = 0;
@@ -40,10 +41,15 @@ public class Image {
         _patchRamdisk(handle, direction);
     }
 
+    public void write(OutputStream fos) {
+        _write(handle, fos);
+    }
+
     private native long init(InputStream fis);
     private native void free(long handle);
     private native byte _detectCompressor(long handle);
     private native void _decompressRamdisk(long handle, byte compMode);
     private native void _compressRamdisk(long handle, byte compMode);
     private native void _patchRamdisk(long handle, byte direction);
+    private native void _write(long handle, OutputStream fos);
 }

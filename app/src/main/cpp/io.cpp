@@ -1,4 +1,5 @@
 #include "io.h"
+#include <functional>
 
 jv_bytes::jv_bytes(JNIEnv *env, jbyteArray array, jbyte *jbytes, unsigned int len) {
     this->env = env;
@@ -17,9 +18,18 @@ char *jv_bytes::bytes() {
 
 std::string jv_bytes::string() {
     std::string ret((char *) jbytes, len);
-    env->ReleaseByteArrayElements(array, jbytes, JNI_ABORT);
+    this->~jv_bytes();
     return ret;
 }
+
+class finally  {
+    std::function<void(void)> functor;
+public:
+    finally(const std::function<void(void)> &functor) : functor(functor) {}
+    ~finally() {
+        functor();
+    }
+};
 
 jv_bytes read_bytes(JNIEnv *env, jobject fis, unsigned int count) {
     // create the buffer
@@ -48,11 +58,56 @@ jv_bytes read_bytes(JNIEnv *env, jobject fis, unsigned int count) {
     return jv_bytes(env, buffer, jbytes, count);
 }
 
-void read_padding(JNIEnv *env, jobject fis, unsigned int item_size, unsigned int page_size) {
+unsigned int padding_size(unsigned int item_size, unsigned int page_size) {
     unsigned int page_mask = page_size - 1;
     if ((item_size & page_mask) == 0)
+        return 0;
+
+    return page_size - (item_size & page_mask);
+}
+
+void read_padding(JNIEnv *env, jobject fis, unsigned int item_size, unsigned int page_size) {
+    auto count = padding_size(item_size, page_size);
+    if (count == 0)
         return;
 
-    unsigned int count = page_size - (item_size & page_mask);
     read_bytes(env, fis, count);
+}
+
+// writing
+void write_bytes(JNIEnv *env, jobject fos, char *data, unsigned long length) {
+    // create the buffer
+    jbyteArray buffer = env->NewByteArray(length);
+    check_exp();
+
+    finally free_buf([&]{
+        env->DeleteLocalRef(buffer);
+    });
+
+    // fill the buffer
+    env->SetByteArrayRegion(buffer, 0, length, (jbyte *) data);
+    check_exp();
+
+    // method: void OutputStream#write(byte[])
+    jclass clazz = env->GetObjectClass(fos);
+    check_exp();
+
+    jmethodID writer = env->GetMethodID(clazz, "write", "([B)V");
+    check_exp();
+
+    env->CallVoidMethod(fos, writer, buffer);
+    check_exp();
+}
+
+void write_padding(JNIEnv *env, jobject fos, unsigned long item_size, unsigned int page_size) {
+    auto count = padding_size((unsigned int) item_size, page_size);
+    if (count == 0)
+        return;
+
+    auto buf = (char *) malloc(count);
+    finally free_buf([&]{
+        free(buf);
+    });
+
+    write_bytes(env, fos, buf, count);
 }

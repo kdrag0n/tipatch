@@ -14,6 +14,8 @@ public:
     void compress_ramdisk(char comp_mode);
     void patch_ramdisk(char direction);
 
+    char *hash();
+
     boot_img_hdr hdr;
 
     std::shared_ptr<std::string> kernel;
