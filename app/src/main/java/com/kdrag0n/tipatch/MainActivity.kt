@@ -381,6 +381,10 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     false
                 } finally {
                     try {
+                        fis.close()
+                    } catch (ex: Exception) {}
+
+                    try {
                         fos.flush()
                         fos.close()
                     } catch (ex: Exception) {
