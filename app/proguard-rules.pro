@@ -117,9 +117,5 @@
 -keepattributes SourceFile,LineNumberTable
 -keep public class * extends java.lang.Exception
 
-# Go
--keep class com.kdrag0n.jni.*.* {*;}
--keep class go.* {*;}
-
 # C++
 -keep class com.kdrag0n.tipatch.jni.** { *; }
