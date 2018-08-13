@@ -49,6 +49,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         get() = optFrag.preferenceManager.findPreference("reverse") as CheckBoxPreference
     private var isRooted = false
     private var slotsPatched = 0
+    private var ifName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,7 +104,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
             intent.type = "application/octet-stream" // no .img type
 
-            var outName = outputFileName(if (::safInput.isInitialized) safInput else null)
+            var outName = outputFileName()
             if (reversePref.isChecked) {
                 outName = outName.replace("-tipatched", "")
             }
@@ -163,8 +164,16 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
             when (requestCode) {
-                REQ_SAF_INPUT -> safInput = data.data ?: return
-                REQ_SAF_OUTPUT -> safOutput = data.data ?: return
+                REQ_SAF_INPUT -> {
+                    safInput = data.data ?: return
+                    ifName = data.data?.getFileName(this) ?: return
+                    optFrag.preferenceManager.findPreference("input")?.summary = ifName
+                }
+                REQ_SAF_OUTPUT -> {
+                    safOutput = data.data ?: return
+                    val ofName = data.data?.getFileName(this) ?: return
+                    optFrag.preferenceManager.findPreference("output")?.summary = ofName
+                }
             }
         }
     }
@@ -528,22 +537,15 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         return null
     }
 
-    private fun outputFileName(inputUri: Uri?): String {
-        return if (inputUri != null) {
-            val inputName = inputUri.getFileName(this)
+    private fun outputFileName(): String {
+        return if (ifName != null) {
+            val split = ifName!!.split('.').toMutableList()
 
-            if (inputName == null) {
-                val devName = getProp("ro.product.device")
-                if (devName != null) "twrp-$devName-tipatched.img" else "twrp-tipatched.img"
+            if (split.size > 1) {
+                split[split.size - 2] += "-tipatched"
+                split.joinToString(".")
             } else {
-                val split = inputName.split('.').toMutableList()
-
-                if (split.size > 1) {
-                    split[split.size - 2] += "-tipatched"
-                    split.joinToString(".")
-                } else {
-                    "$inputName-tipatched"
-                }
+                "$ifName-tipatched"
             }
         } else {
             val devName = getProp("ro.product.device")
