@@ -30,9 +30,9 @@ add_library( # Specifies the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/tipatch.cpp
-             src/main/cpp/jni.cpp
-             src/main/cpp/util.cpp
+             src/main/cpp/image.cpp
+             src/main/cpp/java.cpp
+             src/main/cpp/io.cpp
              src/main/cpp/gzip.cpp )
 
 # Links your native library against one or more other native libraries.
