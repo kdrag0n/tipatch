@@ -3,6 +3,7 @@
 #include "io.h"
 #include "const.h"
 #include "xxhash.h"
+#include "util.h"
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_kdrag0n_tipatch_jni_Image_init(JNIEnv *env, jobject, jobject fis) {
@@ -96,45 +97,39 @@ Java_com_kdrag0n_tipatch_jni_Image__1detectCompressor(JNIEnv, jobject, jlong han
 }
 
 char *Image::hash() {
-    unsigned long long hash;
-    const unsigned long long seed = 42;
-    char *hashCopy;
-    XXH_errorcode ret;
-
     auto xxh_state = XXH32_createState();
     if (xxh_state == NULL)
-        goto err;
+        return NULL;
 
-    ret = XXH32_reset(xxh_state, seed);
+    finally free_state([&]{
+        XXH32_freeState(xxh_state);
+    });
+
+    const unsigned long long seed = 42;
+    auto ret = XXH32_reset(xxh_state, seed);
     if (ret == XXH_ERROR)
-        goto err;
+        return NULL;
 
     ret = XXH32_update(xxh_state, kernel->data(), kernel->length());
     if (ret == XXH_ERROR)
-        goto err;
+        return NULL;
 
     ret = XXH32_update(xxh_state, ramdisk->data(), ramdisk->length());
     if (ret == XXH_ERROR)
-        goto err;
+        return NULL;
 
     ret = XXH32_update(xxh_state, second->data(), second->length());
     if (ret == XXH_ERROR)
-        goto err;
+        return NULL;
 
     ret = XXH32_update(xxh_state, device_tree->data(), device_tree->length());
     if (ret == XXH_ERROR)
-        goto err;
+        return NULL;
 
-    hash = XXH32_digest(xxh_state);
-    XXH32_freeState(xxh_state);
+    unsigned long long hash = XXH32_digest(xxh_state);
 
     // copy it
-    hashCopy = (char *) malloc(sizeof(hash));
+    char *hashCopy = (char *) malloc(sizeof(hash));
     memcpy(hashCopy, &hash, sizeof(hash));
     return hashCopy;
-
-    // oops
-    err:
-    XXH32_freeState(xxh_state);
-    return NULL;
 }
