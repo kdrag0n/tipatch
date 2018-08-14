@@ -17,7 +17,7 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_TOOLCHAIN=clang", "-DANDROID_STL=c++_static"
-                cppFlags "-fexceptions", "-std=c++17", "-O3"
+                cppFlags "-fexceptions", "-std=c++17", "-O3", "-fno-rtti"
             }
         }
     }
