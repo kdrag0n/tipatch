@@ -48,10 +48,10 @@ namespace gzip {
 
         /// Compress incoming buffer to DataBlock list.
         DataList Process(const char *buffer, std::size_t size,
-                         bool last_block = false);
+                         int flush = Z_NO_FLUSH);
 
         /// Compress incoming data to dataBlock list.
-        DataList Process(const Data &data, bool last_block = false);
+        DataList Process(const Data &data, int flush = Z_NO_FLUSH);
 
     private:
         Level level_;
