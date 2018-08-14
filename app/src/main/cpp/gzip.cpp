@@ -64,7 +64,7 @@ namespace gzip {
 
     bool Comp::IsSucc() const { return init_ok_; }
 
-    DataList Comp::Process(const char *buffer, std::size_t size, int flush) {
+    DataList Comp::Process(const char *buffer, std::size_t size, bool last_block) {
         DataList out_data_list;
         // Prepare output buffer memory.
         unsigned char out_buffer[MAX_CHUNK_SIZE];
@@ -75,7 +75,7 @@ namespace gzip {
             zs_.avail_out = MAX_CHUNK_SIZE;
             zs_.next_out = out_buffer;
             // Do compress.
-            deflate(&zs_, flush);
+            deflate(&zs_, last_block ? Z_FINISH : Z_NO_FLUSH);
             // Allocate output memory.
             std::size_t out_size = MAX_CHUNK_SIZE - zs_.avail_out;
             Data out_data = AllocateData(out_size);
@@ -87,8 +87,8 @@ namespace gzip {
         return out_data_list;
     }
 
-    DataList Comp::Process(const Data &data, int flush) {
-        return Process(data->ptr, data->size, flush);
+    DataList Comp::Process(const Data &data, bool last_block) {
+        return Process(data->ptr, data->size, last_block);
     }
 
     Decomp::Decomp() {
