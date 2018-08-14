@@ -13,7 +13,10 @@ void do_replace(std::shared_ptr<std::string> input, std::string from, std::strin
     void *addr = memmem(input->data(), input->length(), from.data(), from.length());
     while (addr != NULL) {
         memcpy(addr, to.data(), to.length());
-        addr = memmem((char *) addr + 1, (input->end().base() - (char *) addr), from.data(), from.length());
+
+        auto start_addr = (char *) addr + (to.length() - 1);
+        auto new_len = (input->end().base() - (char *) addr);
+        addr = memmem(start_addr, new_len, from.data(), from.length());
     }
 }
 
