@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
+import android.os.Process
 import android.preference.CheckBoxPreference
 import android.preference.PreferenceManager
 import android.text.method.LinkMovementMethod
@@ -510,7 +511,9 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
                 when {
                     oom -> setPositiveButton(R.string.exit) { _, _ ->
-                        finish()
+                        // we don't use Activity#finish() because it keeps the JVM running
+                        Process.killProcess(Process.myPid())
+                        System.exit(1) // last resort
                     }
                     appIssue -> {
                         setPositiveButton(android.R.string.ok) { _, _ ->
