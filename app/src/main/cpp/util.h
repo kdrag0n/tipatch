@@ -1,7 +1,9 @@
 #pragma once
 
 #include <functional>
+#ifndef NDEBUG
 #include <chrono>
+#endif
 
 class finally  {
     std::function<void(void)> functor;
@@ -10,6 +12,7 @@ public:
     ~finally();
 };
 
+#ifndef NDEBUG
 class Timer {
 public:
     Timer();
@@ -21,3 +24,4 @@ private:
     typedef std::chrono::duration<double, std::ratio<1>> second_;
     std::chrono::time_point<clock_> beg_;
 };
+#endif

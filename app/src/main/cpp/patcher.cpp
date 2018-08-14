@@ -32,7 +32,9 @@ void repl_dir(std::shared_ptr<std::string> input, std::string from, std::string 
 }
 
 void Image::patch_ramdisk(char dir) {
+#ifndef NDEBUG
     Timer tmr;
+#endif
 
     // Preserve /data/media
     repl_dir(ramdisk,
@@ -58,7 +60,9 @@ void Image::patch_ramdisk(char dir) {
              "Wiping data and internal storage...       ",
              dir);
 
+#ifndef NDEBUG
     dbg("replacing took %f ms", tmr.elapsed());
+#endif
 }
 
 extern "C" JNIEXPORT void JNICALL
