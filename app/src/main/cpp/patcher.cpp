@@ -25,10 +25,9 @@ void do_replace(std::shared_ptr<std::string> input, std::string from, std::strin
     }*/
 
     void *addr = memmem(input->data(), input->length(), from.data(), from.length());
-    if (addr != NULL) {
+    while (addr != NULL) {
         memcpy(addr, to.data(), to.length());
-    } else {
-        return;
+        addr = memmem((char *) addr + 1, (input->end().base() - (char *) addr), from.data(), from.length());
     }
 }
 
@@ -48,8 +47,8 @@ void Image::patch_ramdisk(char dir) {
 
     // Preserve /data/media
     repl_dir(ramdisk,
-             "\x00/media\x00",
-             "\x00/.twrp\x00",
+             std::string("\x00/media\x00", 8),
+             std::string("\x00/.twrp\x00", 8),
              dir);
 
     // Change text in Backup screen for English
