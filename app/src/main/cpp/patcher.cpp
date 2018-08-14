@@ -10,20 +10,6 @@ void do_replace(std::shared_ptr<std::string> input, std::string from, std::strin
                                          std::to_string(to.length()));
     }
 
-    /*auto it = std::search(input->begin(), input->end(),
-                          std::boyer_moore_searcher(from.begin(), from.end()));
-
-    if (it != input->end()) {
-        auto idx = it - input->begin();
-        dbg("%s found at %d", from, idx);
-
-        memcpy(input->data() + (idx * sizeof(char)), to.data(), to.length());
-        dbg("replacement performed");
-    } else { // not found
-        dbg("replacement failed: %s not found", from.c_str());
-        return;
-    }*/
-
     void *addr = memmem(input->data(), input->length(), from.data(), from.length());
     while (addr != NULL) {
         memcpy(addr, to.data(), to.length());
