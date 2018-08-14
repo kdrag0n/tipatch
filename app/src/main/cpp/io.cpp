@@ -28,24 +28,21 @@ jv_bytes read_bytes(JNIEnv *env, jobject fis, unsigned int count) {
     jbyteArray buffer = env->NewByteArray(count);
     check_exp();
 
-    // method: int InputStream#read(byte[])
+    // method: int InputStream#read(byte b[], int off, int len)
     jclass clazz = env->GetObjectClass(fis);
     check_exp();
 
-    jmethodID reader = env->GetMethodID(clazz, "read", "([B)I");
+    jmethodID reader = env->GetMethodID(clazz, "read", "([BII)I");
     check_exp();
 
-    jint bytesRead = env->CallIntMethod(fis, reader, buffer);
-    check_exp();
-
-    if (bytesRead != count) {
-        throw io_exception(std::to_string(count) + " bytes requested, " +
-                                 std::to_string(bytesRead) + " bytes received");
+    jint bytes_read = 0;
+    while (bytes_read < count) {
+        bytes_read += env->CallIntMethod(fis, reader, buffer, bytes_read, count - bytes_read);
+        check_exp();
     }
 
     // get the data
-    jboolean isCopy;
-    jbyte *jbytes = env->GetByteArrayElements(buffer, &isCopy);
+    jbyte *jbytes = env->GetByteArrayElements(buffer, NULL);
 
     return jv_bytes(env, buffer, jbytes, count);
 }
