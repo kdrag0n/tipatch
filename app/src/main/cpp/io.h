@@ -18,6 +18,11 @@ private:
     unsigned int len;
 };
 
+class io_exception : public std::runtime_error {
+public:
+    io_exception(const std::string &what) : std::runtime_error(what) {}
+};
+
 // read
 jv_bytes read_bytes(JNIEnv *env, jobject fis, unsigned int count);
 void read_padding(JNIEnv *env, jobject fis, unsigned int item_size, unsigned int page_size);

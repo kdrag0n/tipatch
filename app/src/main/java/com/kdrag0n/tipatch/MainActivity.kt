@@ -31,8 +31,10 @@ import com.topjohnwu.superuser.io.SuProcessFileInputStream
 import com.topjohnwu.superuser.io.SuProcessFileOutputStream
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.lang.IndexOutOfBoundsException
 
 private const val REQ_SAF_INPUT = 100
 private const val REQ_SAF_OUTPUT = 101
@@ -337,8 +339,8 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                     when (inputSource) {
                         ImageLocation.FILE -> openSafOutput()
                         ImageLocation.PARTITION -> {
-                            SuProcessFileOutputStream(partiPath ?:
-                            throw IllegalStateException(R.string.part_not_found()))
+                            SuProcessFileOutputStream(partiPath
+                                    ?: throw IllegalStateException(R.string.part_not_found()))
                         }
                     }
                 } catch (e: IllegalStateException) {
@@ -360,25 +362,50 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                             fis = fis,
                             fos = fos
                     )
-                } catch (e: Exception) {
+                } catch (e: Throwable) {
                     dialog.dismiss()
-
-                    if (e is ImageException) {
-                        Crashlytics.log("Native error: ${e.message}")
-                        if (e.message == null) {
-                            errorDialog(R.string.err_native_empty())
-                            Crashlytics.logException(e)
-                            return
-                        }
-
-                        errorDialog(e.message!!)
-                    } else {
-                        errorDialog(R.string.err_java(e::class.java.simpleName, e.message ?: "null"), appIssue = true)
-                        Crashlytics.logException(e)
-                    }
 
                     Crashlytics.log("Last step: $currentStep")
                     currentStep = ""
+
+                    when (e) {
+                        is ImageException -> {
+                            Crashlytics.log("Native error: ${e.message}")
+                            if (e.message == null) {
+                                errorDialog(R.string.err_native_empty())
+                                Crashlytics.logException(e)
+                                return
+                            }
+
+                            errorDialog(e.message!!)
+                        }
+                        is IOException -> if (e.message != null) {
+                            errorDialog(R.string.err_native_io(e.message!!))
+                        } else {
+                            errorDialog(R.string.err_native_io_unknown())
+                        }
+                        is OutOfMemoryError -> {
+                            errorDialog(R.string.err_oom(), oom = true)
+                            Crashlytics.logException(e)
+                        }
+                        is IndexOutOfBoundsException -> {
+                            errorDialog(R.string.err_native_empty())
+                            Crashlytics.logException(e)
+                        }
+                        is Error -> {
+                            if (e.message != null) {
+                                errorDialog(R.string.err_native_unknown(e.message!!), appIssue = true)
+                            } else {
+                                errorDialog(R.string.err_native_empty(), appIssue = true)
+                            }
+                            Crashlytics.logException(e)
+                        }
+                        else -> {
+                            errorDialog(R.string.err_java(e::class.java.simpleName, e.message
+                                    ?: "null"), appIssue = true)
+                            Crashlytics.logException(e)
+                        }
+                    }
 
                     false
                 } finally {
@@ -475,21 +502,25 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         dialog.findViewById<TextView>(android.R.id.message).movementMethod = LinkMovementMethod.getInstance()
     }
 
-    private fun errorDialog(message: String, appIssue: Boolean = false) {
+    private fun errorDialog(message: String, appIssue: Boolean = false, oom: Boolean = false) {
         runOnUiThread {
             with (AlertDialog.Builder(this, R.style.DialogTheme)) {
                 setTitle(R.string.err_generic)
                 setMessage(message)
 
-                if (appIssue) {
-                    setPositiveButton(android.R.string.ok) { _, _ ->
+                when {
+                    oom -> setPositiveButton(R.string.exit) { _, _ ->
+                        finish()
                     }
+                    appIssue -> {
+                        setPositiveButton(android.R.string.ok) { _, _ ->
+                        }
 
-                    setNegativeButton(R.string.contact) { _, _ ->
-                        contactDev()
+                        setNegativeButton(R.string.contact) { _, _ ->
+                            contactDev()
+                        }
                     }
-                } else {
-                    setPositiveButton(android.R.string.ok) { _, _ -> }
+                    else -> setPositiveButton(android.R.string.ok) { _, _ -> }
                 }
 
                 setCancelable(false)

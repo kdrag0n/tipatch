@@ -39,8 +39,8 @@ jv_bytes read_bytes(JNIEnv *env, jobject fis, unsigned int count) {
     check_exp();
 
     if (bytesRead != count) {
-        throw std::runtime_error(std::to_string(count) + " bytes requested; " +
-                                 std::to_string(bytesRead) + " bytes read");
+        throw io_exception(std::to_string(count) + " bytes requested, " +
+                                 std::to_string(bytesRead) + " bytes received");
     }
 
     // get the data

@@ -9,12 +9,17 @@
     <string name="author">Author</string>
     <string name="version">Version</string>
     <string name="icon">Icon</string>
+    <string name="exit">Close App</string>
 
     <string name="author_name">Khronodragon</string>
     <string name="author_nick">\"kdrag0n\"</string>
 
     <string name="err_generic">Oops…</string>
-    <string name="err_native_empty">An unknown error occurred processing the input image.</string>
+    <string name="err_native_empty">An error occurred processing the input image.</string>
+    <string name="err_native_unknown">An error occurred processing the image: %s.</string>
+    <string name="err_native_io">An error occurred reading/writing the image: %s.</string>
+    <string name="err_native_io_unknown">An error occurred reading/writing the image.</string>
+    <string name="err_oom">Out of memory. Try closing some apps.</string>
     <string name="err_java">An internal error of type %s occurred: %s.</string>
     <string name="err_close_output">An error occurred cleaning up the written image: %s.</string>
 
