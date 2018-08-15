@@ -79,7 +79,7 @@ void Image::compress_ramdisk_gzip() {
         total_len += finished_data->size;
     }
 
-    char *final_buf = (char *) malloc(total_len + sizeof(uLong));
+    char *final_buf = (char *) malloc(total_len + (sizeof(uLong) * 2));
     finally free_buf([&]{
         free(final_buf);
     });
@@ -90,8 +90,14 @@ void Image::compress_ramdisk_gzip() {
         cur_pos += block->size;
     }
 
+    // uncompressed crc32
     uLong crc = crc32(0L, (Bytef *) ramdisk->data(), ramdisk->length());
     memcpy(cur_pos, (void *) &crc, sizeof(uLong));
+    cur_pos += sizeof(uLong);
+
+    // uncompressed length
+    uLong ulen = static_cast<uLong>(ramdisk->length());
+    memcpy(cur_pos, (void *) &ulen, sizeof(uLong));
 
     ramdisk = std::make_shared<std::string>(final_buf, total_len);
 }
