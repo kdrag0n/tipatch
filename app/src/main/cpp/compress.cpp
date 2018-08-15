@@ -17,6 +17,8 @@ void Image::compress_ramdisk(char comp_mode) {
             return compress_ramdisk_lzo();
         case comp::xz:
             return compress_ramdisk_xz();
+        case comp::none:
+            return; // uncompressed
         default:
             // this isn't comp_exception because it's a problem with the input
             throw img_exception("Ramdisk compression mode '" + comp::name(comp_mode) + "' is not supported.");

@@ -12,6 +12,8 @@ void Image::decompress_ramdisk(char comp_mode) {
             return decompress_ramdisk_lzo();
         case comp::xz:
             return decompress_ramdisk_xz();
+        case comp::none:
+            return;
         default:
             throw img_exception("Ramdisk compression mode '" + comp::name(comp_mode) + "' is not supported.");
     }

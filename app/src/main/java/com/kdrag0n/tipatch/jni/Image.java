@@ -10,7 +10,8 @@ public class Image {
     public static final byte COMP_XZ = 3;
     public static final byte COMP_BZIP2 = 4;
     public static final byte COMP_LZMA = 5;
-    public static final byte COMP_UNKNOWN = 6;
+    public static final byte COMP_NONE = 6;
+    public static final byte COMP_UNKNOWN = 7;
 
     public static final byte REPL_NORMAL = 0;
     public static final byte REPL_REVERSE = 1;

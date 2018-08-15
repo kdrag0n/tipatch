@@ -9,7 +9,8 @@ namespace comp {
     const char xz         = 3;
     const char bzip2      = 4;
     const char lzma       = 5;
-    const char unknown    = 6;
+    const char none       = 6;
+    const char unknown    = 7;
 
     std::string name(const char mode);
 }

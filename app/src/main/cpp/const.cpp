@@ -14,6 +14,8 @@ std::string comp::name(const char mode) {
             return "bzip2";
         case lzma:
             return "lzma";
+        case none:
+            return "none";
         default:
             return "unknown";
     }

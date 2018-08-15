@@ -78,6 +78,9 @@ Java_com_kdrag0n_tipatch_jni_Image__1detectCompressor(JNIEnv, jobject, jlong han
     auto data = image->ramdisk->data();
     int b1 = data[0];
     int b2 = data[1];
+    int b3 = data[2];
+    int b4 = data[3];
+    int b5 = data[4];
 
     if (b1 == 0x42 && b2 == 0x5a) {
         return comp::bzip2;
@@ -91,6 +94,11 @@ Java_com_kdrag0n_tipatch_jni_Image__1detectCompressor(JNIEnv, jobject, jlong han
         return comp::lzma;
     } else if (b1 == 0xfd && b2 == 0x37) {
         return comp::xz;
+    } else if (b1 == 0x07 && b2 == 0x07 && b3 == 0x07) { // legacy cpio: old kernels?
+        return comp::none;
+    } else if (b1 == 0x30 && b2 == 0x37 && b3 == 0x30 && b4 == 0x37 && b5 == 0x30) {
+        // modern cpio: string "07070[X]" being 070701, 070702, or 070707
+        return comp::none;
     } else {
         return comp::unknown;
     }

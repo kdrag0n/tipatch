@@ -244,6 +244,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             Image.COMP_XZ -> "xz"
             Image.COMP_LZMA -> "lzma"
             Image.COMP_BZIP2 -> "bzip2"
+            Image.COMP_NONE -> "none"
             else -> "unknown"
         }
 
