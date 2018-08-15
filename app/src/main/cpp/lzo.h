@@ -6,7 +6,8 @@
 
 #define BLOCK_SIZE (256 * 1024l)
 
-static const unsigned char lzop_magic[9] = {'\211', 'L', 'Z', 'O', '\0', '\r', '\n', '\032', '\n'};
+static const unsigned char lzop_magic[9] =
+        {(unsigned char) '\211', 'L', 'Z', 'O', '\0', '\r', '\n', '\032', '\n'};
 
 struct lzop_header {
     uint16_t version = 0;
