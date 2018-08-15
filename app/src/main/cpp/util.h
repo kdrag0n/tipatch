@@ -33,3 +33,5 @@ private:
     std::chrono::time_point<clock_> beg_;
 };
 #endif
+
+void write_uint32(char *dst, unsigned int orig);
