@@ -54,6 +54,8 @@ namespace gzip {
             // Configurate the compressor to write a simple gzip header and trailer
             // around the compressed data instead of a zlib wrapper
             windowBits += 16;
+        } else {
+            windowBits = -15;
         }
         int ret = deflateInit2(&zs_, static_cast<int>(level_), Z_DEFLATED, windowBits,
                                8, Z_DEFAULT_STRATEGY);

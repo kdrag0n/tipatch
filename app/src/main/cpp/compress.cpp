@@ -31,7 +31,7 @@ void Image::compress_ramdisk_gzip() {
 
     for (size_t i = 0; i < jobs; i++) {
         threads.push_back(std::async(std::launch::async, [&, i]{
-            gzip::Comp comp(gzip::Comp::Level::Max, i == 0);
+            gzip::Comp comp(gzip::Comp::Level::Max, false);
             if (!comp.IsSucc()) {
                 throw comp_exception("Error preparing to compress gzip ramdisk with gzip.");
             }
@@ -49,16 +49,11 @@ void Image::compress_ramdisk_gzip() {
             }
 
             if (i < jobs - 1) {
-                auto flushed_data = comp.Process(to_comp_data, Z_SYNC_FLUSH);
-                return std::make_tuple(gzip::ExpandDataList(flushed_data), gzip::AllocateData(0));
-                /*
-                auto flushed_data = comp.Process(to_comp_data, Z_NO_FLUSH);
-                auto finished_data = gzip::AllocateData(0);
-
-                return std::make_tuple(gzip::ExpandDataList(flushed_data), finished_data);*/
+                auto flushed_data = gzip::ExpandDataList(comp.Process(to_comp_data, Z_SYNC_FLUSH));
+                return std::make_tuple(flushed_data, gzip::AllocateData(0));
             } else {
-                auto finished_data = comp.Process(to_comp_data, Z_FINISH);
-                return std::make_tuple(gzip::ExpandDataList(finished_data), gzip::AllocateData(0));
+                auto finished_data = gzip::ExpandDataList(comp.Process(to_comp_data, Z_FINISH));
+                return std::make_tuple(finished_data, gzip::AllocateData(0));
             }
         }));
     }
@@ -79,12 +74,29 @@ void Image::compress_ramdisk_gzip() {
         total_len += finished_data->size;
     }
 
-    char *final_buf = (char *) malloc(total_len + (sizeof(uLong) * 2));
+    unsigned char header[10] = {
+            31,                       // Magic number (short)
+            139,                      // Magic number (short)
+            8,                        // Compression method (CM)
+            0,                        // Flags (FLG)
+            0,                        // Modification time MTIME (int)
+            0,                        // Modification time MTIME (int)
+            0,                        // Modification time MTIME (int)
+            0,                        // Modification time MTIME (int)
+            2,                        // Extra flags (XFLG)
+            3                         // Operating system (OS)
+    };
+
+    auto final_len = sizeof(header) + total_len + (sizeof(uLong) * 3);
+    char *final_buf = (char *) malloc(final_len);
+    char *cur_pos = final_buf;
     finally free_buf([&]{
         free(final_buf);
     });
 
-    char *cur_pos = final_buf;
+    memcpy(cur_pos, header, sizeof(header));
+    cur_pos += sizeof(header);
+
     for (auto &block : blocks) {
         memcpy(cur_pos, block->ptr, block->size);
         cur_pos += block->size;
@@ -92,14 +104,19 @@ void Image::compress_ramdisk_gzip() {
 
     // uncompressed crc32
     uLong crc = crc32(0L, (Bytef *) ramdisk->data(), ramdisk->length());
-    memcpy(cur_pos, (void *) &crc, sizeof(uLong));
+    memcpy(cur_pos, &crc, sizeof(uLong));
     cur_pos += sizeof(uLong);
 
     // uncompressed length
     uLong ulen = static_cast<uLong>(ramdisk->length());
-    memcpy(cur_pos, (void *) &ulen, sizeof(uLong));
+    memcpy(cur_pos, &ulen, sizeof(uLong));
+    cur_pos += sizeof(uLong);
 
-    ramdisk = std::make_shared<std::string>(final_buf, total_len);
+    // compressed length + header + trailer
+    uLong clen = static_cast<uLong>(final_len) - sizeof(uLong); // don't include this uLong
+    memcpy(cur_pos, &clen, sizeof(uLong));
+
+    ramdisk = std::make_shared<std::string>(final_buf, final_len);
 }
 
 void Image::compress_ramdisk_lzo() {
