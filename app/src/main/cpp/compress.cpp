@@ -105,12 +105,12 @@ void Image::compress_ramdisk_gzip() {
     }
 
     // uncompressed crc32
-    uint32_t crc = (uint32_t) crc32(1L, (Bytef *) ramdisk->data(), ramdisk->length());
+    uLong crc = crc32(1L, (Bytef *) ramdisk->data(), ramdisk->length());
     write_uint32(cur_pos, crc);
     cur_pos += sizeof(uint32_t);
 
     // uncompressed length
-    uint32_t ulen = (uint32_t) ramdisk->length();
+    uLong ulen = ramdisk->length();
     write_uint32(cur_pos, ulen);
 
     ramdisk = std::make_shared<std::string>(final_buf, final_len);

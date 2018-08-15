@@ -18,7 +18,7 @@ double Timer::elapsed() const {
 }
 #endif
 
-void write_uint32(char *dst, unsigned int orig) {
+void write_uint32(char *dst, unsigned long orig) {
     dst[0] = (unsigned char) ((orig >> 24) & 0xFF);
     dst[1] = (unsigned char) ((orig >> 16) & 0xFF);
     dst[2] = (unsigned char) ((orig >> 8) & 0xFF);

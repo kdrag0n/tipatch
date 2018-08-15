@@ -34,4 +34,4 @@ private:
 };
 #endif
 
-void write_uint32(char *dst, unsigned int orig);
+void write_uint32(char *dst, unsigned long orig);
