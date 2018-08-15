@@ -22,6 +22,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.commonsware.cwac.crossport.design.widget.Snackbar
 import com.crashlytics.android.Crashlytics
+import com.kdrag0n.tipatch.jni.CompressException
 import com.kdrag0n.tipatch.jni.Image
 import com.kdrag0n.tipatch.jni.ImageException
 import com.kdrag0n.utils.*
@@ -60,7 +61,13 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return
         }
-        LeakCanary.install(application)
+
+        try {
+            LeakCanary.install(application)
+        } catch (e: UnsupportedOperationException) {}
+        catch (e: Throwable) {
+            throw e
+        }
 
         setContentView(R.layout.activity_main)
 
@@ -225,8 +232,8 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
     }
 
-    private fun patch(progress: (String) -> Unit, fis: InputStream, fos: OutputStream): Boolean {
-        progress(R.string.step1_read_unpack())
+    private fun patch(progress: (String, PatchStep) -> Unit, fis: InputStream, fos: OutputStream): Boolean {
+        progress(R.string.step1_read_unpack(), PatchStep.READ)
         val image = Image(fis)
 
         val cMode = image.detectCompressor()
@@ -240,7 +247,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             else -> "unknown"
         }
 
-        progress(R.string.step2_decompress(cName))
+        progress(R.string.step2_decompress(cName), PatchStep.DECOMPRESS)
         image.decompressRamdisk(cMode)
 
         val direction = when (reversePref.isChecked) {
@@ -249,17 +256,17 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
 
         if (reversePref.isChecked) {
-            progress(R.string.step3_patch_rev())
+            progress(R.string.step3_patch_rev(), PatchStep.PATCH)
         } else {
-            progress(R.string.step3_patch())
+            progress(R.string.step3_patch(), PatchStep.PATCH)
         }
 
         image.patchRamdisk(direction)
 
-        progress(R.string.step4_compress())
+        progress(R.string.step4_compress(), PatchStep.COMPRESS)
         image.compressRamdisk(cMode)
 
-        progress(R.string.step5_pack_write())
+        progress(R.string.step5_pack_write(), PatchStep.WRITE)
         image.write(fos)
 
         return true
@@ -314,6 +321,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
             private var dialog = ProgressDialog(ctx, R.style.DialogTheme)
             private var success = false
             private var currentStep = ""
+            private var currentPatchStep = PatchStep.NONE
 
             override fun onPreExecute() {
                 with (dialog) {
@@ -351,9 +359,10 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
                 success = try {
                     patch(
-                            progress = { step ->
-                                Log.i(logTag, "$step slot=$currentSlot")
+                            progress = { step, patchStep ->
+                                Log.i(logTag, "$step $patchStep slot=$currentSlot")
                                 currentStep = step
+                                currentPatchStep = patchStep
 
                                 runOnUiThread {
                                     dialog.setMessage(step)
@@ -366,12 +375,12 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                 } catch (e: Throwable) {
                     dialog.dismiss()
 
-                    Crashlytics.log("Last step: $currentStep")
+                    Crashlytics.log("Last step: $currentPatchStep $currentStep")
                     currentStep = ""
 
                     when (e) {
                         is ImageException -> {
-                            Crashlytics.log("Native error: ${e.message}")
+                            Crashlytics.log("Native image error: ${e.message}")
                             if (e.message == null) {
                                 errorDialog(R.string.err_native_empty())
                                 Crashlytics.logException(e)
@@ -380,10 +389,29 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
                             errorDialog(e.message!!)
                         }
-                        is IOException -> if (e.message != null) {
-                            errorDialog(R.string.err_native_io(e.message!!))
-                        } else {
-                            errorDialog(R.string.err_native_io_unknown())
+                        is IOException -> when (currentPatchStep) {
+                            PatchStep.READ -> if (e.message != null) {
+                                errorDialog(R.string.err_native_io_read(e.message!!))
+                            } else {
+                                errorDialog(R.string.err_native_io_read_empty())
+                            }
+                            else -> if (e.message != null) {
+                                errorDialog(R.string.err_native_io_write(e.message!!))
+                            } else {
+                                errorDialog(R.string.err_native_io_write_empty())
+                            }
+                        }
+                        is CompressException -> when (currentPatchStep) {
+                            PatchStep.COMPRESS -> if (e.message != null) {
+                                errorDialog(R.string.err_native_comp(e.message!!))
+                            } else {
+                                errorDialog(R.string.err_native_comp_empty())
+                            }
+                            else -> if (e.message != null) {
+                                errorDialog(R.string.err_native_decomp(e.message!!))
+                            } else {
+                                errorDialog(R.string.err_native_decomp_empty())
+                            }
                         }
                         is OutOfMemoryError -> {
                             errorDialog(R.string.err_oom(), oom = true)

@@ -5,11 +5,19 @@
 #include <chrono>
 #endif
 
-class finally  {
+class finally {
     std::function<void(void)> functor;
 public:
     finally(const std::function<void(void)> &functor);
     ~finally();
+};
+
+class byte_array {
+public:
+    byte_array(char *data, unsigned int len) : data(data), len(len) {};
+
+    char *data;
+    unsigned int len;
 };
 
 #ifndef NDEBUG

@@ -2,6 +2,7 @@
 #include "gzip.h"
 #include "const.h"
 #include "java.h"
+#include "lzo.h"
 
 void Image::decompress_ramdisk(char comp_mode) {
     switch (comp_mode) {
@@ -19,7 +20,7 @@ void Image::decompress_ramdisk(char comp_mode) {
 void Image::decompress_ramdisk_gzip() {
     gzip::Decomp decomp;
     if (!decomp.IsSucc()) {
-        throw img_exception("Error preparing to decompress gzip ramdisk.");
+        throw comp_exception("Error preparing to decompress gzip ramdisk.");
     }
 
     gzip::Data compData(new gzip::DataBlock, [](gzip::DataBlock *p) {
@@ -42,11 +43,11 @@ void Image::decompress_ramdisk_gzip() {
 }
 
 void Image::decompress_ramdisk_lzo() {
-    throw img_exception("Ramdisk compression mode 'lzo' is not supported.");
+    throw comp_exception("Ramdisk compression mode 'lzo' is not supported.");
 }
 
 void Image::decompress_ramdisk_xz() {
-    throw img_exception("Ramdisk compression mode 'xz' is not supported.");
+    throw comp_exception("Ramdisk compression mode 'xz' is not supported.");
 }
 
 extern "C" JNIEXPORT void JNICALL
