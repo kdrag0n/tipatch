@@ -5,6 +5,9 @@
 #include "lzo.h"
 #include "util.h"
 #include <vector>
+#include <thread>
+#include <future>
+#include <tuple>
 
 void Image::compress_ramdisk(char comp_mode) {
     switch (comp_mode) {
@@ -21,22 +24,76 @@ void Image::compress_ramdisk(char comp_mode) {
 }
 
 void Image::compress_ramdisk_gzip() {
-    gzip::Comp comp(gzip::Comp::Level::Max, true);
-    if (!comp.IsSucc()) {
-        throw comp_exception("Error preparing to compress gzip ramdisk.");
+    size_t jobs = 4;
+    std::vector<std::future<std::tuple<gzip::Data, gzip::Data>>> threads;
+    threads.reserve(jobs);
+    size_t split_len = ramdisk->length() / jobs;
+
+    for (size_t i = 0; i < jobs; i++) {
+        threads.push_back(std::async(std::launch::async, [&, i]{
+            gzip::Comp comp(gzip::Comp::Level::Max, i == 0);
+            if (!comp.IsSucc()) {
+                throw comp_exception("Error preparing to compress gzip ramdisk with gzip.");
+            }
+
+            gzip::Data to_comp_data(new gzip::DataBlock, [](gzip::DataBlock *p) {
+                delete p;
+            });
+
+            to_comp_data->ptr = ramdisk->data() + (split_len * i);
+
+            if (i == jobs - 1) {
+                to_comp_data->size = ramdisk->end().base() - to_comp_data->ptr;
+            } else{
+                to_comp_data->size = split_len;
+            }
+
+            if (i < jobs - 1) {
+                auto flushed_data = comp.Process(to_comp_data, Z_SYNC_FLUSH);
+                return std::make_tuple(gzip::ExpandDataList(flushed_data), gzip::AllocateData(0));
+                /*
+                auto flushed_data = comp.Process(to_comp_data, Z_NO_FLUSH);
+                auto finished_data = gzip::AllocateData(0);
+
+                return std::make_tuple(gzip::ExpandDataList(flushed_data), finished_data);*/
+            } else {
+                auto finished_data = comp.Process(to_comp_data, Z_FINISH);
+                return std::make_tuple(gzip::ExpandDataList(finished_data), gzip::AllocateData(0));
+            }
+        }));
     }
 
-    gzip::Data toCompData(new gzip::DataBlock, [](gzip::DataBlock *p) {
-        delete p;
+    std::vector<gzip::Data> blocks;
+    blocks.reserve(jobs * 2);
+    size_t total_len(0);
+    for (auto &thread : threads) {
+        gzip::Data flushed_data;
+        gzip::Data finished_data;
+
+        std::tie(flushed_data, finished_data) = thread.get();
+
+        blocks.push_back(flushed_data);
+        total_len += flushed_data->size;
+
+        blocks.push_back(finished_data);
+        total_len += finished_data->size;
+    }
+
+    char *final_buf = (char *) malloc(total_len + sizeof(uLong));
+    finally free_buf([&]{
+        free(final_buf);
     });
 
-    toCompData->ptr = ramdisk->data();
-    toCompData->size = ramdisk->length();
+    char *cur_pos = final_buf;
+    for (auto &block : blocks) {
+        memcpy(cur_pos, block->ptr, block->size);
+        cur_pos += block->size;
+    }
 
-    gzip::DataList data_list = comp.Process(toCompData, true);
+    uLong crc = crc32(0L, (Bytef *) ramdisk->data(), ramdisk->length());
+    memcpy(cur_pos, (void *) &crc, sizeof(uLong));
 
-    auto compData = gzip::ExpandDataList(data_list);
-    ramdisk = std::make_shared<std::string>(compData->ptr, compData->size);
+    ramdisk = std::make_shared<std::string>(final_buf, total_len);
 }
 
 void Image::compress_ramdisk_lzo() {
