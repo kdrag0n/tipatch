@@ -15,4 +15,8 @@ public:
 
 void rethrow(JNIEnv *env);
 
+#ifndef NDEBUG
 #define dbg(...) __android_log_print(ANDROID_LOG_DEBUG, "TiCPP", __VA_ARGS__);
+#else
+#define dbg(...) ;
+#endif
