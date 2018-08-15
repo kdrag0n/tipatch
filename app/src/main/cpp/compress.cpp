@@ -77,16 +77,16 @@ void Image::compress_ramdisk_gzip() {
     }
 
     unsigned char header[10] = {
-            31,                       // Magic number (short)
-            139,                      // Magic number (short)
-            8,                        // Compression method (CM)
-            0,                        // Flags (FLG)
-            0,                        // Modification time MTIME (int)
-            0,                        // Modification time MTIME (int)
-            0,                        // Modification time MTIME (int)
-            0,                        // Modification time MTIME (int)
-            2,                        // Extra flags (XFLG)
-            3                         // Operating system (OS)
+            31,                // Magic number (short)
+            139,               // Magic number (short)
+            8,                 // Compression method (CM)
+            0,                 // Flags (FLG)
+            0,                 // Modification time MTIME (int)
+            0,                 // Modification time MTIME (int)
+            0,                 // Modification time MTIME (int)
+            0,                 // Modification time MTIME (int)
+            2,                 // Extra flags (XFLG)
+            3                  // Operating system (OS)
     };
 
     auto final_len = sizeof(header) + total_len + (sizeof(uint32_t) * 2);
