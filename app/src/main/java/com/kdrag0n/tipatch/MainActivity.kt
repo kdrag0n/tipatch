@@ -401,17 +401,20 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                                 errorDialog(R.string.err_native_io_write_empty())
                             }
                         }
-                        is CompressException -> when (currentPatchStep) {
-                            PatchStep.COMPRESS -> if (e.message != null) {
-                                errorDialog(R.string.err_native_comp(e.message!!))
-                            } else {
-                                errorDialog(R.string.err_native_comp_empty())
-                            }
-                            else -> if (e.message != null) {
+                        is CompressException -> {
+                            if (currentPatchStep == PatchStep.COMPRESS) {
+                                if (e.message != null) {
+                                    errorDialog(R.string.err_native_comp(e.message!!))
+                                } else {
+                                    errorDialog(R.string.err_native_comp_empty())
+                                }
+                            } else if (e.message != null) {
                                 errorDialog(R.string.err_native_decomp(e.message!!))
                             } else {
                                 errorDialog(R.string.err_native_decomp_empty())
                             }
+
+                            Crashlytics.logException(e)
                         }
                         is OutOfMemoryError -> {
                             errorDialog(R.string.err_oom(), oom = true)
