@@ -14,13 +14,17 @@ string(REPLACE "-Os" "-O3" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 # Include a location to the header files
 include_directories(src/main/cpp)
 
-find_library( # Defines the name of the path variable that stores the
-              # location of the NDK library.
-              log-lib
+if (NOT (${CMAKE_BUILD_TYPE} STREQUAL "Release"))
+    find_library( # Defines the name of the path variable that stores the
+                  # location of the NDK library.
+                  log-lib
 
-              # Specifies the name of the NDK library that
-              # CMake needs to locate.
-              log )
+                  # Specifies the name of the NDK library that
+                  # CMake needs to locate.
+                  log )
+else()
+    set(log-lib "")
+endif()
 
 find_library(zlib z)
 
