@@ -61,7 +61,7 @@ void Image::patch_ramdisk(char dir) {
              dir);
 
 #ifndef NDEBUG
-    dbg("Ramdisk patches %f ms", tmr.elapsed());
+    dbg("Ramdisk patches took %f ms", tmr.elapsed());
 #endif
 }
 
