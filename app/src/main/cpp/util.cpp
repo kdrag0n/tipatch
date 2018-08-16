@@ -31,7 +31,9 @@ void byte_array::resize(size_t new_len) {
     if (ret == nullptr)
         throw std::bad_alloc();
 
+    auto old_data = data;
     data = (byte *) ret;
+    pos = data + (pos - old_data);
     len = new_len;
 }
 
