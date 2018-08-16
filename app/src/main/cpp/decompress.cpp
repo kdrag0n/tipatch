@@ -10,8 +10,6 @@ void Image::decompress_ramdisk(char comp_mode) {
             return decompress_ramdisk_gzip();
         case comp::lzo:
             return decompress_ramdisk_lzo();
-        case comp::xz:
-            return decompress_ramdisk_xz();
         case comp::none:
             return;
         default:
@@ -54,10 +52,6 @@ void Image::decompress_ramdisk_gzip() {
 
 void Image::decompress_ramdisk_lzo() {
     throw comp_exception("Ramdisk compression mode 'lzo' is not supported.");
-}
-
-void Image::decompress_ramdisk_xz() {
-    throw comp_exception("Ramdisk compression mode 'xz' is not supported.");
 }
 
 extern "C" JNIEXPORT void JNICALL

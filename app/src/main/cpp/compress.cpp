@@ -15,8 +15,6 @@ void Image::compress_ramdisk(char comp_mode) {
             return compress_ramdisk_gzip();
         case comp::lzo:
             return compress_ramdisk_lzo();
-        case comp::xz:
-            return compress_ramdisk_xz();
         case comp::none:
             return; // uncompressed
         default:
@@ -218,10 +216,6 @@ void Image::compress_ramdisk_lzo() {
     }
 
     ramdisk = byte_array::ref(final_buf, total_block_len);
-}
-
-void Image::compress_ramdisk_xz() {
-    throw comp_exception("Ramdisk compression mode 'xz' is not supported.");
 }
 
 extern "C" JNIEXPORT void JNICALL

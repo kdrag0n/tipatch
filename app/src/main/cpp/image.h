@@ -27,9 +27,7 @@ public:
 private:
     void decompress_ramdisk_gzip();
     void decompress_ramdisk_lzo();
-    void decompress_ramdisk_xz();
 
     void compress_ramdisk_gzip();
     void compress_ramdisk_lzo();
-    void compress_ramdisk_xz();
 };
