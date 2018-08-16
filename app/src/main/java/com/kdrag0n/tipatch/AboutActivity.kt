@@ -18,6 +18,12 @@ class AboutActivity : Activity() {
         about_source.summary = R.string.about_src_desc()
         about_source.uri = R.string.source_uri
 
+        about_oss.removeSummary()
+        about_oss.setOnClickListener {
+            val intent = Intent(this, LicenseActivity::class.java)
+            startActivity(intent)
+        }
+
         about_donate.summary = R.string.about_donate_desc()
         about_donate.uri = R.string.donate_uri
 

@@ -3,6 +3,8 @@
     <string name="contact">Contact</string>
     <string name="patch_btn">Patch</string>
     <string name="about">About</string>
+    <string name="licenses">Licenses</string>
+    <string name="oss_licenses">Open-source licenses</string>
     <string name="help">Help</string>
     <string name="share">Share</string>
     <string name="donate">Donate</string>
@@ -103,4 +105,11 @@
 <p>If Tipatch does not work properly on your device in any way, please let me know via the Contact menu option.</p>
 ]]>
     </string>
+
+    <!-- Projects -->
+    <string name="proj_libsu">libsu</string>
+    <string name="proj_about">AboutCardRow</string>
+    <string name="proj_leak">LeakCanary</string>
+    <string name="proj_lzo">MiniLZO</string>
+    <string name="proj_gzipcpp">gzip_cpp</string>
 </resources>
