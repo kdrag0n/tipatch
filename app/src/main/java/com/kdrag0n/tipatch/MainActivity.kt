@@ -422,7 +422,12 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                             Crashlytics.logException(e)
                         }
                         is IndexOutOfBoundsException -> {
-                            errorDialog(R.string.err_native_empty())
+                            if (e.message != null) {
+                                errorDialog(R.string.err_native_unknown(e.message!!))
+                            } else {
+                                errorDialog(R.string.err_native_empty())
+                            }
+
                             Crashlytics.logException(e)
                         }
                         is Error -> {
