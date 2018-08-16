@@ -89,28 +89,23 @@ void Image::compress_ramdisk_gzip() {
             3                  // Operating system (OS)
     };
 
-    auto final_len = sizeof(header) + total_len + (sizeof(uint32_t) * 2);
-    auto final_buf = (byte *) malloc(final_len);
-    auto cur_pos = final_buf;
-
-    memcpy(cur_pos, header, sizeof(header));
-    cur_pos += sizeof(header);
+    auto final = byte_array(sizeof(header) + total_len + (sizeof(uint32_t) * 2));
+    final.write(header);
 
     for (auto &block : blocks) {
-        memcpy(cur_pos, block->ptr, block->size);
-        cur_pos += block->size;
+        final.write(block->ptr, block->size);
     }
 
     // uncompressed crc32
     uLong crc = crc32(0L, ramdisk->data, (uInt) ramdisk->len);
-    write_uint32(cur_pos, crc);
-    cur_pos += sizeof(uint32_t);
+    write_uint32(final.pos, crc);
+    final.pos += sizeof(uint32_t);
 
     // uncompressed length
     uLong ulen = ramdisk->len;
-    write_uint32(cur_pos, ulen);
+    write_uint32(final.pos, ulen);
 
-    ramdisk = byte_array::ref(final_buf, final_len);
+    ramdisk = final.as_ref();
 }
 
 void Image::compress_ramdisk_lzo() {
