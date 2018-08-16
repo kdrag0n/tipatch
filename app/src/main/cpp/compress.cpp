@@ -102,7 +102,7 @@ void Image::compress_ramdisk_gzip() {
     }
 
     // uncompressed crc32
-    uLong crc = crc32(1L, ramdisk->data, (uInt) ramdisk->len);
+    uLong crc = crc32(0L, ramdisk->data, (uInt) ramdisk->len);
     write_uint32(cur_pos, crc);
     cur_pos += sizeof(uint32_t);
 
