@@ -14,6 +14,7 @@ public:
     ~byte_array();
 
     void write(void *src, size_t src_len);
+    template <typename T> void write(const T &obj);
 
     byte *data;
     byte *pos;

@@ -19,6 +19,10 @@ void byte_array::write(void *src, size_t src_len) {
     pos += len;
 }
 
+template <typename T> void byte_array::write(const T &obj) {
+    write(&obj, sizeof(obj));
+}
+
 byte_obj byte_array::ref(byte *data, size_t len, bool copy) {
     byte *to_ref = data;
     if (copy) {
