@@ -13,7 +13,7 @@ void Image::decompress_ramdisk(char comp_mode) {
         case comp::none:
             return;
         default:
-            throw comp_exception("Ramdisk compression mode '" + comp::name(comp_mode) + "' is not supported.");
+            throw comp_exception("Method '" + comp::name(comp_mode) + "' is not supported.");
     }
 }
 
