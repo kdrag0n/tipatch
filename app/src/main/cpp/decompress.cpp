@@ -25,23 +25,31 @@ void Image::decompress_ramdisk_gzip() {
         throw comp_exception("Error preparing to decompress gzip ramdisk.");
     }
 
-    gzip::Data compData(new gzip::DataBlock, [](gzip::DataBlock *p) {
+    gzip::Data comp_data(new gzip::DataBlock, [](gzip::DataBlock *p) {
         delete p;
     });
 
-    compData->ptr = (char *) ramdisk->data;
-    compData->size = ramdisk->len;
+    comp_data->ptr = (char *) ramdisk->data;
+    comp_data->size = ramdisk->len;
 
     bool success;
     gzip::DataList data_list;
-    std::tie(success, data_list) = decomp.Process(compData);
+    std::tie(success, data_list) = decomp.Process(comp_data);
 
     if (!success) {
         throw img_exception("Unable to decompress gzip ramdisk.");
     }
 
-    auto decompData = gzip::ExpandDataList(data_list);
-    ramdisk = byte_array::ref((byte *) decompData->ptr, decompData->size, true);
+    size_t decomp_len = 0;
+    for (auto &block : data_list) {
+        decomp_len += block->size;
+    }
+
+    ramdisk->resize(decomp_len);
+    ramdisk->reset_pos();
+    for (auto &block : data_list) {
+        ramdisk->write(block->ptr, block->size);
+    }
 }
 
 void Image::decompress_ramdisk_lzo() {

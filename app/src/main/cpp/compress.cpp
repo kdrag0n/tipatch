@@ -91,6 +91,7 @@ void Image::compress_ramdisk_gzip() {
     uLong ulen = ramdisk->len;
 
     ramdisk->resize(sizeof(header) + total_len + (sizeof(uint32_t) * 2));
+    ramdisk->reset_pos();
     ramdisk->write(header);
 
     for (auto &blockList : blockLists) {
