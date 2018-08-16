@@ -13,14 +13,17 @@ public:
     byte_array(size_t len);
     ~byte_array();
 
-    void write(void *src, size_t src_len);
-    template <typename T> void write(const T &obj);
+    void write(const void *src, size_t src_len);
+    template <typename T> void write(const T &obj) {
+        write(reinterpret_cast<const void *>(&obj), sizeof(obj));
+    }
 
     byte *data;
     byte *pos;
     size_t len;
 
     static std::shared_ptr<byte_array> ref(byte *data, size_t len, bool copy = false);
+    std::shared_ptr<byte_array> as_ref();
 };
 
 using byte_obj = std::shared_ptr<byte_array>;

@@ -10,17 +10,13 @@ byte_array::~byte_array() {
     free(data);
 }
 
-void byte_array::write(void *src, size_t src_len) {
+void byte_array::write(const void *src, size_t src_len) {
     if (pos + src_len > data + len) {
         throw std::out_of_range("Attempting to write " + std::to_string(src_len) + "to byte array of length " + std::to_string(len) + "; however, " + std::to_string(pos - data) + " bytes have already been used.");
     }
 
     memcpy(data, src, len);
     pos += len;
-}
-
-template <typename T> void byte_array::write(const T &obj) {
-    write(&obj, sizeof(obj));
 }
 
 byte_obj byte_array::ref(byte *data, size_t len, bool copy) {
@@ -31,6 +27,10 @@ byte_obj byte_array::ref(byte *data, size_t len, bool copy) {
     }
 
     return std::make_shared<byte_array>(to_ref, len);
+}
+
+byte_obj byte_array::as_ref() {
+    return ref(data, len, false);
 }
 
 finally::finally(const std::function<void(void)> &functor) : functor(functor) {}
