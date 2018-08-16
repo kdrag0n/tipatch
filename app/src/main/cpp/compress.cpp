@@ -98,11 +98,11 @@ void Image::compress_ramdisk_gzip() {
     }
 
     // uncompressed crc32
-    write_uint32(ramdisk->pos, crc);
+    write_uint32le(ramdisk->pos, crc);
     ramdisk->pos += sizeof(uint32_t);
 
     // uncompressed length
-    write_uint32(ramdisk->pos, ulen);
+    write_uint32le(ramdisk->pos, ulen);
 }
 
 void Image::compress_ramdisk_lzo() {

@@ -76,9 +76,16 @@ double Timer::elapsed() const {
 }
 #endif
 
-void write_uint32(byte *dst, unsigned long orig) {
+void write_uint32le(byte *dst, unsigned long orig) {
     dst[0] = (byte) orig;
     dst[1] = (byte) (orig >> 8);
     dst[2] = (byte) (orig >> 16);
     dst[3] = (byte) (orig >> 24);
+}
+
+void write_uint32be(byte *dst, unsigned int orig) {
+    dst[0] = (byte) ((orig >> 24) & 0xFF);
+    dst[1] = (byte) ((orig >> 16) & 0xFF);
+    dst[2] = (byte) ((orig >> 8) & 0xFF);
+    dst[3] = (byte) (orig & 0xFF);
 }

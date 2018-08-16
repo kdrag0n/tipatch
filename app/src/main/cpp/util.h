@@ -65,4 +65,5 @@ private:
 };
 #endif
 
-void write_uint32(byte *dst, unsigned long orig);
+void write_uint32le(byte *dst, unsigned long orig);
+void write_uint32be(byte *dst, unsigned int orig);
