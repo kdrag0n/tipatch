@@ -9,7 +9,7 @@ using byte = unsigned char;
 
 class byte_array {
 public:
-    byte_array(byte *data = nullptr, size_t len = 0) : data(data), len(len) {};
+    byte_array(byte *data = nullptr, size_t len = 0) : data(data), pos(data), len(len) {};
     byte_array(size_t len);
     ~byte_array();
 

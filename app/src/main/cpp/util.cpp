@@ -2,7 +2,8 @@
 #include "util.h"
 
 byte_array::byte_array(size_t len) {
-    this->data = (byte *) malloc(len);
+    data = (byte *) malloc(len);
+    pos = data;
     this->len = len;
 }
 
