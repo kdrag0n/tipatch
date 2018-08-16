@@ -25,7 +25,7 @@ void byte_array::resize(size_t new_len) {
         return;
 
     if (new_len == 0)
-        throw std::out_of_range("Attempting to resize byte array of length " + std::to_string(len) + " to 0 bytes");
+        throw std::out_of_range("Attempting to resize byte array of length " + std::to_string(len) + " to 0 bytes.");
 
     auto ret = realloc(data, new_len);
     if (ret == nullptr)
