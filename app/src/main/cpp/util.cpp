@@ -31,7 +31,12 @@ byte_obj byte_array::ref(byte *data, size_t len, bool copy) {
 }
 
 byte_obj byte_array::as_ref() {
-    return ref(data, len, false);
+    auto that = ref(data, len, false);
+    data = nullptr;
+    pos = nullptr;
+    len = 0;
+
+    return that;
 }
 
 finally::finally(const std::function<void(void)> &functor) : functor(functor) {}

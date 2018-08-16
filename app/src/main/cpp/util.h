@@ -24,6 +24,19 @@ public:
 
     static std::shared_ptr<byte_array> ref(byte *data, size_t len, bool copy = false);
     std::shared_ptr<byte_array> as_ref();
+
+    byte_array(byte_array&& that) {
+        data = that.data;
+        pos = that.data; // reset position
+        len = that.len;
+        that.data = nullptr;
+        that.pos = nullptr;
+        that.len = 0;
+    }
+
+    // too lazy to implement copy-and-swap
+    byte_array(const byte_array &) = delete;
+    byte_array &operator=(const byte_array &) = delete;
 };
 
 using byte_obj = std::shared_ptr<byte_array>;
