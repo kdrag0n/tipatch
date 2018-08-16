@@ -26,7 +26,7 @@ void Image::compress_ramdisk(char comp_mode) {
 }
 
 void Image::compress_ramdisk_gzip() {
-    size_t jobs = 4;
+    size_t jobs = std::max<unsigned>(std::min<unsigned>(std::thread::hardware_concurrency(), 1), 4);
     std::vector<std::future<gzip::DataList>> threads;
     threads.reserve(jobs);
     size_t split_len = ramdisk->len / jobs;
