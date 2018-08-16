@@ -16,8 +16,8 @@ void byte_array::write(const void *src, size_t src_len) {
         throw std::out_of_range("Attempting to write " + std::to_string(src_len) + " to byte array of length " + std::to_string(len) + "; however, " + std::to_string(pos - data) + " bytes have already been used.");
     }
 
-    memcpy(data, src, src_len);
-    pos += len;
+    memcpy(pos, src, src_len);
+    pos += src_len;
 }
 
 byte_obj byte_array::ref(byte *data, size_t len, bool copy) {
