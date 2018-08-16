@@ -27,7 +27,7 @@ void Image::compress_ramdisk(char comp_mode) {
 
 void Image::compress_ramdisk_gzip() {
     size_t jobs = 4;
-    std::vector<std::future<std::tuple<gzip::Data, gzip::Data>>> threads;
+    std::vector<std::future<gzip::Data>> threads;
     threads.reserve(jobs);
     size_t split_len = ramdisk->len / jobs;
 
@@ -52,10 +52,10 @@ void Image::compress_ramdisk_gzip() {
 
             if (i < jobs - 1) {
                 auto flushed_data = gzip::ExpandDataList(comp.Process(to_comp_data, Z_SYNC_FLUSH));
-                return std::make_tuple(flushed_data, gzip::AllocateData(0));
+                return flushed_data;
             } else {
                 auto finished_data = gzip::ExpandDataList(comp.Process(to_comp_data, Z_FINISH));
-                return std::make_tuple(finished_data, gzip::AllocateData(0));
+                return finished_data;
             }
         }));
     }
@@ -64,16 +64,10 @@ void Image::compress_ramdisk_gzip() {
     blocks.reserve(jobs * 2);
     size_t total_len(0);
     for (auto &thread : threads) {
-        gzip::Data flushed_data;
-        gzip::Data finished_data;
+        auto data = thread.get();
 
-        std::tie(flushed_data, finished_data) = thread.get();
-
-        blocks.push_back(flushed_data);
-        total_len += flushed_data->size;
-
-        blocks.push_back(finished_data);
-        total_len += finished_data->size;
+        blocks.push_back(data);
+        total_len += data->size;
     }
 
     byte header[10] = {
