@@ -127,7 +127,7 @@ void Image::compress_ramdisk_lzo() {
     std::vector<byte_array> blocks;
     blocks.reserve(in_len / block_size);
     finally free_buffers([&blocks]{
-        for (auto buf : blocks) {
+        for (auto &buf : blocks) {
             free(buf.data);
         }
     });
@@ -212,7 +212,7 @@ void Image::compress_ramdisk_lzo() {
     memcpy(final_pos, &header_check, sizeof(header_check));
     final_pos += sizeof(header_check);
 
-    for (auto buf : blocks) {
+    for (auto &buf : blocks) {
         memcpy(final_pos, buf.data, buf.len);
         final_pos += buf.len;
     }
