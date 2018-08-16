@@ -1,4 +1,33 @@
+#include <string>
 #include "util.h"
+
+byte_array::byte_array(size_t len) {
+    this->data = (byte *) malloc(len);
+    this->len = len;
+}
+
+byte_array::~byte_array() {
+    free(data);
+}
+
+void byte_array::write(void *src, size_t src_len) {
+    if (pos + src_len > data + len) {
+        throw std::runtime_error("Attempting to write " + std::to_string(src_len) + "to byte array of length " + std::to_string(len) + "; however, " + std::to_string(pos - data) + " bytes have already been used.");
+    }
+
+    memcpy(data, src, len);
+    pos += len;
+}
+
+byte_obj byte_array::ref(byte *data, size_t len, bool copy) {
+    byte *to_ref = data;
+    if (copy) {
+        to_ref = (byte *) malloc(len);
+        memcpy(to_ref, data, len);
+    }
+
+    return std::make_shared<byte_array>(to_ref, len);
+}
 
 finally::finally(const std::function<void(void)> &functor) : functor(functor) {}
 
@@ -18,9 +47,9 @@ double Timer::elapsed() const {
 }
 #endif
 
-void write_uint32(char *dst, unsigned long orig) {
-    dst[0] = (unsigned char) ((orig >> 24) & 0xFF);
-    dst[1] = (unsigned char) ((orig >> 16) & 0xFF);
-    dst[2] = (unsigned char) ((orig >> 8) & 0xFF);
-    dst[3] = (unsigned char) (orig & 0xFF);
+void write_uint32(byte *dst, unsigned long orig) {
+    dst[0] = (byte) ((orig >> 24) & 0xFF);
+    dst[1] = (byte) ((orig >> 16) & 0xFF);
+    dst[2] = (byte) ((orig >> 8) & 0xFF);
+    dst[3] = (byte) (orig & 0xFF);
 }

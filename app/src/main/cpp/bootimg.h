@@ -16,6 +16,7 @@
 */
 
 #include <stdint.h>
+#include "util.h"
 
 #pragma once
 
@@ -55,7 +56,7 @@ struct boot_img_hdr
 
     uint8_t cmdline[BOOT_ARGS_SIZE];
 
-    uint32_t id[8]; /* timestamp / checksum / sha1 / etc */
+    byte id[32]; /* timestamp / checksum / sha1 / etc */
 
     /* Supplemental command line data; kept here to maintain
      * binary compatibility with older versions of mkbootimg */

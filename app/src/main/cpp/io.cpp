@@ -13,14 +13,17 @@ jv_bytes::~jv_bytes() {
     env->ReleaseByteArrayElements(array, jbytes, JNI_ABORT);
 }
 
-char *jv_bytes::bytes() {
-    return (char *) jbytes;
+byte *jv_bytes::bytes() {
+    return (byte *) jbytes;
 }
 
-std::string jv_bytes::string() {
-    std::string ret((char *) jbytes, len);
+byte *jv_bytes::copy_bytes() {
+    // copy
+    auto copy = (byte *) malloc(len);
+    memcpy(copy, jbytes, len);
     this->~jv_bytes();
-    return ret;
+
+    return copy;
 }
 
 jv_bytes read_bytes(JNIEnv *env, jobject fis, unsigned int count) {
@@ -42,7 +45,7 @@ jv_bytes read_bytes(JNIEnv *env, jobject fis, unsigned int count) {
     }
 
     // get the data
-    jbyte *jbytes = env->GetByteArrayElements(buffer, NULL);
+    jbyte *jbytes = env->GetByteArrayElements(buffer, nullptr);
 
     return jv_bytes(env, buffer, jbytes, count);
 }
@@ -64,9 +67,9 @@ void read_padding(JNIEnv *env, jobject fis, unsigned int item_size, unsigned int
 }
 
 // writing
-void write_bytes(JNIEnv *env, jobject fos, char *data, unsigned long length) {
+void write_bytes(JNIEnv *env, jobject fos, byte *data, size_t length) {
     // create the buffer
-    jbyteArray buffer = env->NewByteArray(length);
+    jbyteArray buffer = env->NewByteArray(static_cast<jsize>(length));
     check_exp();
 
     finally free_buf([&]{
@@ -74,8 +77,10 @@ void write_bytes(JNIEnv *env, jobject fos, char *data, unsigned long length) {
     });
 
     // fill the buffer
-    env->SetByteArrayRegion(buffer, 0, length, (jbyte *) data);
-    check_exp();
+    if (data != nullptr) { // nullptr = write zeroes
+        env->SetByteArrayRegion(buffer, 0, static_cast<jsize>(length), (jbyte *) data);
+        check_exp();
+    }
 
     // method: void OutputStream#write(byte[])
     jclass clazz = env->GetObjectClass(fos);
@@ -88,15 +93,10 @@ void write_bytes(JNIEnv *env, jobject fos, char *data, unsigned long length) {
     check_exp();
 }
 
-void write_padding(JNIEnv *env, jobject fos, unsigned long item_size, unsigned int page_size) {
+void write_padding(JNIEnv *env, jobject fos, size_t item_size, unsigned int page_size) {
     auto count = padding_size((unsigned int) item_size, page_size);
     if (count == 0)
         return;
 
-    auto buf = (char *) malloc(count);
-    finally free_buf([&]{
-        free(buf);
-    });
-
-    write_bytes(env, fos, buf, count);
+    write_bytes(env, fos, nullptr, count);
 }

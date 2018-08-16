@@ -25,36 +25,32 @@ Java_com_kdrag0n_tipatch_jni_Image_init(JNIEnv *env, jobject, jobject fis) {
 
         // kernel
         {
-            auto kernel_bytes = read_bytes(env, fis, image->hdr.kernel_size);
-            image->kernel = std::make_shared<std::string>(kernel_bytes.string());
+            auto kernel = read_bytes(env, fis, image->hdr.kernel_size);
+            image->kernel = byte_array::ref(kernel.copy_bytes(), kernel.len);
         }
 
         read_padding(env, fis, image->hdr.kernel_size, image->hdr.page_size);
 
         // ramdisk
         {
-            auto ramdisk_bytes = read_bytes(env, fis, image->hdr.ramdisk_size);
-            image->ramdisk = std::make_shared<std::string>(ramdisk_bytes.string());
+            auto ramdisk = read_bytes(env, fis, image->hdr.ramdisk_size);
+            image->ramdisk = byte_array::ref(ramdisk.copy_bytes(), ramdisk.len);
         }
 
         read_padding(env, fis, image->hdr.ramdisk_size, image->hdr.page_size);
 
         // second-stage loader
         if (image->hdr.second_size > 0) {
-            auto second_bytes = read_bytes(env, fis, image->hdr.second_size);
-            image->second = std::make_shared<std::string>(second_bytes.string());
-        } else {
-            image->second = std::make_shared<std::string>("");
+            auto second = read_bytes(env, fis, image->hdr.second_size);
+            image->second = byte_array::ref(second.copy_bytes(), second.len);
         }
 
         read_padding(env, fis, image->hdr.second_size, image->hdr.page_size);
 
         // device tree
         if (image->hdr.dt_size > 0) {
-            auto dt_bytes = read_bytes(env, fis, image->hdr.dt_size);
-            image->device_tree = std::make_shared<std::string>(dt_bytes.string());
-        } else {
-            image->device_tree = std::make_shared<std::string>("");
+            auto dt = read_bytes(env, fis, image->hdr.dt_size);
+            image->device_tree = byte_array::ref(dt.copy_bytes(), dt.len);
         }
 
         read_padding(env, fis, image->hdr.dt_size, image->hdr.page_size);
@@ -75,7 +71,7 @@ Java_com_kdrag0n_tipatch_jni_Image_free(JNIEnv, jobject, jlong handle) {
 extern "C" JNIEXPORT jbyte JNICALL
 Java_com_kdrag0n_tipatch_jni_Image__1detectCompressor(JNIEnv, jobject, jlong handle) {
     Image *image = (Image*) handle;
-    auto data = image->ramdisk->data();
+    auto data = image->ramdisk->data;
     int b1 = data[0];
     int b2 = data[1];
     int b3 = data[2];
@@ -104,10 +100,10 @@ Java_com_kdrag0n_tipatch_jni_Image__1detectCompressor(JNIEnv, jobject, jlong han
     }
 }
 
-char *Image::hash() {
+byte *Image::hash() {
     auto xxh_state = XXH32_createState();
-    if (xxh_state == NULL)
-        return NULL;
+    if (xxh_state == nullptr)
+        return nullptr;
 
     finally free_state([&]{
         XXH32_freeState(xxh_state);
@@ -116,28 +112,28 @@ char *Image::hash() {
     const unsigned long long seed = 42;
     auto ret = XXH32_reset(xxh_state, seed);
     if (ret == XXH_ERROR)
-        return NULL;
+        return nullptr;
 
-    ret = XXH32_update(xxh_state, kernel->data(), kernel->length());
+    ret = XXH32_update(xxh_state, kernel->data, kernel->len);
     if (ret == XXH_ERROR)
-        return NULL;
+        return nullptr;
 
-    ret = XXH32_update(xxh_state, ramdisk->data(), ramdisk->length());
+    ret = XXH32_update(xxh_state, ramdisk->data, ramdisk->len);
     if (ret == XXH_ERROR)
-        return NULL;
+        return nullptr;
 
-    ret = XXH32_update(xxh_state, second->data(), second->length());
+    ret = XXH32_update(xxh_state, second->data, second->len);
     if (ret == XXH_ERROR)
-        return NULL;
+        return nullptr;
 
-    ret = XXH32_update(xxh_state, device_tree->data(), device_tree->length());
+    ret = XXH32_update(xxh_state, device_tree->data, device_tree->len);
     if (ret == XXH_ERROR)
-        return NULL;
+        return nullptr;
 
     unsigned long long hash = XXH32_digest(xxh_state);
 
     // copy it
-    char *hashCopy = (char *) malloc(sizeof(hash));
+    auto hashCopy = (byte *) malloc(sizeof(hash));
     memcpy(hashCopy, &hash, sizeof(hash));
     return hashCopy;
 }

@@ -6,16 +6,17 @@
 
 #define BLOCK_SIZE (256 * 1024l)
 
-static const unsigned char lzop_magic[9] =
-        {(unsigned char) '\211', 'L', 'Z', 'O', '\0', '\r', '\n', '\032', '\n'};
+static const byte lzop_magic[9] =
+        {(byte) '\211', 'L', 'Z', 'O', '\0', '\r', '\n', '\032', '\n'};
 
 struct lzop_header {
-    uint16_t version = 0;
-    uint16_t lib_version = 0;
-    uint16_t version_needed_to_extract = 0;
-    unsigned char method = 0;
-    unsigned char level = 0;
-    lzo_uint32 flags = 0;
+    uint16_t version = 0x1040 & 0xffff;
+    uint16_t lib_version = (uint16_t) (LZO_VERSION & 0xffff);
+    uint16_t version_needed_to_extract = 0x0940;
+    byte method = 1; // lzo1x_1
+    byte level = 5; // lzo1x_1
+    lzo_uint32 flags = (0x03000000L & 0xff000000L) | // OS: Unix
+            (0x00000000L & 0xff000000L); // Character encoding: Native
     lzo_uint32 mode = 0;
     lzo_uint32 mtime_low = 0;
     lzo_uint32 mtime_high = 0;

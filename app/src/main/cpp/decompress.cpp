@@ -29,8 +29,8 @@ void Image::decompress_ramdisk_gzip() {
         delete p;
     });
 
-    compData->ptr = ramdisk->data();
-    compData->size = ramdisk->length();
+    compData->ptr = (char *) ramdisk->data;
+    compData->size = ramdisk->len;
 
     bool success;
     gzip::DataList data_list;
@@ -41,7 +41,7 @@ void Image::decompress_ramdisk_gzip() {
     }
 
     auto decompData = gzip::ExpandDataList(data_list);
-    ramdisk = std::make_shared<std::string>(decompData->ptr, decompData->size);
+    ramdisk = byte_array::ref((byte *) decompData->ptr, decompData->size, true);
 }
 
 void Image::decompress_ramdisk_lzo() {

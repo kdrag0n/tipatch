@@ -29,7 +29,7 @@ void Image::compress_ramdisk_gzip() {
     size_t jobs = 4;
     std::vector<std::future<std::tuple<gzip::Data, gzip::Data>>> threads;
     threads.reserve(jobs);
-    size_t split_len = ramdisk->length() / jobs;
+    size_t split_len = ramdisk->len / jobs;
 
     for (size_t i = 0; i < jobs; i++) {
         threads.push_back(std::async(std::launch::async, [&, i]{
@@ -42,10 +42,10 @@ void Image::compress_ramdisk_gzip() {
                 delete p;
             });
 
-            to_comp_data->ptr = ramdisk->data() + (split_len * i);
+            to_comp_data->ptr = (char *) ramdisk->data + (split_len * i);
 
             if (i == jobs - 1) {
-                to_comp_data->size = ramdisk->end().base() - to_comp_data->ptr;
+                to_comp_data->size = (ramdisk->data + ramdisk->len) - (byte *) to_comp_data->ptr;
             } else{
                 to_comp_data->size = split_len;
             }
@@ -76,7 +76,7 @@ void Image::compress_ramdisk_gzip() {
         total_len += finished_data->size;
     }
 
-    unsigned char header[10] = {
+    byte header[10] = {
             31,                // Magic number (short)
             139,               // Magic number (short)
             8,                 // Compression method (CM)
@@ -90,11 +90,8 @@ void Image::compress_ramdisk_gzip() {
     };
 
     auto final_len = sizeof(header) + total_len + (sizeof(uint32_t) * 2);
-    char *final_buf = (char *) malloc(final_len);
-    char *cur_pos = final_buf;
-    finally free_buf([&]{
-        free(final_buf);
-    });
+    auto final_buf = (byte *) malloc(final_len);
+    auto cur_pos = final_buf;
 
     memcpy(cur_pos, header, sizeof(header));
     cur_pos += sizeof(header);
@@ -105,15 +102,15 @@ void Image::compress_ramdisk_gzip() {
     }
 
     // uncompressed crc32
-    uLong crc = crc32(1L, (Bytef *) ramdisk->data(), (uInt) ramdisk->length());
+    uLong crc = crc32(1L, ramdisk->data, (uInt) ramdisk->len);
     write_uint32(cur_pos, crc);
     cur_pos += sizeof(uint32_t);
 
     // uncompressed length
-    uLong ulen = ramdisk->length();
+    uLong ulen = ramdisk->len;
     write_uint32(cur_pos, ulen);
 
-    ramdisk = std::make_shared<std::string>(final_buf, final_len);
+    ramdisk = byte_array::ref(final_buf, final_len);
 }
 
 void Image::compress_ramdisk_lzo() {
@@ -121,8 +118,8 @@ void Image::compress_ramdisk_lzo() {
     if (ret != LZO_E_OK)
         throw comp_exception("Failed to initialize LZO compressor. (error code " + std::to_string(ret) + ")");
 
-    auto in_data = (unsigned char *) ramdisk->data();
-    auto in_len = ramdisk->length();
+    auto in_data = ramdisk->data;
+    auto in_len = ramdisk->len;
 
     unsigned int block_size = BLOCK_SIZE;
     lzo_uint lblock_size = block_size;
@@ -143,9 +140,9 @@ void Image::compress_ramdisk_lzo() {
     unsigned int total_block_len = 0;
 
     for (unsigned int blocks_processed = 0;; blocks_processed++) {
-        auto read_len = std::max(std::min<unsigned int>(block_size, in_len), static_cast<unsigned int>(0));
+        auto read_len = std::max(std::min<unsigned int>(block_size, (unsigned int) in_len), static_cast<unsigned int>(0));
         if (read_len == 0) {
-            auto block_out = (char *) malloc(sizeof(read_len));
+            auto block_out = (byte *) malloc(sizeof(read_len));
 
             // big endian...
             auto swapped = __builtin_bswap32(read_len);
@@ -160,11 +157,11 @@ void Image::compress_ramdisk_lzo() {
         if (ret != LZO_E_OK)
             throw comp_exception("Failed to compress ramdisk block #" + std::to_string(blocks_processed) + " with LZO. (error code " + std::to_string(ret) + ")");
 
-        uint32_t comp_size = out_len;
+        auto comp_size = (uint32_t) out_len;
         auto comp_check = lzo_adler32(1L, out_buf, out_len);
 
         auto block_out_len = sizeof(read_len) + sizeof(uncomp_check) + sizeof(comp_size) + sizeof(comp_check) + out_len;
-        auto block_out_buf = (char *) malloc(block_out_len);
+        auto block_out_buf = (byte *) malloc(block_out_len);
         auto block_out_pos = block_out_buf;
 
         // big endian...
@@ -194,15 +191,6 @@ void Image::compress_ramdisk_lzo() {
     }
     
     lzop_header hdr;
-    hdr.version = 0x1040 & 0xffff;
-    hdr.version_needed_to_extract = 0x0940;
-    hdr.lib_version = lzo_version() & 0xffff;
-    hdr.method = (unsigned char) 1; // lzo1x_1
-    hdr.level = (unsigned char) 5; // lzo1x_1
-
-    hdr.flags = 0;
-    hdr.flags |= 0x03000000L & 0xff000000L; // Unix
-    hdr.flags |= 0x00000000L & 0xff000000L; // Native
 
     // big endian
     hdr.version = __builtin_bswap16(hdr.version);
@@ -213,11 +201,11 @@ void Image::compress_ramdisk_lzo() {
     hdr.mtime_low = __builtin_bswap32(hdr.mtime_low);
     hdr.mtime_high = __builtin_bswap32(hdr.mtime_high);
 
-    auto header_data = (unsigned char *) &hdr;
+    auto header_data = (byte *) &hdr;
     auto header_check = lzo_adler32(1L, header_data, sizeof(lzop_header));
     header_check = __builtin_bswap32(header_check);
 
-    auto final_buf = (char *) malloc(sizeof(lzop_magic) + sizeof(lzop_header) + sizeof(header_check) + total_block_len);
+    auto final_buf = (byte *) malloc(sizeof(lzop_magic) + sizeof(lzop_header) + sizeof(header_check) + total_block_len);
     auto final_pos = final_buf;
 
     memcpy(final_pos, lzop_magic, sizeof(lzop_magic));
@@ -234,7 +222,7 @@ void Image::compress_ramdisk_lzo() {
         final_pos += buf.len;
     }
 
-    ramdisk = std::make_shared<std::string>(final_buf, total_block_len);
+    ramdisk = byte_array::ref(final_buf, total_block_len);
 }
 
 void Image::compress_ramdisk_xz() {

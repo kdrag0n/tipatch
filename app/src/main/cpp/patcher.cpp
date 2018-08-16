@@ -3,24 +3,24 @@
 #include "java.h"
 #include "util.h"
 
-void do_replace(std::shared_ptr<std::string> input, std::string from, std::string to) {
+void do_replace(byte_obj input, std::string from, std::string to) {
     if (from.length() != to.length()) {
         throw std::runtime_error("Replacement '" + from + "' invalid: from length " +
                                          std::to_string(from.length()) + " != to length " +
                                          std::to_string(to.length()));
     }
 
-    void *addr = memmem(input->data(), input->length(), from.data(), from.length());
-    while (addr != NULL) {
+    void *addr = memmem(input->data, input->len, from.data(), from.length());
+    while (addr != nullptr) {
         memcpy(addr, to.data(), to.length());
 
-        auto start_addr = (char *) addr + (to.length() - 1);
-        auto new_len = (input->end().base() - (char *) addr);
+        auto start_addr = (byte *) addr + (to.length() - 1);
+        auto new_len = ((input->data + input->len) - (byte *) addr);
         addr = memmem(start_addr, new_len, from.data(), from.length());
     }
 }
 
-void repl_dir(std::shared_ptr<std::string> input, std::string from, std::string to, char direction) {
+void repl_dir(byte_obj input, std::string from, std::string to, char direction) {
     switch (direction) {
         case repl::normal:
             return do_replace(input, from, to);

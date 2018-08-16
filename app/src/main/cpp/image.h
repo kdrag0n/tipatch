@@ -2,6 +2,7 @@
 
 #include <string>
 #include "bootimg.h"
+#include "util.h"
 
 class img_exception : public std::runtime_error {
 public:
@@ -14,14 +15,14 @@ public:
     void compress_ramdisk(char comp_mode);
     void patch_ramdisk(char direction);
 
-    char *hash();
+    byte *hash();
 
     boot_img_hdr hdr;
 
-    std::shared_ptr<std::string> kernel;
-    std::shared_ptr<std::string> ramdisk;
-    std::shared_ptr<std::string> second;
-    std::shared_ptr<std::string> device_tree;
+    byte_obj kernel;
+    byte_obj ramdisk;
+    byte_obj second;
+    byte_obj device_tree;
 
 private:
     void decompress_ramdisk_gzip();
