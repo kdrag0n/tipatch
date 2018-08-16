@@ -27,7 +27,7 @@ void Image::compress_ramdisk(char comp_mode) {
 
 void Image::compress_ramdisk_gzip() {
     size_t jobs = 4;
-    std::vector<std::future<gzip::Data>> threads;
+    std::vector<std::future<gzip::DataList>> threads;
     threads.reserve(jobs);
     size_t split_len = ramdisk->len / jobs;
 
@@ -51,23 +51,26 @@ void Image::compress_ramdisk_gzip() {
             }
 
             if (i < jobs - 1) {
-                auto flushed_data = gzip::ExpandDataList(comp.Process(to_comp_data, Z_SYNC_FLUSH));
+                auto flushed_data = comp.Process(to_comp_data, Z_SYNC_FLUSH);
                 return flushed_data;
             } else {
-                auto finished_data = gzip::ExpandDataList(comp.Process(to_comp_data, Z_FINISH));
+                auto finished_data = comp.Process(to_comp_data, Z_FINISH);
                 return finished_data;
             }
         }));
     }
 
-    std::vector<gzip::Data> blocks;
-    blocks.reserve(jobs * 2);
-    size_t total_len(0);
+    std::vector<gzip::DataList> blockLists;
+    blockLists.reserve(jobs);
+    size_t total_len = 0;
     for (auto &thread : threads) {
-        auto data = thread.get();
+        auto list = thread.get();
 
-        blocks.push_back(data);
-        total_len += data->size;
+        for (auto &block : list) {
+            total_len += block->size;
+        }
+
+        blockLists.push_back(list);
     }
 
     byte header[10] = {
@@ -83,23 +86,25 @@ void Image::compress_ramdisk_gzip() {
             3                  // Operating system (OS)
     };
 
-    auto final = byte_array(sizeof(header) + total_len + (sizeof(uint32_t) * 2));
-    final.write(header);
+    // uncompressed crc32
+    uLong crc = crc32(0L, ramdisk->data, (uInt) ramdisk->len);
+    uLong ulen = ramdisk->len;
 
-    for (auto &block : blocks) {
-        final.write(block->ptr, block->size);
+    ramdisk->resize(sizeof(header) + total_len + (sizeof(uint32_t) * 2));
+    ramdisk->write(header);
+
+    for (auto &blockList : blockLists) {
+        for (auto &block : blockList) {
+            ramdisk->write(block->ptr, block->size);
+        }
     }
 
     // uncompressed crc32
-    uLong crc = crc32(0L, ramdisk->data, (uInt) ramdisk->len);
-    write_uint32(final.pos, crc);
-    final.pos += sizeof(uint32_t);
+    write_uint32(ramdisk->pos, crc);
+    ramdisk->pos += sizeof(uint32_t);
 
     // uncompressed length
-    uLong ulen = ramdisk->len;
-    write_uint32(final.pos, ulen);
-
-    ramdisk = final.as_ref();
+    write_uint32(ramdisk->pos, ulen);
 }
 
 void Image::compress_ramdisk_lzo() {
