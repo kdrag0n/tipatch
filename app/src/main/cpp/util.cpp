@@ -35,6 +35,10 @@ void byte_array::resize(size_t new_len) {
     len = new_len;
 }
 
+void byte_array::reset_pos() {
+    pos = data;
+}
+
 byte_obj byte_array::ref(byte *data, size_t len, bool copy) {
     byte *to_ref = data;
     if (copy) {

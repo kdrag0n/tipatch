@@ -16,9 +16,8 @@
         android:id="@+id/patchBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:layout_gravity="end|bottom"
+        android:layout_gravity="center_horizontal|bottom"
         android:tooltipText="@string/patch_btn"
         android:src="@drawable/ic_patch"
         tools:targetApi="o" />

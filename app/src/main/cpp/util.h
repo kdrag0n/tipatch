@@ -23,6 +23,7 @@ public:
     size_t len;
 
     void resize(size_t new_len);
+    void reset_pos();
 
     static std::shared_ptr<byte_array> ref(byte *data, size_t len, bool copy = false);
     std::shared_ptr<byte_array> as_ref();
