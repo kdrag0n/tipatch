@@ -43,6 +43,8 @@ Java_com_kdrag0n_tipatch_jni_Image_init(JNIEnv *env, jobject, jobject fis) {
         if (image->hdr.second_size > 0) {
             auto second = read_bytes(env, fis, image->hdr.second_size);
             image->second = byte_array::ref(second.copy_bytes(), second.len);
+        } else {
+            image->second = byte_array::ref(nullptr, 0);
         }
 
         read_padding(env, fis, image->hdr.second_size, image->hdr.page_size);
@@ -51,6 +53,8 @@ Java_com_kdrag0n_tipatch_jni_Image_init(JNIEnv *env, jobject, jobject fis) {
         if (image->hdr.dt_size > 0) {
             auto dt = read_bytes(env, fis, image->hdr.dt_size);
             image->device_tree = byte_array::ref(dt.copy_bytes(), dt.len);
+        } else {
+            image->device_tree = byte_array::ref(nullptr, 0);
         }
 
         read_padding(env, fis, image->hdr.dt_size, image->hdr.page_size);
