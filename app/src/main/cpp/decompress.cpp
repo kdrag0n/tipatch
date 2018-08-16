@@ -51,7 +51,7 @@ void Image::decompress_ramdisk_gzip() {
 }
 
 void Image::decompress_ramdisk_lzo() {
-    throw comp_exception("Ramdisk compression mode 'lzo' is not supported.");
+    throw comp_exception("Ramdisk compression mode 'lzo' is not supported");
 }
 
 extern "C" JNIEXPORT void JNICALL

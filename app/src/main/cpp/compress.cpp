@@ -19,7 +19,7 @@ void Image::compress_ramdisk(char comp_mode) {
             return; // uncompressed
         default:
             // this isn't comp_exception because it's a problem with the input
-            throw img_exception("Ramdisk compression mode '" + comp::name(comp_mode) + "' is not supported.");
+            throw img_exception("Ramdisk compression mode '" + comp::name(comp_mode) + "' is not supported");
     }
 }
 
@@ -33,7 +33,7 @@ void Image::compress_ramdisk_gzip() {
         threads.push_back(std::async(std::launch::async, [&, i]{
             gzip::Comp comp(gzip::Comp::Level::Max, false);
             if (!comp.IsSucc()) {
-                throw comp_exception("Error preparing to compress gzip ramdisk with gzip.");
+                throw comp_exception("Error preparing to compress gzip ramdisk with gzip");
             }
 
             gzip::Data to_comp_data(new gzip::DataBlock, [](gzip::DataBlock *p) {
