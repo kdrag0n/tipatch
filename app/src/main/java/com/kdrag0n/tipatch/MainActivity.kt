@@ -274,7 +274,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     private fun snack(text: String): Snackbar {
-        return Snackbar.make(rootCoordinator, text, Snackbar.LENGTH_SHORT)
+        return Snackbar.make(rootCoordinator, text, Snackbar.LENGTH_LONG)
     }
 
     private fun snack(textRes: Int): Snackbar {
