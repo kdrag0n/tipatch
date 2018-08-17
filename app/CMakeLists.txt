@@ -50,7 +50,6 @@ add_library( # Specifies the name of the library.
              src/main/cpp/patcher.cpp
              src/main/cpp/output.cpp
              src/main/cpp/xxhash.c
-             src/main/cpp/lzo/minilzo.c
              src/main/cpp/util.cpp )
 
 # Links your native library against one or more other native libraries.

@@ -2,14 +2,11 @@
 #include "gzip.h"
 #include "const.h"
 #include "java.h"
-#include "lzo.h"
 
 void Image::decompress_ramdisk(char comp_mode) {
     switch (comp_mode) {
         case comp::gzip:
             return decompress_ramdisk_gzip();
-        case comp::lzo:
-            return decompress_ramdisk_lzo();
         case comp::none:
             return;
         default:
@@ -48,10 +45,6 @@ void Image::decompress_ramdisk_gzip() {
     for (auto &block : data_list) {
         ramdisk->write(block->ptr, block->size);
     }
-}
-
-void Image::decompress_ramdisk_lzo() {
-    throw comp_exception("Ramdisk compression mode 'lzo' is not supported");
 }
 
 extern "C" JNIEXPORT void JNICALL

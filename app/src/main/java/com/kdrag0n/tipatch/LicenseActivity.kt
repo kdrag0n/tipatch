@@ -19,7 +19,6 @@ class LicenseActivity : Activity() {
         oss_libsu.license(License.APACHE, 2018, "John \"topjohnwu\" Wu")
         oss_about.license(License.APACHE, 2016, "dvdandroid")
         oss_leak.license(License.APACHE, 2015, "Square, Inc")
-        oss_lzo.license(License.GPL2, 2017, "Markus Franz Xaver Oberhumer")
         oss_gzipcpp.license(License.MIT, 2016, "Mera, Inc.")
     }
 

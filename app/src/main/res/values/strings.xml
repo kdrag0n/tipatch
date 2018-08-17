@@ -110,6 +110,5 @@
     <string name="proj_libsu">libsu</string>
     <string name="proj_about">AboutCardRow</string>
     <string name="proj_leak">LeakCanary</string>
-    <string name="proj_lzo">MiniLZO</string>
     <string name="proj_gzipcpp">gzip_cpp</string>
 </resources>
