@@ -33,7 +33,7 @@ class LicenseActivity : AppCompatActivity() {
         val text = String.format(license.text, year, author)
 
         setOnClickListener {
-            val dialog = with (AlertDialog.Builder(this@LicenseActivity)) {
+            val dialog = with (AlertDialog.Builder(this@LicenseActivity, R.style.DialogTheme)) {
                 setMessage(text)
                 setPositiveButton(android.R.string.ok) { _, _ -> }
                 create()
