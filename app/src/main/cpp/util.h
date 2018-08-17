@@ -22,21 +22,21 @@ public:
     }
 
     inline void write_u32le(unsigned long num) {
-        if (pos + sizeof(num) > data + len) {
+        if (pos + sizeof(uint32_t) > data + len) {
             throw std::out_of_range("Attempting to write 4 bytes to byte array of length " + std::to_string(len) + "; however, " + std::to_string(pos - data) + " bytes have already been used");
         }
 
         write_uint32le(pos, num);
-        pos += sizeof(num);
+        pos += sizeof(uint32_t);
     }
 
     inline void write_u32be(unsigned int num) {
-        if (pos + sizeof(num) > data + len) {
+        if (pos + sizeof(uint32_t) > data + len) {
             throw std::out_of_range("Attempting to write 4 bytes to byte array of length " + std::to_string(len) + "; however, " + std::to_string(pos - data) + " bytes have already been used");
         }
 
         write_uint32be(pos, num);
-        pos += sizeof(num);
+        pos += sizeof(uint32_t);
     }
 
     byte *data;
