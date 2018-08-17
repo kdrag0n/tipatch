@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootCoordinator"
     android:layout_width="match_parent"
@@ -17,9 +18,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginEnd="16dp"
+        android:layout_gravity="end|bottom"
         android:tooltipText="@string/patch_btn"
         android:src="@drawable/ic_patch"
+        tools:targetApi="o" />
+
+    <com.commonsware.cwac.crossport.design.widget.FloatingActionButton
+        android:id="@+id/revPatchBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginBottom="86dp"
+        android:layout_marginEnd="16dp"
+        app:layout_anchor="@id/patchBtn"
+        app:layout_anchorGravity="right|top"
+        android:tooltipText="@string/undo"
+        android:src="@drawable/ic_undo"
+        android:backgroundTint="@color/accent2"
         tools:targetApi="o" />
 
 </android.support.design.widget.CoordinatorLayout>

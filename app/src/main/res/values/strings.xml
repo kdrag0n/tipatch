@@ -12,6 +12,7 @@
     <string name="version">Version</string>
     <string name="icon">Icon</string>
     <string name="exit">Close App</string>
+    <string name="undo">Undo patch</string>
 
     <string name="author_name">Khronodragon</string>
     <string name="author_nick">\"kdrag0n\"</string>
@@ -59,8 +60,6 @@
     <string name="pref_file_output_desc">Where to save the patched recovery image</string>
     <string name="pref_partition">In-place patching</string>
     <string name="pref_partition_desc">Patch the current recovery in-place (requires root)</string>
-    <string name="pref_reverse">Reverse patch</string>
-    <string name="pref_reverse_desc">Undo the internal storage patch</string>
 
     <string name="about_src">Source code</string>
     <string name="about_src_desc">On GitHub</string>

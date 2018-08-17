@@ -49,8 +49,6 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
     private lateinit var opts: SharedPreferences
     private lateinit var optFrag: OptionFragment
     private var firstRun = false
-    private val reversePref: CheckBoxPreference
-        get() = optFrag.preferenceManager.findPreference("reverse") as CheckBoxPreference
     private var isRooted = false
     private var slotsPatched = 0
     private var ifName: String? = null
@@ -114,23 +112,26 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
             intent.type = "application/octet-stream" // no .img type
 
-            var outName = outputFileName()
-            if (reversePref.isChecked) {
-                outName = outName.replace("-tipatched", "")
-            }
-
+            val outName = outputFileName()
             intent.putExtra(Intent.EXTRA_TITLE, outName)
 
             startActivityForResult(intent, REQ_SAF_OUTPUT)
         }
 
         patchBtn.setOnClickListener { _ ->
-            asyncPatch(getProp("ro.boot.slot_suffix"))
+            asyncPatch(getProp("ro.boot.slot_suffix"), Image.REPL_NORMAL)
+        }
+        revPatchBtn.setOnClickListener { _ ->
+            asyncPatch(getProp("ro.boot.slot_suffix"), Image.REPL_REVERSE)
         }
 
         if (Build.VERSION.SDK_INT < 26) {
             patchBtn.setOnLongClickListener { _ ->
                 Toast.makeText(this, R.string.patch_btn, Toast.LENGTH_SHORT).show()
+                true
+            }
+            revPatchBtn.setOnLongClickListener { _ ->
+                Toast.makeText(this, R.string.undo, Toast.LENGTH_SHORT).show()
                 true
             }
         }
@@ -232,7 +233,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         }
     }
 
-    private fun patch(progress: (String, PatchStep) -> Unit, fis: InputStream, fos: OutputStream): Boolean {
+    private fun patch(progress: (String, PatchStep) -> Unit, fis: InputStream, fos: OutputStream, direction: Byte): Boolean {
         progress(R.string.step1_read_unpack(), PatchStep.READ)
         val image = Image(fis)
 
@@ -251,12 +252,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         progress(R.string.step2_decompress(cName), PatchStep.DECOMPRESS)
         image.decompressRamdisk(cMode)
 
-        val direction = when (reversePref.isChecked) {
-            true -> Image.REPL_REVERSE
-            false -> Image.REPL_NORMAL
-        }
-
-        if (reversePref.isChecked) {
+        if (direction == Image.REPL_REVERSE) {
             progress(R.string.step3_patch_rev(), PatchStep.PATCH)
         } else {
             progress(R.string.step3_patch(), PatchStep.PATCH)
@@ -281,7 +277,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         return snack(textRes())
     }
 
-    private fun asyncPatch(slot: String?) {
+    private fun asyncPatch(slot: String?, direction: Byte) {
         if (inputSource == ImageLocation.FILE) {
             if (!::safInput.isInitialized) {
                 errorDialog(R.string.file_select_input())
@@ -371,7 +367,8 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                             },
 
                             fis = fis,
-                            fos = fos
+                            fos = fos,
+                            direction = direction
                     )
                 } catch (e: Throwable) {
                     dialog.dismiss()
@@ -507,7 +504,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
                                 else -> return
                             }
 
-                            asyncPatch(otherSlot)
+                            asyncPatch(otherSlot, direction)
                             return
                         } else {
                             snack(R.string.part_complete).show()
