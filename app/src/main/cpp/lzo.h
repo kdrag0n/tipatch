@@ -10,6 +10,7 @@ static const byte lzop_magic[9] =
         {(byte) '\211', 'L', 'Z', 'O', '\0', '\r', '\n', '\032', '\n'};
 
 struct lzop_header {
+    byte magic[9];
     uint16_t version = 0x1040 & 0xffff;
     uint16_t lib_version = (uint16_t) (LZO_VERSION & 0xffff);
     uint16_t version_needed_to_extract = 0x0940;
