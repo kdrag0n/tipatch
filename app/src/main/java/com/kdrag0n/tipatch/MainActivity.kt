@@ -32,7 +32,6 @@ import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuProcessFileInputStream
 import com.topjohnwu.superuser.io.SuProcessFileOutputStream
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -578,7 +577,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
 
     private fun partPath(slot: String?): String? {
         // the most common one
-        val bdPath = when (slot) {
+        var bdPath = when (slot) {
             null -> "/dev/block/bootdevice/by-name/recovery"
             else -> "/dev/block/bootdevice/by-name/boot$slot"
         }
@@ -586,6 +585,11 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         if (SuFile(bdPath).exists()) {
             return bdPath
         }
+
+        // kirin
+        bdPath = "/dev/block/bootdevice/by-name/recovery_ramdisk"
+        if (SuFile(bdPath).exists())
+            return bdPath
 
         val partNames = when (slot) {
             null -> setOf("recovery", "RECOVERY", "SOS", "recovery_ramdisk")
@@ -595,7 +599,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         // time to do some hunting...
         // need API 26 for nio.Files
         findPartitionDirs().forEach { dir ->
-            File(dir).listFiles()?.forEach {
+            SuFile(dir).listFiles()?.forEach {
                 if (it.name in partNames) {
                     return it.absolutePath
                 }
