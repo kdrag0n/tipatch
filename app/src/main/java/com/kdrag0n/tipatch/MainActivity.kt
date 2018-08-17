@@ -599,9 +599,15 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         // time to do some hunting...
         // need API 26 for nio.Files
         findPartitionDirs().forEach { dir ->
-            SuFile(dir).listFiles()?.forEach {
-                if (it.name in partNames) {
-                    return it.absolutePath
+            // use root to bypass strict SELinux policies
+            val res = Shell.su("ls -1 \"$dir\"").exec()
+            if (!res.isSuccess) {
+                return@forEach
+            }
+
+            for (part in res.out) {
+                if (part in partNames) {
+                    return "$dir/$part"
                 }
             }
         }
