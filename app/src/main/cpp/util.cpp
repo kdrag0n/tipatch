@@ -13,7 +13,7 @@ byte_array::~byte_array() {
 
 void byte_array::write(const void *src, size_t src_len) {
     if (pos + src_len > data + len) {
-        throw std::out_of_range("Attempting to write " + std::to_string(src_len) + " to byte array of length " + std::to_string(len) + "; however, " + std::to_string(pos - data) + " bytes have already been used");
+        throw std::out_of_range("Attempting to write " + std::to_string(src_len) + " bytes to byte array of length " + std::to_string(len) + "; however, " + std::to_string(pos - data) + " bytes have already been used");
     }
 
     memcpy(pos, src, src_len);

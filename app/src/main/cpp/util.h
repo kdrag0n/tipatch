@@ -7,6 +7,9 @@
 
 using byte = unsigned char;
 
+void write_uint32le(byte *dst, unsigned long orig);
+void write_uint32be(byte *dst, unsigned int orig);
+
 class byte_array {
 public:
     byte_array(byte *data = nullptr, size_t len = 0) : data(data), pos(data), len(len) {};
@@ -14,8 +17,26 @@ public:
     ~byte_array();
 
     void write(const void *src, size_t src_len);
-    template <typename T> void write(const T &obj) {
+    template <typename T> inline void write(const T &obj) {
         write(reinterpret_cast<const void *>(&obj), sizeof(obj));
+    }
+
+    inline void write_u32le(unsigned long num) {
+        if (pos + sizeof(num) > data + len) {
+            throw std::out_of_range("Attempting to write 4 bytes to byte array of length " + std::to_string(len) + "; however, " + std::to_string(pos - data) + " bytes have already been used");
+        }
+
+        write_uint32le(pos, num);
+        pos += sizeof(num);
+    }
+
+    inline void write_u32be(unsigned int num) {
+        if (pos + sizeof(num) > data + len) {
+            throw std::out_of_range("Attempting to write 4 bytes to byte array of length " + std::to_string(len) + "; however, " + std::to_string(pos - data) + " bytes have already been used");
+        }
+
+        write_uint32be(pos, num);
+        pos += sizeof(num);
     }
 
     byte *data;
@@ -64,6 +85,3 @@ private:
     std::chrono::time_point<clock_> beg_;
 };
 #endif
-
-void write_uint32le(byte *dst, unsigned long orig);
-void write_uint32be(byte *dst, unsigned int orig);
