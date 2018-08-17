@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify
+import android.view.View
 import android.widget.TextView
 import com.kdrag0n.utils.AboutCardRow
 import kotlinx.android.synthetic.main.activity_license.*
@@ -18,7 +19,13 @@ class LicenseActivity : Activity() {
 
         oss_libsu.license(License.APACHE, 2018, "John \"topjohnwu\" Wu")
         oss_about.license(License.APACHE, 2016, "dvdandroid")
-        oss_leak.license(License.APACHE, 2015, "Square, Inc")
+
+        if (BuildConfig.DEBUG) {
+            oss_leak.license(License.APACHE, 2015, "Square, Inc")
+        } else {
+            oss_leak.visibility = View.GONE
+        }
+
         oss_gzipcpp.license(License.MIT, 2016, "Mera, Inc.")
     }
 
