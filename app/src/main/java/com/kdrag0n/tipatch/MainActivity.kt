@@ -600,7 +600,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         // need API 26 for nio.Files
         findPartitionDirs().forEach { dir ->
             // use root to bypass strict SELinux policies
-            val res = Shell.su("ls -1 \"$dir\"").exec()
+            val res = Shell.su("ls -1 \"$dir/\"").exec()
             if (!res.isSuccess) {
                 return@forEach
             }
