@@ -98,11 +98,10 @@ void Image::compress_ramdisk_gzip() {
     }
 
     // uncompressed crc32
-    write_uint32le(ramdisk->pos, crc);
-    ramdisk->pos += sizeof(uint32_t);
+    ramdisk->write_u32le(crc);
 
     // uncompressed length
-    write_uint32le(ramdisk->pos, ulen);
+    ramdisk->write_u32le(ulen);
 }
 
 void Image::compress_ramdisk_lzo() {
@@ -117,17 +116,30 @@ void Image::compress_ramdisk_lzo() {
     lzo_uint lblock_size = block_size;
     auto orig_out_len = lblock_size + lblock_size / 16 + 64 + 3;
     auto out_len = orig_out_len;
+    unsigned char __LZO_MMODEL last_out_buf[out_len];
     unsigned char __LZO_MMODEL out_buf[out_len];
 
     HEAP_ALLOC(wrkmem, LZO1X_MEM_COMPRESS);
 
-    std::vector<byte_array> blocks;
-    blocks.reserve(in_len / block_size);
-    finally free_buffers([&blocks]{
-        for (auto &buf : blocks) {
-            free(buf.data);
-        }
-    });
+    ramdisk->resize(sizeof(lzop_header) + sizeof(uint32_t) + (orig_out_len * (in_len / block_size)));
+    ramdisk->reset_pos();
+
+    lzop_header hdr;
+    memcpy(hdr.magic, lzop_magic, sizeof(hdr.magic));
+
+    // big endian
+    hdr.version = __builtin_bswap16(hdr.version);
+    hdr.lib_version = __builtin_bswap16(hdr.lib_version);
+    hdr.version_needed_to_extract = __builtin_bswap16(hdr.version_needed_to_extract);
+    hdr.flags = __builtin_bswap32(hdr.flags);
+    hdr.mode = __builtin_bswap32(hdr.mode);
+    hdr.mtime_low = __builtin_bswap32(hdr.mtime_low);
+    hdr.mtime_high = __builtin_bswap32(hdr.mtime_high);
+
+    ramdisk->write(hdr);
+
+    auto header_check = lzo_adler32(1L, (byte *) &hdr, sizeof(lzop_header));
+    ramdisk->write_u32be(header_check);
 
     unsigned int total_block_len = 0;
 
@@ -152,69 +164,16 @@ void Image::compress_ramdisk_lzo() {
         auto comp_size = (uint32_t) out_len;
         auto comp_check = lzo_adler32(1L, out_buf, out_len);
 
-        auto block_out_len = sizeof(read_len) + sizeof(uncomp_check) + sizeof(comp_size) + sizeof(comp_check) + out_len;
-        auto block_out_buf = (byte *) malloc(block_out_len);
-        auto block_out_pos = block_out_buf;
-
-        // big endian...
-        auto swapped = __builtin_bswap32(read_len);
-        memcpy(block_out_pos, &swapped, sizeof(read_len));
-        block_out_pos += sizeof(read_len);
-
-        swapped = __builtin_bswap32(out_len);
-        memcpy(block_out_pos, &swapped, sizeof(out_len));
-        block_out_pos += sizeof(out_len);
-
-        swapped = __builtin_bswap32(uncomp_check);
-        memcpy(block_out_pos, &swapped, sizeof(uncomp_check));
-        block_out_pos += sizeof(uncomp_check);
-
-        swapped = __builtin_bswap32(comp_check);
-        memcpy(block_out_pos, &swapped, sizeof(comp_check));
-        block_out_pos += sizeof(comp_check);
-
-        memcpy(block_out_pos, out_buf, out_len);
-        blocks.push_back(byte_array(block_out_buf, block_out_len));
+        ramdisk->write_u32be(read_len);
+        ramdisk->write_u32be((unsigned int) out_len);
+        ramdisk->write_u32be(uncomp_check);
+        ramdisk->write_u32be(comp_check);
+        ramdisk->write(out_buf, out_len);
 
         in_data += read_len;
         in_len -= read_len;
         out_len = orig_out_len;
-        total_block_len += block_out_len;
     }
-    
-    lzop_header hdr;
-
-    // big endian
-    hdr.version = __builtin_bswap16(hdr.version);
-    hdr.lib_version = __builtin_bswap16(hdr.lib_version);
-    hdr.version_needed_to_extract = __builtin_bswap16(hdr.version_needed_to_extract);
-    hdr.flags = __builtin_bswap32(hdr.flags);
-    hdr.mode = __builtin_bswap32(hdr.mode);
-    hdr.mtime_low = __builtin_bswap32(hdr.mtime_low);
-    hdr.mtime_high = __builtin_bswap32(hdr.mtime_high);
-
-    auto header_data = (byte *) &hdr;
-    auto header_check = lzo_adler32(1L, header_data, sizeof(lzop_header));
-    header_check = __builtin_bswap32(header_check);
-
-    auto final_buf = (byte *) malloc(sizeof(lzop_magic) + sizeof(lzop_header) + sizeof(header_check) + total_block_len);
-    auto final_pos = final_buf;
-
-    memcpy(final_pos, lzop_magic, sizeof(lzop_magic));
-    final_pos += sizeof(lzop_magic);
-
-    memcpy(final_pos, header_data, sizeof(lzop_header));
-    final_pos += sizeof(lzop_header);
-
-    memcpy(final_pos, &header_check, sizeof(header_check));
-    final_pos += sizeof(header_check);
-
-    for (auto &buf : blocks) {
-        memcpy(final_pos, buf.data, buf.len);
-        final_pos += buf.len;
-    }
-
-    ramdisk = byte_array::ref(final_buf, total_block_len);
 }
 
 extern "C" JNIEXPORT void JNICALL
