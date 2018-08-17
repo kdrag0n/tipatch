@@ -2,8 +2,8 @@
 #include "image.h"
 #include "io.h"
 #include "const.h"
-#include "xxhash.h"
 #include "util.h"
+#include <zlib.h>
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_kdrag0n_tipatch_jni_Image_init(JNIEnv *env, jobject, jobject fis) {
@@ -104,40 +104,17 @@ Java_com_kdrag0n_tipatch_jni_Image__1detectCompressor(JNIEnv, jobject, jlong han
     }
 }
 
-byte *Image::hash() {
-    auto xxh_state = XXH32_createState();
-    if (xxh_state == nullptr)
-        return nullptr;
+unsigned long Image::hash() {
+    auto sum = adler32(0L, kernel->data, (uInt) kernel->len);
+    sum = adler32(sum, ramdisk->data, (uInt) ramdisk->len);
 
-    finally free_state([&]{
-        XXH32_freeState(xxh_state);
-    });
+    if (second->len > 0) {
+        sum = adler32(sum, second->data, (uInt) second->len);
+    }
 
-    const unsigned long long seed = 42;
-    auto ret = XXH32_reset(xxh_state, seed);
-    if (ret == XXH_ERROR)
-        return nullptr;
+    if (device_tree->len > 0) {
+        sum = adler32(sum, device_tree->data, (uInt) device_tree->len);
+    }
 
-    ret = XXH32_update(xxh_state, kernel->data, kernel->len);
-    if (ret == XXH_ERROR)
-        return nullptr;
-
-    ret = XXH32_update(xxh_state, ramdisk->data, ramdisk->len);
-    if (ret == XXH_ERROR)
-        return nullptr;
-
-    ret = XXH32_update(xxh_state, second->data, second->len);
-    if (ret == XXH_ERROR)
-        return nullptr;
-
-    ret = XXH32_update(xxh_state, device_tree->data, device_tree->len);
-    if (ret == XXH_ERROR)
-        return nullptr;
-
-    unsigned long long hash = XXH32_digest(xxh_state);
-
-    // copy it
-    auto hashCopy = (byte *) malloc(sizeof(hash));
-    memcpy(hashCopy, &hash, sizeof(hash));
-    return hashCopy;
+    return sum;
 }

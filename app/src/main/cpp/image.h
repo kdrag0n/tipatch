@@ -15,7 +15,7 @@ public:
     void compress_ramdisk(char comp_mode);
     void patch_ramdisk(char direction);
 
-    byte *hash();
+    unsigned long hash();
 
     boot_img_hdr hdr;
 
@@ -26,8 +26,6 @@ public:
 
 private:
     void decompress_ramdisk_gzip();
-    void decompress_ramdisk_lzo();
 
     void compress_ramdisk_gzip();
-    void compress_ramdisk_lzo();
 };
