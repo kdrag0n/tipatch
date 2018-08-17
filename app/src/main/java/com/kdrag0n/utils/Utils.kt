@@ -59,7 +59,8 @@ fun Uri.getFileName(ctx: Context): String? {
 }
 
 fun findPartitionDirs(): List<String> {
-    val res = Shell.su("find /dev/block/platform -type d -name 'by-name'").exec()
+    // follow symlinks such as /dev/block/bootdevice
+    val res = Shell.su("find -L /dev/block -type d -name 'by-name'").exec()
 
     if (!res.isSuccess) {
         val err = res.err.getOrElse(0) { "Unknown error" }
