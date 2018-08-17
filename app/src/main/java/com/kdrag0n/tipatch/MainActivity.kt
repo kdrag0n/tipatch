@@ -595,7 +595,7 @@ class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListe
         // time to do some hunting...
         // need API 26 for nio.Files
         findPartitionDirs().forEach { dir ->
-            File(dir).listFiles().forEach {
+            File(dir).listFiles()?.forEach {
                 if (it.name in partNames) {
                     return it.absolutePath
                 }
