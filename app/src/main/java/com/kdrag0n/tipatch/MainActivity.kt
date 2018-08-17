@@ -14,13 +14,14 @@ import android.os.Bundle
 import android.os.Process
 import android.preference.CheckBoxPreference
 import android.preference.PreferenceManager
+import android.support.design.widget.Snackbar
+import android.support.v7.app.AppCompatActivity
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
-import com.commonsware.cwac.crossport.design.widget.Snackbar
 import com.crashlytics.android.Crashlytics
 import com.kdrag0n.tipatch.jni.CompressException
 import com.kdrag0n.tipatch.jni.Image
@@ -40,7 +41,7 @@ import java.lang.IndexOutOfBoundsException
 private const val REQ_SAF_INPUT = 100
 private const val REQ_SAF_OUTPUT = 101
 
-class MainActivity : Activity(), SharedPreferences.OnSharedPreferenceChangeListener {
+class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     private var inputSource = ImageLocation.FILE
     private var outputDest = ImageLocation.FILE
     private lateinit var safInput: Uri

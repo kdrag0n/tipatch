@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:gravity="top" />
 
-    <com.commonsware.cwac.crossport.design.widget.FloatingActionButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/patchBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,10 +21,11 @@
         android:layout_marginEnd="16dp"
         android:layout_gravity="end|bottom"
         android:tooltipText="@string/patch_btn"
-        android:src="@drawable/ic_patch"
+        app:srcCompat="@drawable/ic_patch"
+        app:borderWidth="0dp"
         tools:targetApi="o" />
 
-    <com.commonsware.cwac.crossport.design.widget.FloatingActionButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/revPatchBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,8 +35,9 @@
         app:layout_anchor="@id/patchBtn"
         app:layout_anchorGravity="right|top"
         android:tooltipText="@string/undo"
-        android:src="@drawable/ic_undo"
+        app:srcCompat="@drawable/ic_undo"
         android:backgroundTint="@color/accent2"
+        app:borderWidth="0dp"
         tools:targetApi="o" />
 
 </android.support.design.widget.CoordinatorLayout>

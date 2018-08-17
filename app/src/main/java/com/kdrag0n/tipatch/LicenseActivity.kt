@@ -1,8 +1,8 @@
 package com.kdrag0n.tipatch
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify
 import android.view.View
@@ -10,12 +10,12 @@ import android.widget.TextView
 import com.kdrag0n.utils.AboutCardRow
 import kotlinx.android.synthetic.main.activity_license.*
 
-class LicenseActivity : Activity() {
+class LicenseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_license)
 
-        actionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         oss_libsu.license(License.APACHE, 2018, "John \"topjohnwu\" Wu")
         oss_about.license(License.APACHE, 2016, "dvdandroid")

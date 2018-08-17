@@ -1,20 +1,21 @@
 <resources>
-    <style name="AppTheme" parent="android:Theme.Material">
-        <item name="android:colorPrimary">@color/action_dark</item>
-        <item name="android:colorPrimaryDark">@color/status_dark</item>
-        <item name="android:colorAccent">@color/accent</item>
+    <style name="AppTheme" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/action_dark</item>
+        <item name="colorPrimaryDark">@color/status_dark</item>
+        <item name="colorAccent">@color/accent</item>
 
         <item name="android:windowBackground">@color/background_dark</item>
-        <item name="android:popupTheme">@style/MenuTheme</item>
+        <item name="popupTheme">@style/MenuTheme</item>
         <item name="cardStyle">@style/CardTheme</item>
     </style>
 
-    <style name="MenuTheme" parent="android:Theme.Material">
+    <style name="MenuTheme" parent="Theme.AppCompat">
         <item name="android:colorBackground">@color/background_dark</item>
     </style>
     
-    <style name="DialogTheme" parent="android:Theme.Material.Dialog.Alert">
-        <item name="android:colorAccent">@color/accent</item>
+    <style name="DialogTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/accent</item>
+        <item name="background">@color/background_dark</item>
         <item name="android:background">@color/background_dark</item>
     </style>
 
