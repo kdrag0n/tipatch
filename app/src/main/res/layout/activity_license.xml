@@ -48,12 +48,12 @@
                         app:icon="@drawable/ic_book"
                         app:text="@string/proj_about"/>
 
-                <com.kdrag0n.utils.AboutCardRow
-                    android:id="@+id/oss_leak"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:icon="@drawable/ic_book"
-                    app:text="@string/proj_leak"/>
+                    <com.kdrag0n.utils.AboutCardRow
+                        android:id="@+id/oss_leak"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:icon="@drawable/ic_book"
+                        app:text="@string/proj_leak"/>
 
                     <com.kdrag0n.utils.AboutCardRow
                         android:id="@+id/oss_gzipcpp"
@@ -61,6 +61,13 @@
                         android:layout_height="wrap_content"
                         app:icon="@drawable/ic_book"
                         app:text="@string/proj_gzipcpp"/>
+
+                    <com.kdrag0n.utils.AboutCardRow
+                        android:id="@+id/oss_speeddial"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:icon="@drawable/ic_book"
+                        app:text="@string/proj_speeddial"/>
 
                 </LinearLayout>
 

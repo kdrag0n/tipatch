@@ -1,0 +1,6 @@
+<resources>
+    <item name="fab_patch" type="id" />
+    <item name="fab_undo_patch" type="id" />
+    <item name="fab_restore_backups" type="id" />
+    <item name="fab_delete_backups" type="id" />
+</resources>

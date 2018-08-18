@@ -19,33 +19,15 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/patchBtn"
+    <com.leinardi.android.speeddial.SpeedDialView
+        android:id="@+id/patch_dial"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_gravity="end|bottom"
-        android:tooltipText="@string/patch_btn"
-        app:srcCompat="@drawable/ic_patch"
-        android:tint="@color/action_fg"
-        app:borderWidth="0dp"
-        tools:targetApi="o" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/revPatchBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginBottom="86dp"
-        android:layout_marginEnd="16dp"
-        app:layout_anchor="@id/patchBtn"
-        app:layout_anchorGravity="right|top"
-        android:tooltipText="@string/undo"
-        app:srcCompat="@drawable/ic_undo"
-        android:tint="@color/action_fg"
-        android:backgroundTint="@color/accent2"
-        app:borderWidth="0dp"
+        android:tooltipText="@string/fab_actions"
+        app:sdMainFabClosedSrc="@drawable/ic_arrow_up"
+        app:sdMainFabClosedBackgroundColor="@color/accent"
+        app:sdMainFabOpenedSrc="@drawable/ic_arrow_down"
         tools:targetApi="o" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -12,6 +12,7 @@
     <string name="version">Version</string>
     <string name="icon">Icon</string>
     <string name="exit">Close App</string>
+    <string name="fab_actions">Actions</string>
     <string name="undo">Undo patch</string>
     <string name="restore">Restore backups</string>
     <string name="delete_backup">Delete backups</string>
@@ -132,4 +133,5 @@
     <string name="proj_about">AboutCardRow</string>
     <string name="proj_leak">LeakCanary</string>
     <string name="proj_gzipcpp">gzip_cpp</string>
+    <string name="proj_speeddial">FAB Speed Dial</string>
 </resources>

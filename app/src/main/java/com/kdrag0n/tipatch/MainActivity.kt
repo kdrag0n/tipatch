@@ -9,12 +9,12 @@ import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.AsyncTask
-import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.preference.CheckBoxPreference
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.method.LinkMovementMethod
@@ -28,6 +28,8 @@ import com.kdrag0n.tipatch.jni.CompressException
 import com.kdrag0n.tipatch.jni.Image
 import com.kdrag0n.tipatch.jni.ImageException
 import com.kdrag0n.utils.*
+import com.leinardi.android.speeddial.SpeedDialActionItem
+import com.leinardi.android.speeddial.SpeedDialView
 import com.squareup.leakcanary.LeakCanary
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
@@ -122,22 +124,66 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             startActivityForResult(intent, REQ_SAF_OUTPUT)
         }
 
-        patchBtn.setOnClickListener { _ ->
-            asyncPatch(getProp("ro.boot.slot_suffix"), Image.REPL_NORMAL)
-        }
-        revPatchBtn.setOnClickListener { _ ->
-            asyncPatch(getProp("ro.boot.slot_suffix"), Image.REPL_REVERSE)
-        }
+        patch_dial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_patch, R.drawable.ic_apply)
+                .setFabBackgroundColor(ContextCompat.getColor(this, R.color.btn_green))
+                .setLabel(R.string.patch_btn())
+                .setLabelColor(ContextCompat.getColor(this, R.color.about_ic_color))
+                .setLabelBackgroundColor(ContextCompat.getColor(this, R.color.card_dark))
+                .create())
+        patch_dial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_undo_patch, R.drawable.ic_undo)
+                .setFabBackgroundColor(ContextCompat.getColor(this, R.color.btn_red))
+                .setLabel(R.string.undo())
+                .setLabelColor(ContextCompat.getColor(this, R.color.about_ic_color))
+                .setLabelBackgroundColor(ContextCompat.getColor(this, R.color.card_dark))
+                .create())
+        patch_dial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_restore_backups, R.drawable.ic_restore)
+                .setFabBackgroundColor(ContextCompat.getColor(this, R.color.btn_blue))
+                .setLabel(R.string.restore())
+                .setLabelColor(ContextCompat.getColor(this, R.color.about_ic_color))
+                .setLabelBackgroundColor(ContextCompat.getColor(this, R.color.card_dark))
+                .create())
+        patch_dial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_delete_backups, R.drawable.ic_delete)
+                .setFabBackgroundColor(ContextCompat.getColor(this, R.color.btn_orange))
+                .setLabel(R.string.delete_backup())
+                .setLabelColor(ContextCompat.getColor(this, R.color.about_ic_color))
+                .setLabelBackgroundColor(ContextCompat.getColor(this, R.color.card_dark))
+                .create())
 
-        if (Build.VERSION.SDK_INT < 26) {
-            patchBtn.setOnLongClickListener { _ ->
-                Toast.makeText(this, R.string.patch_btn, Toast.LENGTH_SHORT).show()
-                true
+        patch_dial.setOnChangeListener(object : SpeedDialView.OnChangeListener {
+            override fun onMainActionSelected() = false
+
+            override fun onToggleChanged(isOpen: Boolean) {
             }
-            revPatchBtn.setOnLongClickListener { _ ->
-                Toast.makeText(this, R.string.undo, Toast.LENGTH_SHORT).show()
-                true
+        })
+
+        patch_dial.setOnActionSelectedListener { act ->
+            when (act.id) {
+                R.id.fab_patch -> asyncPatch(getProp("ro.boot.slot_suffix"), Image.REPL_NORMAL)
+                R.id.fab_undo_patch -> asyncPatch(getProp("ro.boot.slot_suffix"), Image.REPL_REVERSE)
+                R.id.fab_restore_backups -> {
+                    val dialog = ProgressDialog(this, R.style.DialogTheme)
+
+                    asyncExec {
+                        restoreBackups(dialog)
+                    }
+                }
+                R.id.fab_delete_backups -> asyncExec {
+                    var cnt = 0
+
+                    File(noBackupFilesDir.absolutePath).listFiles()?.forEach {
+                        if (it.isFile && it.name.startsWith(BACKUP_PREFIX)) {
+                            it.delete()
+                            cnt++
+                        }
+                    }
+
+                    runOnUiThread {
+                        snack(resources.getQuantityString(R.plurals.delete_backup_success, cnt, cnt)).show()
+                    }
+                }
             }
+
+            false
         }
 
         if (resources.getBoolean(R.bool.isPhone)) {
@@ -162,27 +208,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             R.id.helpOpt -> showHelpDialog()
 
             R.id.aboutOpt -> showAboutActivity()
-            R.id.restoreOpt -> {
-                val dialog = ProgressDialog(this, R.style.DialogTheme)
-
-                asyncExec {
-                    restoreBackups(dialog)
-                }
-            }
-            R.id.deleteBkOpt -> asyncExec {
-                var cnt = 0
-
-                File(noBackupFilesDir.absolutePath).listFiles()?.forEach {
-                    if (it.isFile && it.name.startsWith(BACKUP_PREFIX)) {
-                        it.delete()
-                        cnt++
-                    }
-                }
-
-                runOnUiThread {
-                    snack(resources.getQuantityString(R.plurals.delete_backup_success, cnt, cnt)).show()
-                }
-            }
             R.id.contactOpt -> contactDev()
             R.id.donateOpt -> openUri(R.string.donate_uri())
         }
@@ -350,19 +375,15 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             private var currentStep = R.string.step0_backup()
             private var currentPatchStep = PatchStep.BACKUP
 
-            override fun onPreExecute() {
-                with (dialog) {
-                    setTitle(when (currentSlot) {
-                        null -> R.string.header_patching()
-                        "unknown" -> R.string.header_patching_unknown_slot()
-                        else -> R.string.header_patching_slot(currentSlot)
-                    })
-                    setMessage(currentStep)
-                    setCancelable(false)
-                    show()
-                }
-
-                patchBtn.isEnabled = false
+            override fun onPreExecute() = with (dialog) {
+                setTitle(when (currentSlot) {
+                    null -> R.string.header_patching()
+                    "unknown" -> R.string.header_patching_unknown_slot()
+                    else -> R.string.header_patching_slot(currentSlot)
+                })
+                setMessage(currentStep)
+                setCancelable(false)
+                show()
             }
 
             override fun doInBackground(vararg params: Unit?) {
@@ -504,8 +525,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 if (dialog.isShowing) {
                     dialog.dismiss()
                 }
-
-                patchBtn.isEnabled = true
 
                 if (!success) {
                     return

@@ -28,7 +28,8 @@ class LicenseActivity : AppCompatActivity() {
             oss_leak.visibility = View.GONE
         }
 
-        oss_gzipcpp.license(License.MIT, 2016, "Mera, Inc.")
+        oss_gzipcpp.license(License.MIT, 2016, "Mera, Inc")
+        oss_speeddial.license(License.APACHE, 2018, "Roberto Leinardi")
     }
 
     private fun AboutCardRow.license(license: License, year: Int, author: String) {

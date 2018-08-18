@@ -6,6 +6,10 @@
     <color name="action_dark">#2979ff</color>
     <color name="accent">#448aff</color>
     <color name="about_ic_color">#bebec0</color>
-    <color name="accent2">#cb6262</color>
     <color name="action_fg">#ffffff</color>
+
+    <color name="btn_red">#cb6262</color>
+    <color name="btn_green">#48ad70</color>
+    <color name="btn_blue">#6977c9</color>
+    <color name="btn_orange">#ef9757</color>
 </resources>
