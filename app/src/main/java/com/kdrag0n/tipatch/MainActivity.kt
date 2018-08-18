@@ -16,6 +16,7 @@ import android.preference.CheckBoxPreference
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.Menu
@@ -69,6 +70,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
 
         setContentView(R.layout.activity_main)
+        setSupportActionBar(toolbar_main as Toolbar?)
 
         opts = PreferenceManager.getDefaultSharedPreferences(baseContext)
         opts.registerOnSharedPreferenceChangeListener(this)

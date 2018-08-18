@@ -3,6 +3,7 @@ package com.kdrag0n.tipatch
 import android.app.AlertDialog
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify
 import android.view.View
@@ -15,6 +16,7 @@ class LicenseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_license)
 
+        setSupportActionBar(toolbar_license as Toolbar?)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         oss_libsu.license(License.APACHE, 2018, "John \"topjohnwu\" Wu")

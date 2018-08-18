@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import kotlinx.android.synthetic.main.activity_about.*
 
 class AboutActivity : AppCompatActivity() {
@@ -11,6 +12,7 @@ class AboutActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
 
+        setSupportActionBar(toolbar_about as Toolbar?)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         about_version.summary = BuildConfig.VERSION_NAME
