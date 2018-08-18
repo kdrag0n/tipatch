@@ -17,7 +17,8 @@ void do_replace(byte_obj input, std::string &from, const std::string &to, unsign
         addr = memmem(start_addr, new_len, from.data(), from.length());
     }
 
-    if (patched == 0) {
+    // no occurrences found and not already patched
+    if (patched == 0 && memmem(input->data, input->len, to.data(), to.length()) == nullptr) {
         size_t pos = 0;
         std::string null = std::string("\x00", 1);
         while ((pos = from.find(null, pos)) != std::string::npos) {
