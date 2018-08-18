@@ -3,7 +3,7 @@
 #include "java.h"
 #include "util.h"
 
-void do_replace(byte_obj input, std::string from, std::string to, unsigned int num) {
+void do_replace(byte_obj input, std::string &from, const std::string &to, unsigned int num) {
     assert(from.length() == to.length());
 
     unsigned int patched = 0;
