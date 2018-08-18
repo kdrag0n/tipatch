@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/aboutOpt"
-        android:title="@string/about" />
-    <item
-        android:id="@+id/contactOpt"
-        android:title="@string/contact" />
-    <item
-        android:id="@+id/donateOpt"
-        android:title="@string/donate" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/helpOpt"
-        android:icon="@android:drawable/ic_dialog_info"
-        android:title="@string/help" />
+        android:icon="@drawable/ic_info_outline_action"
+        android:title="@string/help"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/aboutOpt"
+        android:title="@string/about"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/contactOpt"
+        android:title="@string/contact"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/donateOpt"
+        android:title="@string/donate"
+        app:showAsAction="never" />
 </menu>

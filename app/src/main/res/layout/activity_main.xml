@@ -28,6 +28,7 @@
         android:layout_gravity="end|bottom"
         android:tooltipText="@string/patch_btn"
         app:srcCompat="@drawable/ic_patch"
+        android:tint="@color/action_fg"
         app:borderWidth="0dp"
         tools:targetApi="o" />
 
@@ -42,6 +43,7 @@
         app:layout_anchorGravity="right|top"
         android:tooltipText="@string/undo"
         app:srcCompat="@drawable/ic_undo"
+        android:tint="@color/action_fg"
         android:backgroundTint="@color/accent2"
         app:borderWidth="0dp"
         tools:targetApi="o" />

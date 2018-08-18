@@ -7,4 +7,5 @@
     <color name="accent">#448aff</color>
     <color name="about_ic_color">#bebec0</color>
     <color name="accent2">#cb6262</color>
+    <color name="action_fg">#ffffff</color>
 </resources>
