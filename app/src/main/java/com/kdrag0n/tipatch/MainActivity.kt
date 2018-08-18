@@ -42,6 +42,7 @@ import java.lang.IndexOutOfBoundsException
 
 private const val REQ_SAF_INPUT = 100
 private const val REQ_SAF_OUTPUT = 101
+private const val BACKUP_PREFIX = "parti_backup"
 
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     private var inputSource = ImageLocation.FILE
@@ -158,10 +159,32 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
+            R.id.helpOpt -> showHelpDialog()
+
             R.id.aboutOpt -> showAboutActivity()
+            R.id.restoreOpt -> {
+                val dialog = ProgressDialog(this, R.style.DialogTheme)
+
+                asyncExec {
+                    restoreBackups(dialog)
+                }
+            }
+            R.id.deleteBkOpt -> asyncExec {
+                var cnt = 0
+
+                File(noBackupFilesDir.absolutePath).listFiles()?.forEach {
+                    if (it.isFile && it.name.startsWith(BACKUP_PREFIX)) {
+                        it.delete()
+                        cnt++
+                    }
+                }
+
+                runOnUiThread {
+                    snack(resources.getQuantityString(R.plurals.delete_backup_success, cnt, cnt)).show()
+                }
+            }
             R.id.contactOpt -> contactDev()
             R.id.donateOpt -> openUri(R.string.donate_uri())
-            R.id.helpOpt -> showHelpDialog()
         }
 
         return true
@@ -530,14 +553,71 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun doBackup(slot: String, path: String) {
-        val file = File("${noBackupFilesDir.absolutePath}/backup$slot.img.gz")
+        val backupSet = opts.getStringSet("backups", setOf())?.toHashSet() ?: hashSetOf()
+
+        val file = File("${noBackupFilesDir.absolutePath}/$BACKUP_PREFIX$slot.img.gz")
         file.outputStream().close() // create
 
-        if (!Shell.su("gzip -1c \"$path\" > ${file.absolutePath}").exec().isSuccess) {
+        if (!Shell.su("gzip -1c \"$path\" > \"${file.absolutePath}\"").exec().isSuccess) {
             runOnUiThread {
                 Toast.makeText(this, "Backup failed", Toast.LENGTH_SHORT).show()
             }
             return
+        }
+
+        backupSet += slot
+        opts.edit().putStringSet("backups", backupSet).apply()
+    }
+
+    private fun restoreBackups(dialog: ProgressDialog) {
+        val backups = opts.getStringSet("backups", setOf())?.toHashSet() ?: hashSetOf()
+        if (backups.size == 0) {
+            runOnUiThread {
+                snack(R.string.no_backups).show()
+            }
+            return
+        }
+
+        val sz = backups.size
+        runOnUiThread {
+            with (dialog) {
+                setMessage(resources.getQuantityString(R.plurals.restore_backup_progress, sz))
+                show()
+            }
+        }
+
+        for (slot in backups) {
+            val file = File("${noBackupFilesDir.absolutePath}/$BACKUP_PREFIX$slot.img.gz")
+            if (!file.exists()) {
+                val copy = opts.getStringSet("backups", null)?.toHashSet()!!
+                copy -= slot
+                opts.edit().putStringSet("backups", copy).apply()
+                continue
+            }
+
+            val partiPath = partPath(if (slot == "") null else slot)
+            if (partiPath == null) {
+                errorDialog(R.string.part_not_found())
+                return
+            }
+
+            if (!Shell.su("gzip -dc \"${file.absolutePath}\" > \"$partiPath\"").exec().isSuccess) {
+                runOnUiThread {
+                    snack(resources.getQuantityString(R.plurals.restore_backup_fail, backups.size)).show()
+                }
+                return
+            }
+
+            if (file.delete()) {
+                val copy = opts.getStringSet("backups", null)?.toHashSet()!!
+                copy -= slot
+                opts.edit().putStringSet("backups", copy).apply()
+            }
+        }
+
+        runOnUiThread {
+            dialog.dismiss()
+            snack(resources.getQuantityString(R.plurals.restore_backup_success, backups.size, backups.size)).show()
         }
     }
 

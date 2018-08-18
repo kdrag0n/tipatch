@@ -12,6 +12,14 @@
         android:title="@string/about"
         app:showAsAction="never" />
     <item
+        android:id="@+id/restoreOpt"
+        android:title="@string/restore"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/deleteBkOpt"
+        android:title="@string/delete_backup"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/contactOpt"
         android:title="@string/contact"
         app:showAsAction="never" />
