@@ -17,4 +17,11 @@
         android:defaultValue="false"
         android:enabled="false"
         android:key="partition" />
+
+    <CheckBoxPreference
+        android:title="@string/pref_backup"
+        android:summary="@string/pref_backup_desc"
+        android:defaultValue="true"
+        android:enabled="false"
+        android:key="backup" />
 </PreferenceScreen>

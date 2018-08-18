@@ -339,7 +339,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             }
 
             override fun doInBackground(vararg params: Unit?) {
-                if (inputSource == ImageLocation.PARTITION) {
+                if (inputSource == ImageLocation.PARTITION && opts.getBoolean("backup", true)) {
                     doBackup(slot ?: "", partiPath!!)
                 }
 
