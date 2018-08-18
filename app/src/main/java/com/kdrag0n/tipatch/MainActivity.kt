@@ -231,6 +231,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                     findPreference("input")?.isEnabled = false
                     findPreference("output")?.isEnabled = false
 
+                    findPreference("backup")?.isEnabled = true
+
                     (optPart as CheckBoxPreference?)?.isChecked = true
                     inputSource = ImageLocation.PARTITION
                     outputDest = ImageLocation.PARTITION
@@ -250,6 +252,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
                 findPreference("input")?.isEnabled = true
                 findPreference("output")?.isEnabled = true
+
+                findPreference("backup")?.isEnabled = false
 
                 inputSource = ImageLocation.FILE
                 outputDest = ImageLocation.FILE
@@ -742,6 +746,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
             optFrag.preferenceManager.findPreference("input")?.isEnabled = !partEnabled
             optFrag.preferenceManager.findPreference("output")?.isEnabled = !partEnabled
+
+            optFrag.preferenceManager.findPreference("backup")?.isEnabled = partEnabled
 
             inputSource = when (partEnabled) {
                 true -> ImageLocation.PARTITION
