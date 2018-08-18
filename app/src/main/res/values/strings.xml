@@ -46,7 +46,7 @@
     <string name="header_patching_unknown_slot">Patching image (unknown slot)</string>
     <string name="header_patching_slot">Patching image (slot %s)</string>
 
-    <string name="step0_start">Preparing to patch</string>
+    <string name="step0_backup">Backing up image</string>
     <string name="step1_read_unpack">Reading &amp; unpacking image</string>
     <string name="step2_decompress">Decompressing ramdisk of type %s</string>
     <string name="step3_patch_rev">Reversing ramdisk patches</string>

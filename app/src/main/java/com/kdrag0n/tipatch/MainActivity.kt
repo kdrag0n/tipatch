@@ -33,6 +33,7 @@ import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuProcessFileInputStream
 import com.topjohnwu.superuser.io.SuProcessFileOutputStream
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -317,8 +318,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         object : AsyncTask<Unit, Unit, Unit>() {
             private var dialog = ProgressDialog(ctx, R.style.DialogTheme)
             private var success = false
-            private var currentStep = ""
-            private var currentPatchStep = PatchStep.NONE
+            private var currentStep = R.string.step0_backup()
+            private var currentPatchStep = PatchStep.BACKUP
 
             override fun onPreExecute() {
                 with (dialog) {
@@ -327,7 +328,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                         "unknown" -> R.string.header_patching_unknown_slot()
                         else -> R.string.header_patching_slot(currentSlot)
                     })
-                    setMessage(R.string.step0_start())
+                    setMessage(currentStep)
                     setCancelable(false)
                     show()
                 }
@@ -336,6 +337,10 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             }
 
             override fun doInBackground(vararg params: Unit?) {
+                if (inputSource == ImageLocation.PARTITION) {
+                    doBackup(slot ?: "", partiPath!!)
+                }
+
                 val fis = when (inputSource) {
                     ImageLocation.FILE -> openSafInput()
                     ImageLocation.PARTITION -> SuProcessFileInputStream(partiPath!!)
@@ -344,10 +349,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 val fos = try {
                     when (inputSource) {
                         ImageLocation.FILE -> openSafOutput()
-                        ImageLocation.PARTITION -> {
-                            SuProcessFileOutputStream(partiPath
-                                    ?: throw IllegalStateException(R.string.part_not_found()))
-                        }
+                        ImageLocation.PARTITION -> SuProcessFileOutputStream(partiPath!!)
                     }
                 } catch (e: IllegalStateException) {
                     errorDialog(e.message!!, appIssue = inputSource == ImageLocation.PARTITION)
@@ -515,6 +517,18 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
 
         task.execute()
+    }
+
+    private fun doBackup(slot: String, path: String) {
+        val file = File("${noBackupFilesDir.absolutePath}/backup$slot.img.gz")
+        file.outputStream().close() // create
+
+        if (!Shell.su("gzip -1c \"$path\" > ${file.absolutePath}").exec().isSuccess) {
+            runOnUiThread {
+                Toast.makeText(this, "Backup failed", Toast.LENGTH_SHORT).show()
+            }
+            return
+        }
     }
 
     private fun contactDev() {
