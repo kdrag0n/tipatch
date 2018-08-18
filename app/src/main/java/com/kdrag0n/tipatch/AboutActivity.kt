@@ -32,9 +32,6 @@ class AboutActivity : AppCompatActivity() {
         about_author.summary = R.string.author_nick()
         about_author.uri = R.string.website_uri
 
-        about_github.removeSummary()
-        about_github.uri = R.string.github_uri
-
         about_telegram.removeSummary()
         about_telegram.uri = R.string.telegram_uri
 

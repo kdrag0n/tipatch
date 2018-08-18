@@ -115,13 +115,6 @@
                         app:text="@string/telegram"/>
 
                     <com.kdrag0n.utils.AboutCardRow
-                        android:id="@+id/about_github"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:icon="@drawable/ic_github"
-                        app:text="@string/github"/>
-
-                    <com.kdrag0n.utils.AboutCardRow
                         android:id="@+id/about_xda"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
