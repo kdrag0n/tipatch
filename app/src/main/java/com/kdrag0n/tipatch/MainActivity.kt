@@ -390,17 +390,25 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                             }
 
                             errorDialog(e.message!!)
-                        }
-                        is IOException -> when (currentPatchStep) {
-                            PatchStep.READ -> if (e.message != null) {
-                                errorDialog(R.string.err_native_io_read(e.message!!))
-                            } else {
-                                errorDialog(R.string.err_native_io_read_empty())
+                            if (inputSource == ImageLocation.PARTITION) {
+                                Crashlytics.logException(e) // should never happen if it boots
                             }
-                            else -> if (e.message != null) {
+                        }
+                        is IOException -> {
+                            if (currentPatchStep == PatchStep.READ) {
+                                if (e.message != null) {
+                                    errorDialog(R.string.err_native_io_read(e.message!!))
+                                } else {
+                                    errorDialog(R.string.err_native_io_read_empty())
+                                }
+                            } else if (e.message != null) {
                                 errorDialog(R.string.err_native_io_write(e.message!!))
                             } else {
                                 errorDialog(R.string.err_native_io_write_empty())
+                            }
+
+                            if (inputSource == ImageLocation.PARTITION) {
+                                Crashlytics.logException(e) // should never happen
                             }
                         }
                         is CompressException -> {
