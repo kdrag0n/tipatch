@@ -163,22 +163,26 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                     val dialog = ProgressDialog(this, R.style.DialogTheme)
                     with (dialog) {
                         setMessage(R.string.restore_backup_progress())
-                        show()
                     }
 
                     asyncExec {
-                        restoreBackups(dialog)
+                        try {
+                            restoreBackups(dialog)
+                        } finally {
+                            runOnUiThread {
+                                dialog.dismiss()
+                            }
+                        }
                     }
                 }
                 R.id.fab_delete_backups -> asyncExec {
-                    var cnt = 0
-
                     File(noBackupFilesDir.absolutePath).listFiles()?.forEach {
                         if (it.isFile && it.name.startsWith(BACKUP_PREFIX)) {
                             it.delete()
-                            cnt++
                         }
                     }
+
+                    opts.edit().putStringSet("backups", setOf()).apply()
 
                     runOnUiThread {
                         snack(R.string.delete_backup_success).show()
@@ -614,6 +618,10 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             return
         }
 
+        runOnUiThread {
+            dialog.show()
+        }
+
         for (slot in backups) {
             val file = File("${noBackupFilesDir.absolutePath}/$BACKUP_PREFIX$slot.img.gz")
             if (!file.exists()) {
@@ -638,7 +646,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
 
         runOnUiThread {
-            dialog.dismiss()
             snack(R.string.restore_backup_success).show()
         }
     }
