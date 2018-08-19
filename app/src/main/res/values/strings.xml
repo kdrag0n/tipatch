@@ -114,6 +114,9 @@
 
 <h4>Problems?</h4>
 <p>If Tipatch does not work properly on your device in any way, please let me know via the Contact menu option.</p>
+
+<h4>Help, something broke!</h4>
+<p>Reflash your recovery image. If you used in-place patching, tap 'Restore backup' in the action menu.</p>
 ]]>
     </string>
 
