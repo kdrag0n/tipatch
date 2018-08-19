@@ -9,8 +9,8 @@ android {
         applicationId "com.kdrag0n.tipatch"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 1010
+        versionName "1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
 
@@ -21,6 +21,7 @@ android {
             }
         }
     }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -28,6 +29,18 @@ android {
             shrinkResources true
         }
     }
+
+    flavorDimensions "flags"
+    productFlavors {
+        standard {
+            dimension "flags"
+        }
+
+        play {
+            dimension "flags"
+        }
+    }
+
     externalNativeBuild {
         cmake {
             path 'CMakeLists.txt'

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.view.View
 import kotlinx.android.synthetic.main.activity_about.*
 
 class AboutActivity : AppCompatActivity() {
@@ -26,8 +27,12 @@ class AboutActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        about_donate.summary = R.string.about_donate_desc()
-        about_donate.uri = R.string.donate_uri
+        if (resources.getBoolean(R.bool.showPaypal)) {
+            about_donate.summary = R.string.about_donate_desc()
+            about_donate.uri = R.string.donate_uri
+        } else {
+            about_donate.visibility = View.GONE
+        }
 
         about_author.summary = R.string.author_nick()
         about_author.uri = R.string.website_uri
