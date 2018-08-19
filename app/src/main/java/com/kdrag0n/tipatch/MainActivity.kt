@@ -161,6 +161,10 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 R.id.fab_undo_patch -> asyncPatch(getProp("ro.boot.slot_suffix"), Image.REPL_REVERSE)
                 R.id.fab_restore_backups -> {
                     val dialog = ProgressDialog(this, R.style.DialogTheme)
+                    with (dialog) {
+                        setMessage(R.string.restore_backup_progress())
+                        show()
+                    }
 
                     asyncExec {
                         restoreBackups(dialog)
@@ -177,7 +181,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                     }
 
                     runOnUiThread {
-                        snack(resources.getQuantityString(R.plurals.delete_backup_success, cnt, cnt)).show()
+                        snack(R.string.delete_backup_success).show()
                     }
                 }
             }
@@ -610,14 +614,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             return
         }
 
-        val sz = backups.size
-        runOnUiThread {
-            with (dialog) {
-                setMessage(resources.getQuantityString(R.plurals.restore_backup_progress, sz))
-                show()
-            }
-        }
-
         for (slot in backups) {
             val file = File("${noBackupFilesDir.absolutePath}/$BACKUP_PREFIX$slot.img.gz")
             if (!file.exists()) {
@@ -635,7 +631,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
             if (!Shell.su("gzip -d -c \"${file.absolutePath}\" > \"$partiPath\"").exec().isSuccess) {
                 runOnUiThread {
-                    snack(resources.getQuantityString(R.plurals.restore_backup_fail, backups.size)).show()
+                    snack(R.string.restore_backup_fail).show()
                 }
                 return
             }
@@ -649,7 +645,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
         runOnUiThread {
             dialog.dismiss()
-            snack(resources.getQuantityString(R.plurals.restore_backup_success, backups.size, backups.size)).show()
+            snack(R.string.restore_backup_success).show()
         }
     }
 

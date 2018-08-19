@@ -14,26 +14,14 @@
     <string name="exit">Close App</string>
     <string name="fab_actions">Actions</string>
     <string name="undo">Undo patch</string>
-    <string name="restore">Restore backups</string>
-    <string name="delete_backup">Delete backups</string>
-    <string name="no_backups">No recovery backups saved</string>
+    <string name="restore">Restore backup</string>
+    <string name="delete_backup">Delete backup</string>
+    <string name="no_backups">No recovery backup saved</string>
 
-    <plurals name="delete_backup_success">
-        <item quantity="one">%d recovery backup deleted</item>
-        <item quantity="other">%d recovery backups deleted</item>
-    </plurals>
-    <plurals name="restore_backup_progress">
-        <item quantity="one">Restoring recovery backup</item>
-        <item quantity="other">Restoring recovery backups</item>
-    </plurals>
-    <plurals name="restore_backup_success">
-        <item quantity="one">%d recovery backup restored and deleted</item>
-        <item quantity="other">%d recovery backups restored and deleted</item>
-    </plurals>
-    <plurals name="restore_backup_fail">
-        <item quantity="one">Failed to restore recovery backup</item>
-        <item quantity="other">Failed to restore recovery backups</item>
-    </plurals>
+    <string name="delete_backup_success">Recovery backup deleted</string>
+    <string name="restore_backup_progress">Restoring recovery backup</string>
+    <string name="restore_backup_success">Recovery backup restored and deleted</string>
+    <string name="restore_backup_fail">Failed to restore recovery backup</string>
 
     <string name="author_name">Khronodragon</string>
     <string name="author_nick">\"kdrag0n\"</string>
