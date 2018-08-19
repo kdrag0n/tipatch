@@ -14,7 +14,7 @@ func checkWrap(err error) {
 		wrapped := err.(errwrap.Wrapper).WrappedErrors()
 		err1 := wrapped[0].Error()
 		if strings.ContainsRune(err1, ';') {
-			err1 = err1[:strings.IndexByte(err1, ';')+1]
+			err1 = err1[:strings.IndexByte(err1, ';')]
 		}
 
 		fmt.Printf(" ! Error %s!\n", err1)
