@@ -22,7 +22,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
-import android.widget.Toast
 import com.crashlytics.android.Crashlytics
 import com.kdrag0n.tipatch.jni.CompressException
 import com.kdrag0n.tipatch.jni.Image
@@ -388,7 +387,18 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
             override fun doInBackground(vararg params: Unit?) {
                 if (inputSource == ImageLocation.PARTITION && opts.getBoolean("backup", true)) {
-                    doBackup(slot ?: "", partiPath!!)
+                    val res = doBackup(slot ?: "", partiPath!!)
+                    if (!res.isSuccess) {
+                        val errStr = if (res.err.isNotEmpty())
+                            res.err.joinToString()
+                        else
+                            "Unknown error"
+
+                        errorDialog(R.string.err_backup(errStr), appIssue = true)
+                        Crashlytics.log("Slot = $slot")
+                        Crashlytics.logException(RuntimeException("Partition backup failed: $errStr"))
+                        return
+                    }
                 }
 
                 val fis = when (inputSource) {
@@ -575,21 +585,20 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         task.execute()
     }
 
-    private fun doBackup(slot: String, path: String) {
+    private fun doBackup(slot: String, path: String): Shell.Result {
         val backupSet = opts.getStringSet("backups", setOf())?.toHashSet() ?: hashSetOf()
 
         val file = File("${noBackupFilesDir.absolutePath}/$BACKUP_PREFIX$slot.img.gz")
         file.outputStream().close() // create
 
-        if (!Shell.su("gzip -1c \"$path\" > \"${file.absolutePath}\"").exec().isSuccess) {
-            runOnUiThread {
-                Toast.makeText(this, "Backup failed", Toast.LENGTH_SHORT).show()
-            }
-            return
+        val res = Shell.su("gzip -1 -c \"$path\" > \"${file.absolutePath}\"").exec()
+        if (!res.isSuccess) {
+            return res
         }
 
         backupSet += slot
         opts.edit().putStringSet("backups", backupSet).apply()
+        return res
     }
 
     private fun restoreBackups(dialog: ProgressDialog) {
@@ -624,7 +633,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 return
             }
 
-            if (!Shell.su("gzip -dc \"${file.absolutePath}\" > \"$partiPath\"").exec().isSuccess) {
+            if (!Shell.su("gzip -d -c \"${file.absolutePath}\" > \"$partiPath\"").exec().isSuccess) {
                 runOnUiThread {
                     snack(resources.getQuantityString(R.plurals.restore_backup_fail, backups.size)).show()
                 }

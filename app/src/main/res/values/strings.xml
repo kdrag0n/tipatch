@@ -52,6 +52,7 @@
     <string name="err_oom">Out of memory. Try closing some apps.</string>
     <string name="err_java">An internal error of type %s occurred: %s.</string>
     <string name="err_close_output">An error occurred cleaning up the written image: %s.</string>
+    <string name="err_backup">Recovery backup failed: %s.</string>
 
     <string name="part_not_found">Tipatch was unable to find your device\'s recovery partition. Select an image file and flash it instead.</string>
     <string name="part_complete_slot">Recovery in both slots patched!</string>
