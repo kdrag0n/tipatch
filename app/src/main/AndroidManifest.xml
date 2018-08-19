@@ -3,8 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.kdrag0n.tipatch">
 
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-
     <application
         android:name="com.topjohnwu.superuser.ContainerApp"
         android:allowBackup="false"

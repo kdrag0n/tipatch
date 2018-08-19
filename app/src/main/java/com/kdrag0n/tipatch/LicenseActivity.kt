@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify
-import android.view.View
 import android.widget.TextView
 import com.kdrag0n.utils.AboutCardRow
 import kotlinx.android.synthetic.main.activity_license.*
@@ -21,13 +20,6 @@ class LicenseActivity : AppCompatActivity() {
 
         oss_libsu.license(License.APACHE, 2018, "John \"topjohnwu\" Wu")
         oss_about.license(License.APACHE, 2016, "dvdandroid")
-
-        if (BuildConfig.DEBUG) {
-            oss_leak.license(License.APACHE, 2015, "Square, Inc")
-        } else {
-            oss_leak.visibility = View.GONE
-        }
-
         oss_gzipcpp.license(License.MIT, 2016, "Mera, Inc")
         oss_speeddial.license(License.APACHE, 2018, "Roberto Leinardi")
     }

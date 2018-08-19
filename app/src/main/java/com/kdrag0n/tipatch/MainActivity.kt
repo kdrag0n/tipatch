@@ -29,7 +29,6 @@ import com.kdrag0n.tipatch.jni.ImageException
 import com.kdrag0n.utils.*
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView
-import com.squareup.leakcanary.LeakCanary
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuProcessFileInputStream
@@ -59,17 +58,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            return
-        }
-
-        try {
-            LeakCanary.install(application)
-        } catch (e: UnsupportedOperationException) {}
-        catch (e: Throwable) {
-            throw e
-        }
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar_main as Toolbar?)
