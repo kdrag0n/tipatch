@@ -607,7 +607,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
     private fun restoreBackups(dialog: ProgressDialog) {
         val backups = opts.getStringSet("backups", setOf())?.toHashSet() ?: hashSetOf()
-        if (backups.size == 0) {
+        if (backups.isEmpty()) {
             runOnUiThread {
                 snack(R.string.no_backups).show()
             }
@@ -634,12 +634,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                     snack(R.string.restore_backup_fail).show()
                 }
                 return
-            }
-
-            if (file.delete()) {
-                val copy = opts.getStringSet("backups", null)?.toHashSet()!!
-                copy -= slot
-                opts.edit().putStringSet("backups", copy).apply()
             }
         }
 

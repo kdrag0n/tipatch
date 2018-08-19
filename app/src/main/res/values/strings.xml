@@ -20,7 +20,7 @@
 
     <string name="delete_backup_success">Recovery backup deleted</string>
     <string name="restore_backup_progress">Restoring recovery backup</string>
-    <string name="restore_backup_success">Recovery backup restored and deleted</string>
+    <string name="restore_backup_success">Recovery backup restored</string>
     <string name="restore_backup_fail">Failed to restore recovery backup</string>
 
     <string name="author_name">Khronodragon</string>
