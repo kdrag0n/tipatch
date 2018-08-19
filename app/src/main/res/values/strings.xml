@@ -27,7 +27,7 @@
     <string name="author_nick">\"kdrag0n\"</string>
 
     <string name="err_generic">Oops…</string>
-    <string name="err_native_empty">An error occurred processing the input image.</string>
+    <string name="err_native_empty">An error occurred processing the image.</string>
     <string name="err_native_unknown">An error occurred processing the image: %s.</string>
     <string name="err_native_io_read">An error occurred reading the image: %s.</string>
     <string name="err_native_io_read_empty">An error occurred reading the image.</string>
