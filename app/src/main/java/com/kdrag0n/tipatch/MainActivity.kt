@@ -34,10 +34,7 @@ import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuProcessFileInputStream
 import com.topjohnwu.superuser.io.SuProcessFileOutputStream
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import java.lang.IndexOutOfBoundsException
 
 private const val REQ_SAF_INPUT = 100
@@ -403,9 +400,21 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                     }
                 }
 
-                val fis = when (inputSource) {
-                    ImageLocation.FILE -> openSafInput()
-                    ImageLocation.PARTITION -> SuProcessFileInputStream(partiPath!!)
+                val fis = try {
+                    when (inputSource) {
+                        ImageLocation.FILE -> openSafInput()
+                        ImageLocation.PARTITION -> SuProcessFileInputStream(partiPath!!)
+                    }
+                } catch (e: FileNotFoundException) {
+                    if (inputSource == ImageLocation.PARTITION) {
+                        errorDialog(R.string.err_open_part(), appIssue = true)
+                    } else {
+                        errorDialog(R.string.err_open_file(R.string.err_open_file_inp()))
+                    }
+
+                    return
+                } catch (e: Exception) {
+                    throw e
                 }
 
                 val fos = try {
@@ -413,9 +422,16 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                         ImageLocation.FILE -> openSafOutput()
                         ImageLocation.PARTITION -> SuProcessFileOutputStream(partiPath!!)
                     }
-                } catch (e: IllegalStateException) {
-                    errorDialog(e.message!!, appIssue = inputSource == ImageLocation.PARTITION)
+                } catch (e: FileNotFoundException) {
+                    if (inputSource == ImageLocation.PARTITION) {
+                        errorDialog(R.string.err_open_part_out(), appIssue = true)
+                    } else {
+                        errorDialog(R.string.err_open_file(R.string.err_open_file_out()))
+                    }
+
                     return
+                } catch (e: Exception) {
+                    throw e
                 }
 
                 success = try {
@@ -700,13 +716,11 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun openSafInput(): InputStream {
-        return contentResolver.openInputStream(safInput) ?:
-        throw IllegalStateException(R.string.file_error_input())
+        return contentResolver.openInputStream(safInput) ?: throw FileNotFoundException()
     }
 
     private fun openSafOutput(): OutputStream {
-        return contentResolver.openOutputStream(safOutput) ?:
-        throw IllegalStateException(R.string.file_error_output())
+        return contentResolver.openOutputStream(safOutput) ?: throw FileNotFoundException()
     }
 
     private fun partPath(slot: String?): String? {

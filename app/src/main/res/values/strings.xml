@@ -43,6 +43,11 @@
     <string name="err_backup">Recovery backup failed: %s.</string>
     <string name="err_part_empty">Unknown error searching for partitions via root.</string>
     <string name="err_part_root">Root command failed while searching for partitions: %s.</string>
+    <string name="err_open_file">Unable to open %s image. Make sure the file exists and that you can access it.</string>
+    <string name="err_open_file_inp">input</string>
+    <string name="err_open_file_out">output</string>
+    <string name="err_open_part">Unable to read from recovery partition. Select an image file and flash it instead.</string>
+    <string name="err_open_part_out">Unable to write to recovery partition. Select an image file and flash it instead.</string>
 
     <string name="part_not_found">Tipatch was unable to find your device\'s recovery partition. Select an image file and flash it instead.</string>
     <string name="part_complete_slot">Recovery in both slots patched!</string>
@@ -50,8 +55,6 @@
 
     <string name="file_select_input">Please select an image file to patch.</string>
     <string name="file_select_output">Please select an output file.</string>
-    <string name="file_error_input">Unable to read input file.</string>
-    <string name="file_error_output">Unable to write to output file.</string>
     <string name="file_complete">Image patched!</string>
 
     <string name="header_patching">Patching image</string>
