@@ -10,6 +10,7 @@ import android.provider.OpenableColumns
 import android.text.Html
 import android.text.Spanned
 import android.util.Log
+import com.kdrag0n.tipatch.R
 import com.topjohnwu.superuser.Shell
 
 const val logTag = "Tipatch"
@@ -64,7 +65,7 @@ fun findPartitionDirs(): List<String> {
 
     if (!res.isSuccess) {
         val err = res.err.getOrElse(0) { "Unknown error" }
-        throw IllegalStateException("Root command failed (searching for partitions). \"$err\"")
+        throw IllegalStateException(err)
     }
 
     return res.out[0].split('\n')

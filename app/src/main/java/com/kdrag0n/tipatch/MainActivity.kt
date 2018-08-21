@@ -339,7 +339,13 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
 
         val partiPath = if (inputSource == ImageLocation.PARTITION) {
-            val pp = partPath(slot)
+            val pp = try {
+                partPath(slot)
+            } catch (e: IllegalStateException) {
+                errorDialog(if (e.message != null) R.string.err_part_root(e.message!!) else R.string.err_part_empty())
+                return
+            }
+
             if (pp == null) {
                 errorDialog(R.string.part_not_found())
                 return
@@ -619,7 +625,13 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 continue
             }
 
-            val partiPath = partPath(if (slot == "") null else slot)
+            val partiPath = try {
+                partPath(if (slot == "") null else slot)
+            } catch (e: IllegalStateException) {
+                errorDialog(if (e.message != null) R.string.err_part_root(e.message!!) else R.string.err_part_empty())
+                return
+            }
+
             if (partiPath == null) {
                 errorDialog(R.string.part_not_found())
                 return
