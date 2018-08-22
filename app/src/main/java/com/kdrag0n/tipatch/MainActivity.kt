@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
@@ -667,7 +668,13 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun contactDev() {
-        openUri("mailto:" + R.string.contact_mail().replace(" (at) ", "@"))
+        val addr = R.string.contact_mail().replace(" (at) ", "@")
+
+        try {
+            openUri("mailto:$addr")
+        } catch (e: ActivityNotFoundException) {
+            errorDialog(R.string.err_mailto_handler(addr))
+        }
     }
 
     private fun showAboutActivity() {
