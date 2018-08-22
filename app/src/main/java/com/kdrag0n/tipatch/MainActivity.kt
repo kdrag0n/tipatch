@@ -410,16 +410,19 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                         ImageLocation.FILE -> openSafInput()
                         ImageLocation.PARTITION -> SuProcessFileInputStream(partiPath!!)
                     }
-                } catch (e: FileNotFoundException) {
-                    if (inputSource == ImageLocation.PARTITION) {
-                        errorDialog(R.string.err_open_part(), appIssue = true)
-                    } else {
-                        errorDialog(R.string.err_open_file(R.string.err_open_file_inp()))
+                } catch (e: Exception) {
+                    when (e) {
+                        is FileNotFoundException, is EOFException -> {
+                            if (inputSource == ImageLocation.PARTITION) {
+                                errorDialog(R.string.err_open_part(), appIssue = true)
+                            } else {
+                                errorDialog(R.string.err_open_file(R.string.err_open_file_inp()))
+                            }
+                        }
+                        else -> throw e
                     }
 
                     return
-                } catch (e: Exception) {
-                    throw e
                 }
 
                 val fos = try {
