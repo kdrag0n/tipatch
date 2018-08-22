@@ -179,10 +179,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             false
         }
 
-        if (resources.getBoolean(R.bool.isPhone)) {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-        }
-
         if (opts.getBoolean("first_run", true)) {
             firstRun = true
             showHelpDialog()
