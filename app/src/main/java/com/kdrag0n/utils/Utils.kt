@@ -63,7 +63,7 @@ fun findPartitionDirs(): List<String> {
     // follow symlinks such as /dev/block/bootdevice
     val res = Shell.su("find -L /dev/block/ -type d -name 'by-name'").exec()
     // ignore errors because there could be *some* valid entries
-    return res.out[0].split('\n')
+    return res.out[0].split('\n').filter { it.startsWith('/') }
 }
 
 @SuppressLint("deprecation")
