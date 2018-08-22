@@ -27,7 +27,7 @@ void rethrow(JNIEnv *env) {
         if (clazz)
             env->ThrowNew(clazz, e.what());
     } catch (const std::exception &e) { // unknown
-        jclass clazz = env->FindClass("java/lang/Error");
+        jclass clazz = env->FindClass("com/kdrag0n/tipatch/jni/NativeException");
         if (clazz)
             env->ThrowNew(clazz, e.what());
     }

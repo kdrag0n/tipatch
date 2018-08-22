@@ -27,6 +27,7 @@ import com.crashlytics.android.Crashlytics
 import com.kdrag0n.tipatch.jni.CompressException
 import com.kdrag0n.tipatch.jni.Image
 import com.kdrag0n.tipatch.jni.ImageException
+import com.kdrag0n.tipatch.jni.NativeException
 import com.kdrag0n.utils.*
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView
@@ -523,7 +524,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
                             Crashlytics.logException(e)
                         }
-                        is Error -> {
+                        is NativeException -> {
                             if (e.message != null) {
                                 errorDialog(R.string.err_native_unknown(e.message!!), appIssue = true)
                             } else {
