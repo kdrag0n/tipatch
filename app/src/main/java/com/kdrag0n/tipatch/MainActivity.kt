@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 errorDialog(R.string.err_no_file_handler())
             }
         }
-        
+
         optFrag.retainInstance = true
 
         fragmentManager
