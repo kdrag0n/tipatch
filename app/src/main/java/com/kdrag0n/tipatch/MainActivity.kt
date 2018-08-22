@@ -94,7 +94,11 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "application/octet-stream" // no .img type
 
-            startActivityForResult(intent, REQ_SAF_INPUT)
+            try {
+                startActivityForResult(intent, REQ_SAF_INPUT)
+            } catch (e: ActivityNotFoundException) {
+                errorDialog(R.string.err_no_file_handler())
+            }
         }
 
         optFrag.outputEvent = {
@@ -106,7 +110,11 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             val outName = outputFileName()
             intent.putExtra(Intent.EXTRA_TITLE, outName)
 
-            startActivityForResult(intent, REQ_SAF_OUTPUT)
+            try {
+                startActivityForResult(intent, REQ_SAF_OUTPUT)
+            } catch (e: ActivityNotFoundException) {
+                errorDialog(R.string.err_no_file_handler())
+            }
         }
 
         patch_dial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_patch, R.drawable.ic_apply)
