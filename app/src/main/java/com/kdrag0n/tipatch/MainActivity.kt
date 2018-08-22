@@ -65,31 +65,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         opts.registerOnSharedPreferenceChangeListener(this)
 
         optFrag = OptionFragment()
-        optFrag.retainInstance = true
-
-        fragmentManager
-                .beginTransaction()
-                .add(R.id.opt_container, optFrag)
-                .commit()
-
-        if (savedInstanceState == null) {
-            asyncExec {
-                try {
-                    if (Shell.rootAccess()) {
-                        hasRoot()
-                    } else {
-                        noRoot()
-                    }
-                } catch (e: Exception) {
-                    noRoot()
-                }
-            }
-        } else {
-            isRooted = savedInstanceState.getBoolean("rooted", false)
-            inputSource = ImageLocation.valueOf(savedInstanceState.getString("input", "FILE"))
-            outputDest = ImageLocation.valueOf(savedInstanceState.getString("output", "FILE"))
-        }
-
         optFrag.inputEvent = {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -116,6 +91,31 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             } catch (e: ActivityNotFoundException) {
                 errorDialog(R.string.err_no_file_handler())
             }
+        }
+        
+        optFrag.retainInstance = true
+
+        fragmentManager
+                .beginTransaction()
+                .add(R.id.opt_container, optFrag)
+                .commit()
+
+        if (savedInstanceState == null) {
+            asyncExec {
+                try {
+                    if (Shell.rootAccess()) {
+                        hasRoot()
+                    } else {
+                        noRoot()
+                    }
+                } catch (e: Exception) {
+                    noRoot()
+                }
+            }
+        } else {
+            isRooted = savedInstanceState.getBoolean("rooted", false)
+            inputSource = ImageLocation.valueOf(savedInstanceState.getString("input", "FILE"))
+            outputDest = ImageLocation.valueOf(savedInstanceState.getString("output", "FILE"))
         }
 
         patch_dial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_patch, R.drawable.ic_apply)
