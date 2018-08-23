@@ -10,7 +10,7 @@ void Image::decompress_ramdisk(char comp_mode) {
         case comp::none:
             return;
         default:
-            throw comp_exception("Method '" + comp::name(comp_mode) + "' is not supported.");
+            throw comp_type_exception(std::to_string(comp_mode));
     }
 }
 
@@ -48,7 +48,7 @@ void Image::decompress_ramdisk_gzip() {
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_kdrag0n_tipatch_jni_Image__1decompressRamdisk(JNIEnv *env, jobject, jlong handle, jbyte comp_mode) {
+Java_com_kdrag0n_tipatch_jni_Image_nvDecompressRamdisk(JNIEnv *env, jobject, jlong handle, jbyte comp_mode) {
     try {
         Image *image = (Image*) handle;
         image->decompress_ramdisk(comp_mode);

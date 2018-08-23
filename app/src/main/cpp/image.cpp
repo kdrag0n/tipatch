@@ -73,7 +73,7 @@ Java_com_kdrag0n_tipatch_jni_Image_free(JNIEnv, jobject, jlong handle) {
 }
 
 extern "C" JNIEXPORT jbyte JNICALL
-Java_com_kdrag0n_tipatch_jni_Image__1detectCompressor(JNIEnv, jobject, jlong handle) {
+Java_com_kdrag0n_tipatch_jni_Image_nvDetectCompressor(JNIEnv, jobject, jlong handle) {
     Image *image = (Image*) handle;
     auto data = image->ramdisk->data;
     int b1 = data[0];

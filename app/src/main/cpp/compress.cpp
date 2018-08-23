@@ -15,7 +15,7 @@ void Image::compress_ramdisk(char comp_mode) {
         case comp::none:
             return; // uncompressed
         default:
-            throw comp_exception("Method '" + comp::name(comp_mode) + "' is not supported");
+            throw comp_type_exception(std::to_string(comp_mode));
     }
 }
 
@@ -102,7 +102,7 @@ void Image::compress_ramdisk_gzip() {
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_kdrag0n_tipatch_jni_Image__1compressRamdisk(JNIEnv *env, jobject, jlong handle, jbyte comp_mode) {
+Java_com_kdrag0n_tipatch_jni_Image_nvCompressRamdisk(JNIEnv *env, jobject, jlong handle, jbyte comp_mode) {
     try {
         Image *image = (Image*) handle;
         image->compress_ramdisk(comp_mode);

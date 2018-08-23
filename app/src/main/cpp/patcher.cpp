@@ -80,7 +80,7 @@ void Image::patch_ramdisk(char dir) {
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_kdrag0n_tipatch_jni_Image__1patchRamdisk(JNIEnv *env, jobject, jlong handle, jbyte direction) {
+Java_com_kdrag0n_tipatch_jni_Image_nvPatchRamdisk(JNIEnv *env, jobject, jlong handle, jbyte direction) {
     try {
         Image *image = (Image*) handle;
         image->patch_ramdisk(direction);

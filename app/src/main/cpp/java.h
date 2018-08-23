@@ -12,6 +12,10 @@ class comp_exception : public std::runtime_error {
 public:
     comp_exception(const std::string &what) : std::runtime_error(what) {}
 };
+class comp_type_exception : public std::runtime_error {
+public:
+    comp_type_exception(const std::string &what) : std::runtime_error(what) {}
+};
 
 void rethrow(JNIEnv *env);
 

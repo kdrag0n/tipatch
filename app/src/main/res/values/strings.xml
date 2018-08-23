@@ -11,12 +11,13 @@
     <string name="author">Author</string>
     <string name="version">Version</string>
     <string name="icon">Icon</string>
-    <string name="exit">Close App</string>
+    <string name="exit">Close app</string>
     <string name="fab_actions">Actions</string>
     <string name="undo">Undo patch</string>
     <string name="restore">Restore backup</string>
     <string name="delete_backup">Delete backup</string>
     <string name="no_backups">No recovery backup saved</string>
+    <string name="request_support">Request support</string>
 
     <string name="delete_backup_success">Recovery backup deleted</string>
     <string name="restore_backup_progress">Restoring recovery backup</string>
@@ -37,6 +38,8 @@
     <string name="err_native_comp_empty">An error occurred compressing the ramdisk.</string>
     <string name="err_native_decomp">An error occurred decompressing the ramdisk: %s.</string>
     <string name="err_native_decomp_empty">An error occurred decompressing the ramdisk.</string>
+    <string name="err_native_comp_magic">Unable to detect ramdisk compression method. The image is probably corrupted.</string>
+    <string name="err_native_comp_method">The %s compression method is not currently supported.</string>
     <string name="err_oom">Out of memory. Try closing some apps.</string>
     <string name="err_java">An internal error of type %s occurred: %s.</string>
     <string name="err_close_output">An error occurred cleaning up the written image: %s.</string>
@@ -65,7 +68,7 @@
 
     <string name="step0_backup">Backing up image</string>
     <string name="step1_read_unpack">Reading &amp; unpacking image</string>
-    <string name="step2_decompress">Decompressing ramdisk of type %s</string>
+    <string name="step2_decompress">Decompressing ramdisk with %s</string>
     <string name="step3_patch_rev">Reversing ramdisk patches</string>
     <string name="step3_patch">Patching ramdisk</string>
     <string name="step4_compress">Compressing ramdisk</string>

@@ -24,10 +24,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import com.crashlytics.android.Crashlytics
-import com.kdrag0n.tipatch.jni.CompressException
-import com.kdrag0n.tipatch.jni.Image
-import com.kdrag0n.tipatch.jni.ImageException
-import com.kdrag0n.tipatch.jni.NativeException
+import com.kdrag0n.tipatch.jni.*
 import com.kdrag0n.utils.*
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView
@@ -291,16 +288,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         val image = Image(fis)
 
         val cMode = image.detectCompressor()
-        val cName = when (cMode) {
-            Image.COMP_GZIP -> "gzip"
-            Image.COMP_LZ4 -> "lz4"
-            Image.COMP_LZO -> "lzo"
-            Image.COMP_XZ -> "xz"
-            Image.COMP_LZMA -> "lzma"
-            Image.COMP_BZIP2 -> "bzip2"
-            Image.COMP_NONE -> "none"
-            else -> "unknown"
-        }
+        val cName = Image.compressorName(cMode)
 
         progress(R.string.step2_decompress(cName), PatchStep.DECOMPRESS)
         image.decompressRamdisk(cMode)
@@ -511,6 +499,15 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
                             Crashlytics.logException(e)
                         }
+                        is RamdiskMagicException -> {
+                            val cMode = e.message!!.toByte()
+                            val cName = Image.compressorName(cMode)
+
+                            when (cMode) {
+                                Image.COMP_UNKNOWN -> errorDialog(R.string.err_native_comp_magic())
+                                else -> errorDialog(R.string.err_native_comp_method(cName), request = cName)
+                            }
+                        }
                         is OutOfMemoryError -> {
                             errorDialog(R.string.err_oom(), oom = true)
                             Crashlytics.logException(e)
@@ -675,11 +672,11 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
     }
 
-    private fun contactDev() {
+    private fun contactDev(extra: String = "") {
         val addr = R.string.contact_mail().replace(" (at) ", "@")
 
         try {
-            openUri("mailto:$addr")
+            openUri("mailto:$addr$extra")
         } catch (e: ActivityNotFoundException) {
             errorDialog(R.string.err_mailto_handler(addr))
         }
@@ -701,7 +698,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         dialog.findViewById<TextView>(android.R.id.message).movementMethod = LinkMovementMethod.getInstance()
     }
 
-    private fun errorDialog(message: String, appIssue: Boolean = false, oom: Boolean = false) {
+    private fun errorDialog(message: String, appIssue: Boolean = false, oom: Boolean = false, request: String = "") {
         runOnUiThread {
             with (AlertDialog.Builder(this, R.style.DialogTheme)) {
                 setTitle(R.string.err_generic)
@@ -714,11 +711,17 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                         System.exit(1) // last resort
                     }
                     appIssue -> {
-                        setPositiveButton(android.R.string.ok) { _, _ ->
-                        }
+                        setPositiveButton(android.R.string.ok) { _, _ -> }
 
                         setNegativeButton(R.string.contact) { _, _ ->
                             contactDev()
+                        }
+                    }
+                    request != "" -> {
+                        setPositiveButton(android.R.string.ok) { _, _ -> }
+
+                        setNegativeButton(R.string.request_support) { _, _ ->
+                            contactDev("?subject=$request compression&body=I would like to request support for the $request compression method for my device '${getProp("ro.product.device")}'. Thanks in advance.".replace(" ", "%20"))
                         }
                     }
                     else -> setPositiveButton(android.R.string.ok) { _, _ -> }

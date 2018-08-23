@@ -5,7 +5,7 @@
 #include <vector>
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_kdrag0n_tipatch_jni_Image__1write(JNIEnv *env, jobject, jlong handle, jobject fos) {
+Java_com_kdrag0n_tipatch_jni_Image_nvWrite(JNIEnv *env, jobject, jlong handle, jobject fos) {
     try {
         Image *image = (Image*) handle;
 
