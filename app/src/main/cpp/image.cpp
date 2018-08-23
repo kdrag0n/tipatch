@@ -129,6 +129,7 @@ Java_com_kdrag0n_tipatch_jni_Image_nvSetRamdisk(JNIEnv *env, jobject, jlong hand
     image->ramdisk->resize((size_t) jLen);
     image->ramdisk->reset_pos();
     image->ramdisk->write(jBytes, (size_t) jLen);
+    image->hdr.ramdisk_size = (uint32_t) jLen;
 
     env->ReleaseByteArrayElements(data, jBytes, JNI_ABORT);
     check_exp();
