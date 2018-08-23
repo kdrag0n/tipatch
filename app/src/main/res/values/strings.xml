@@ -101,7 +101,7 @@
     
     <string name="telegram_uri">https://t.me/kdrag0n</string>
     <string name="github_uri">https://github.com/kdrag0n</string>
-    <string name="xda_uri">https://forum.xda-developers.com/member.php?u=7291478</string>
+    <string name="xda_uri">https://forum.xda-developers.com/android/apps-games/app-twrp-tipatch-backup-internal-t3831217</string>
 
     <!-- Line breaks and margins don't work properly in plain XML -->
     <string name="full_info"><![CDATA[
