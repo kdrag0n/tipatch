@@ -41,7 +41,7 @@ class Image(fis: InputStream) {
             COMP_LZMA -> {
                 val dcData = nvGetRamdisk(nativePtr)
                 val bos = ByteBuffer(comprSize + 4) // better safe than sorry (oom)
-                val stream = LZMAOutputStream(BufferedOutputStream(bos), LZMA2Options(), -1, ArrayCache.getDefaultCache())
+                val stream = LZMAOutputStream(bos, LZMA2Options(), -1, ArrayCache.getDefaultCache())
                 stream.write(dcData)
 
                 stream.close()
