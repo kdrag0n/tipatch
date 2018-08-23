@@ -1,42 +1,57 @@
 package com.kdrag0n.tipatch.jni
 
+import org.tukaani.xz.LZMAInputStream
+import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.io.OutputStream
 
 class Image(fis: InputStream) {
-    private val handle = init(fis)
+    private val nativePtr = init(fis)
 
     fun finalize() {
-        free(handle)
+        free(nativePtr)
     }
 
     fun detectCompressor(): Byte {
-        return nvDetectCompressor(handle)
+        return nvDetectCompressor(nativePtr)
     }
 
     fun decompressRamdisk(compMode: Byte) {
-        nvDecompressRamdisk(handle, compMode)
+        when (compMode) {
+            COMP_LZMA -> {
+                val cmData = nvGetRamdisk(nativePtr)
+                val stream = LZMAInputStream(ByteArrayInputStream(cmData))
+
+                val dcData = stream.readBytes(cmData.size * 2)
+                stream.close()
+
+                nvSetRamdisk(nativePtr, dcData)
+            }
+            else -> nvDecompressRamdisk(nativePtr, compMode)
+        }
     }
 
     fun compressRamdisk(compMode: Byte) {
-        nvCompressRamdisk(handle, compMode)
+        nvCompressRamdisk(nativePtr, compMode)
     }
 
     fun patchRamdisk(direction: Byte) {
-        nvPatchRamdisk(handle, direction)
+        nvPatchRamdisk(nativePtr, direction)
     }
 
     fun write(fos: OutputStream) {
-        nvWrite(handle, fos)
+        nvWrite(nativePtr, fos)
     }
 
     private external fun init(fis: InputStream): Long
-    private external fun free(handle: Long)
-    private external fun nvDetectCompressor(handle: Long): Byte
-    private external fun nvDecompressRamdisk(handle: Long, compMode: Byte)
-    private external fun nvCompressRamdisk(handle: Long, compMode: Byte)
-    private external fun nvPatchRamdisk(handle: Long, direction: Byte)
-    private external fun nvWrite(handle: Long, fos: OutputStream)
+    private external fun free(pointer: Long)
+    private external fun nvDetectCompressor(pointer: Long): Byte
+    private external fun nvDecompressRamdisk(pointer: Long, compMode: Byte)
+    private external fun nvCompressRamdisk(pointer: Long, compMode: Byte)
+    private external fun nvPatchRamdisk(pointer: Long, direction: Byte)
+    private external fun nvGetRamdisk(pointer: Long): ByteArray
+    private external fun nvSetRamdisk(pointer: Long, data: ByteArray)
+    private external fun nvWrite(pointer: Long, fos: OutputStream)
 
     companion object {
         const val COMP_GZIP: Byte = 0

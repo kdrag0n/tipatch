@@ -104,6 +104,38 @@ Java_com_kdrag0n_tipatch_jni_Image_nvDetectCompressor(JNIEnv, jobject, jlong han
     }
 }
 
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_com_kdrag0n_tipatch_jni_Image_nvGetRamdisk(JNIEnv *env, jobject, jlong handle) {
+    Image *image = (Image*) handle;
+
+    jbyteArray buffer = env->NewByteArray((jsize) image->ramdisk->len);
+    check_exp();
+
+    env->SetByteArrayRegion(buffer, 0, (jsize) image->ramdisk->len, (jbyte *) image->ramdisk->data);
+
+    return buffer;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_kdrag0n_tipatch_jni_Image_nvSetRamdisk(JNIEnv *env, jobject, jlong handle, jbyteArray data) {
+    Image *image = (Image*) handle;
+
+    jsize jLen = env->GetArrayLength(data);
+    check_exp();
+
+    jbyte *jBytes = env->GetByteArrayElements(data, nullptr);
+    check_exp();
+
+    image->ramdisk->resize((size_t) jLen);
+    image->ramdisk->reset_pos();
+    image->ramdisk->write(jBytes, (size_t) jLen);
+
+    env->ReleaseByteArrayElements(data, jBytes, JNI_ABORT);
+    check_exp();
+
+    env->DeleteLocalRef(data);
+}
+
 unsigned long Image::hash() {
     auto sum = adler32(0L, kernel->data, (uInt) kernel->len);
     sum = adler32(sum, ramdisk->data, (uInt) ramdisk->len);

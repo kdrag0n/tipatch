@@ -67,6 +67,7 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$supportVer"
     implementation "com.android.support:design:$supportVer"
     implementation "com.leinardi.android:speed-dial:1.0.2"
+    implementation 'org.tukaani:xz:1.8'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
