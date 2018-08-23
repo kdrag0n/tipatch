@@ -72,7 +72,8 @@
     <string name="step2_decompress">Decompressing ramdisk with %s</string>
     <string name="step3_patch_rev">Reversing ramdisk patches</string>
     <string name="step3_patch">Patching ramdisk</string>
-    <string name="step4_compress">Compressing ramdisk</string>
+    <string name="step4_compress">Compressing ramdisk with %s</string>
+    <string name="step4_compress_lzma">Compressing ramdisk with LZMA (this will take a while)</string>
     <string name="step5_pack_write">Repacking &amp; writing image</string>
 
     <string name="pref_file_input">Input source</string>

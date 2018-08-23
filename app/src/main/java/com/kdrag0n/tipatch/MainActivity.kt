@@ -357,7 +357,10 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
         image.patchRamdisk(direction)
 
-        progress(R.string.step4_compress(), PatchStep.COMPRESS)
+        progress(when (cMode) {
+            Image.COMP_LZMA -> R.string.step4_compress_lzma()
+            else -> R.string.step4_compress(cName)
+        }, PatchStep.COMPRESS)
         image.compressRamdisk(cMode)
 
         progress(R.string.step5_pack_write(), PatchStep.WRITE)
