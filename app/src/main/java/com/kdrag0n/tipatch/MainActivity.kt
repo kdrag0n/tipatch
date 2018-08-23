@@ -103,7 +103,13 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 .add(R.id.opt_container, optFrag)
                 .commit()
 
-        patchDialog = ProgressDialog(this, R.style.DialogTheme)
+
+        val pDialog = ProgressDialog(this, R.style.DialogTheme)
+        try {
+            patchDialog.value = pDialog
+        } catch (e: UninitializedPropertyAccessException) {
+            patchDialog = Box(pDialog)
+        }
         currentStep = R.string.step0_backup()
 
         if (savedInstanceState == null) {
@@ -138,7 +144,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             }
 
             if (task?.status == AsyncTask.Status.RUNNING) {
-                with (patchDialog) {
+                with (patchDialog.value) {
                     setTitle(patchTitle)
                     setMessage(currentStep)
                     setCancelable(false)
@@ -263,8 +269,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     override fun onDestroy() {
         super.onDestroy()
 
-        if (patchDialog.isShowing) {
-            patchDialog.dismiss()
+        if (patchDialog.value.isShowing) {
+            patchDialog.value.dismiss()
         }
     }
 
@@ -420,7 +426,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                     }
                 }
 
-                with (patchDialog) {
+                with (patchDialog.value) {
                     setTitle(patchTitle)
                     setMessage(currentStep)
                     setCancelable(false)
@@ -489,7 +495,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                                 currentPatchStep = patchStep
 
                                 runOnUiThread {
-                                    patchDialog.setMessage(step)
+                                    patchDialog.value.setMessage(step)
                                 }
                             },
 
@@ -498,7 +504,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                             direction = direction
                     )
                 } catch (e: Throwable) {
-                    patchDialog.dismiss()
+                    patchDialog.value.dismiss()
 
                     Crashlytics.log("Last step: $currentPatchStep $currentStep")
                     currentStep = ""
@@ -596,8 +602,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                         fos.flush()
                         fos.close()
                     } catch (ex: Exception) {
-                        if (patchDialog.isShowing) {
-                            patchDialog.dismiss()
+                        if (patchDialog.value.isShowing) {
+                            patchDialog.value.dismiss()
                         }
 
                         errorDialog(R.string.err_close_output(ex.message ?: "null"))
@@ -606,8 +612,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             }
 
             override fun onPostExecute(result: Unit?) {
-                if (patchDialog.isShowing) {
-                    patchDialog.dismiss()
+                if (patchDialog.value.isShowing) {
+                    patchDialog.value.dismiss()
                 }
 
                 if (!success) {
@@ -865,7 +871,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
     companion object {
         private var task: AsyncTask<Unit, Unit, Unit>? = null
-        private lateinit var patchDialog: ProgressDialog
+        private lateinit var patchDialog: Box<ProgressDialog>
 
         init {
             System.loadLibrary("tipatch")
