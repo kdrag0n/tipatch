@@ -9,8 +9,8 @@ android {
         applicationId "com.kdrag0n.tipatch"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 1032
-        versionName "1.3"
+        versionCode 1041
+        versionName "1.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
 
