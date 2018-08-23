@@ -117,11 +117,8 @@ Java_com_kdrag0n_tipatch_jni_Image_nvGetRamdisk(JNIEnv *env, jobject, jlong hand
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_kdrag0n_tipatch_jni_Image_nvSetRamdisk(JNIEnv *env, jobject, jlong handle, jbyteArray data) {
+Java_com_kdrag0n_tipatch_jni_Image_nvSetRamdisk(JNIEnv *env, jobject, jlong handle, jbyteArray data, jint jLen) {
     Image *image = (Image*) handle;
-
-    jsize jLen = env->GetArrayLength(data);
-    check_exp();
 
     jbyte *jBytes = env->GetByteArrayElements(data, nullptr);
     check_exp();

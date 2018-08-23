@@ -30,7 +30,7 @@ class Image(fis: InputStream) {
                 val dcData = stream.readBytes(cmData.size * 2)
                 stream.close()
 
-                nvSetRamdisk(nativePtr, dcData)
+                nvSetRamdisk(nativePtr, dcData, dcData.size)
             }
             else -> nvDecompressRamdisk(nativePtr, compMode)
         }
@@ -47,7 +47,7 @@ class Image(fis: InputStream) {
                 stream.close()
 
                 // avoid copy as it's probably already copied once for JNI access
-                nvSetRamdisk(nativePtr, bos.bytes)
+                nvSetRamdisk(nativePtr, bos.bytes, bos.size())
             }
             else -> nvCompressRamdisk(nativePtr, compMode)
         }
@@ -68,7 +68,7 @@ class Image(fis: InputStream) {
     private external fun nvCompressRamdisk(pointer: Long, compMode: Byte)
     private external fun nvPatchRamdisk(pointer: Long, direction: Byte)
     private external fun nvGetRamdisk(pointer: Long): ByteArray
-    private external fun nvSetRamdisk(pointer: Long, data: ByteArray)
+    private external fun nvSetRamdisk(pointer: Long, data: ByteArray, size: Int)
     private external fun nvWrite(pointer: Long, fos: OutputStream)
 
     companion object {
