@@ -132,8 +132,6 @@ Java_com_kdrag0n_tipatch_jni_Image_nvSetRamdisk(JNIEnv *env, jobject, jlong hand
 
     env->ReleaseByteArrayElements(data, jBytes, JNI_ABORT);
     check_exp();
-
-    env->DeleteLocalRef(data);
 }
 
 unsigned long Image::hash() {

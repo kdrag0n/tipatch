@@ -1,12 +1,15 @@
 package com.kdrag0n.tipatch.jni
 
+import com.kdrag0n.utils.ByteBuffer
+import org.tukaani.xz.ArrayCache
+import org.tukaani.xz.LZMA2Options
 import org.tukaani.xz.LZMAInputStream
-import java.io.ByteArrayInputStream
-import java.io.InputStream
-import java.io.OutputStream
+import org.tukaani.xz.LZMAOutputStream
+import java.io.*
 
 class Image(fis: InputStream) {
     private val nativePtr = init(fis)
+    private var comprSize: Int = 0
 
     fun finalize() {
         free(nativePtr)
@@ -20,6 +23,8 @@ class Image(fis: InputStream) {
         when (compMode) {
             COMP_LZMA -> {
                 val cmData = nvGetRamdisk(nativePtr)
+                comprSize = cmData.size
+
                 val stream = LZMAInputStream(ByteArrayInputStream(cmData))
 
                 val dcData = stream.readBytes(cmData.size * 2)
@@ -32,7 +37,20 @@ class Image(fis: InputStream) {
     }
 
     fun compressRamdisk(compMode: Byte) {
-        nvCompressRamdisk(nativePtr, compMode)
+        when (compMode) {
+            COMP_LZMA -> {
+                val dcData = nvGetRamdisk(nativePtr)
+                val bos = ByteBuffer(comprSize + 4) // better safe than sorry (oom)
+                val stream = LZMAOutputStream(BufferedOutputStream(bos), LZMA2Options(), -1, ArrayCache.getDefaultCache())
+                stream.write(dcData)
+
+                stream.close()
+
+                // avoid copy as it's probably already copied once for JNI access
+                nvSetRamdisk(nativePtr, bos.bytes)
+            }
+            else -> nvCompressRamdisk(nativePtr, compMode)
+        }
     }
 
     fun patchRamdisk(direction: Byte) {

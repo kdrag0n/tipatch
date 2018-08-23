@@ -7,7 +7,6 @@ import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
@@ -33,6 +32,7 @@ import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuProcessFileInputStream
 import com.topjohnwu.superuser.io.SuProcessFileOutputStream
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.info_item_row.*
 import java.io.*
 import java.lang.IndexOutOfBoundsException
 
@@ -51,6 +51,12 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     private var isRooted = false
     private var slotsPatched = 0
     private var ifName: String? = null
+
+    // task
+    private var success = false
+    private lateinit var currentStep: String
+    private lateinit var patchTitle: String
+    private var currentPatchStep = PatchStep.BACKUP
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,6 +103,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 .add(R.id.opt_container, optFrag)
                 .commit()
 
+        patchDialog = ProgressDialog(this, R.style.DialogTheme)
+        currentStep = R.string.step0_backup()
+
         if (savedInstanceState == null) {
             asyncExec {
                 try {
@@ -113,6 +122,29 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             isRooted = savedInstanceState.getBoolean("rooted", false)
             inputSource = ImageLocation.valueOf(savedInstanceState.getString("input", "FILE"))
             outputDest = ImageLocation.valueOf(savedInstanceState.getString("output", "FILE"))
+            success = savedInstanceState.getBoolean("success", success)
+            currentStep = savedInstanceState.getString("currentStep", currentStep)
+            currentPatchStep = PatchStep.values()[savedInstanceState.getInt("currentPatchStep", currentPatchStep.ordinal)]
+            patchTitle = savedInstanceState.getString("patchTitle", R.string.header_patching())
+
+            var pcu = savedInstanceState.getParcelable<Uri>("safInput")
+            if (pcu != null) {
+                safInput = pcu
+            }
+
+            pcu = savedInstanceState.getParcelable("safOutput")
+            if (pcu != null) {
+                safOutput = pcu
+            }
+
+            if (task?.status == AsyncTask.Status.RUNNING) {
+                with (patchDialog) {
+                    setTitle(patchTitle)
+                    setMessage(currentStep)
+                    setCancelable(false)
+                    show()
+                }
+            }
         }
 
         patch_dial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_patch, R.drawable.ic_apply)
@@ -216,6 +248,24 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         outState?.putBoolean("rooted", isRooted)
         outState?.putString("input", inputSource.name)
         outState?.putString("output", outputDest.name)
+        outState?.putBoolean("success", success)
+        outState?.putString("currentStep", currentStep)
+        outState?.putInt("currentPatchStep", currentPatchStep.ordinal)
+
+        if (task?.status == AsyncTask.Status.RUNNING) {
+            outState?.putString("patchTitle", patchTitle)
+        }
+
+        outState?.putParcelable("safInput", if (::safInput.isInitialized) safInput else null)
+        outState?.putParcelable("safOutput", if (::safOutput.isInitialized) safOutput else null)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        if (patchDialog.isShowing) {
+            patchDialog.dismiss()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -357,25 +407,25 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             null
         }
 
-        val ctx = this
-
-        val task =
+        task =
         @SuppressLint("StaticFieldLeak")
         object : AsyncTask<Unit, Unit, Unit>() {
-            private var dialog = ProgressDialog(ctx, R.style.DialogTheme)
-            private var success = false
-            private var currentStep = R.string.step0_backup()
-            private var currentPatchStep = PatchStep.BACKUP
+            override fun onPreExecute() {
+                patchTitle = when (inputSource) {
+                    ImageLocation.FILE -> R.string.header_patching()
+                    ImageLocation.PARTITION -> when (currentSlot) {
+                        null -> R.string.header_patching_part()
+                        "unknown" -> R.string.header_patching_unknown_slot()
+                        else -> R.string.header_patching_slot(currentSlot)
+                    }
+                }
 
-            override fun onPreExecute() = with (dialog) {
-                setTitle(when (currentSlot) {
-                    null -> R.string.header_patching()
-                    "unknown" -> R.string.header_patching_unknown_slot()
-                    else -> R.string.header_patching_slot(currentSlot)
-                })
-                setMessage(currentStep)
-                setCancelable(false)
-                show()
+                with (patchDialog) {
+                    setTitle(patchTitle)
+                    setMessage(currentStep)
+                    setCancelable(false)
+                    show()
+                }
             }
 
             override fun doInBackground(vararg params: Unit?) {
@@ -439,7 +489,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                                 currentPatchStep = patchStep
 
                                 runOnUiThread {
-                                    dialog.setMessage(step)
+                                    patchDialog.setMessage(step)
                                 }
                             },
 
@@ -448,7 +498,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                             direction = direction
                     )
                 } catch (e: Throwable) {
-                    dialog.dismiss()
+                    patchDialog.dismiss()
 
                     Crashlytics.log("Last step: $currentPatchStep $currentStep")
                     currentStep = ""
@@ -546,8 +596,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                         fos.flush()
                         fos.close()
                     } catch (ex: Exception) {
-                        if (dialog.isShowing) {
-                            dialog.dismiss()
+                        if (patchDialog.isShowing) {
+                            patchDialog.dismiss()
                         }
 
                         errorDialog(R.string.err_close_output(ex.message ?: "null"))
@@ -556,8 +606,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             }
 
             override fun onPostExecute(result: Unit?) {
-                if (dialog.isShowing) {
-                    dialog.dismiss()
+                if (patchDialog.isShowing) {
+                    patchDialog.dismiss()
                 }
 
                 if (!success) {
@@ -606,7 +656,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             }
         }
 
-        task.execute()
+        task!!.execute()
     }
 
     private fun doBackup(slot: String, path: String): Shell.Result {
@@ -814,6 +864,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     companion object {
+        private var task: AsyncTask<Unit, Unit, Unit>? = null
+        private lateinit var patchDialog: ProgressDialog
+
         init {
             System.loadLibrary("tipatch")
         }
