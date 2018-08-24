@@ -40,7 +40,6 @@
     <string name="err_native_decomp_empty">An error occurred decompressing the ramdisk.</string>
     <string name="err_native_comp_magic">Unable to detect ramdisk compression method. The image is probably corrupted.</string>
     <string name="err_native_comp_method">The %s compression method is not currently supported.</string>
-    <string name="err_oom">Out of memory. Try closing some apps.</string>
     <string name="err_java">An internal error of type %s occurred: %s.</string>
     <string name="err_close_output">An error occurred cleaning up the written image: %s.</string>
     <string name="err_backup">Recovery backup failed: %s.</string>

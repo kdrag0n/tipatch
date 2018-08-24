@@ -566,10 +566,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                                 else -> errorDialog(R.string.err_native_comp_method(cName), request = cName)
                             }
                         }
-                        is OutOfMemoryError -> {
-                            errorDialog(R.string.err_oom(), oom = true)
-                            Crashlytics.logException(e)
-                        }
                         is IndexOutOfBoundsException -> {
                             if (e.message != null) {
                                 errorDialog(R.string.err_native_unknown(e.message!!))
@@ -756,18 +752,13 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         dialog.findViewById<TextView>(android.R.id.message).movementMethod = LinkMovementMethod.getInstance()
     }
 
-    private fun errorDialog(message: String, appIssue: Boolean = false, oom: Boolean = false, request: String = "") {
+    private fun errorDialog(message: String, appIssue: Boolean = false, request: String = "") {
         runOnUiThread {
             with (AlertDialog.Builder(this, R.style.DialogTheme)) {
                 setTitle(R.string.err_generic)
                 setMessage(message)
 
                 when {
-                    oom -> setPositiveButton(R.string.exit) { _, _ ->
-                        // we don't use Activity#finish() because it keeps the JVM running
-                        Process.killProcess(Process.myPid())
-                        System.exit(1) // last resort
-                    }
                     appIssue -> {
                         setPositiveButton(android.R.string.ok) { _, _ -> }
 
