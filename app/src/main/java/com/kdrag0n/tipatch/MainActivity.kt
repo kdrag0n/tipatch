@@ -32,7 +32,6 @@ import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuProcessFileInputStream
 import com.topjohnwu.superuser.io.SuProcessFileOutputStream
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.info_item_row.*
 import java.io.*
 import java.lang.IndexOutOfBoundsException
 
