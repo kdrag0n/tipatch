@@ -1,8 +1,10 @@
 package com.kdrag0n.tipatch
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.View
@@ -17,6 +19,16 @@ class AboutActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         about_version.summary = BuildConfig.VERSION_NAME
+        about_version.setOnClickListener {
+            try {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                val intent = Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS)
+                startActivity(intent)
+            }
+        }
 
         about_source.summary = R.string.about_src_desc()
         about_source.uri = R.string.source_uri
