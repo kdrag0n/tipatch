@@ -18,7 +18,7 @@ class AboutActivity : AppCompatActivity() {
         setSupportActionBar(toolbar_about as Toolbar?)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        about_version.summary = BuildConfig.VERSION_NAME
+        about_version.summary = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
         about_version.setOnClickListener {
             try {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
