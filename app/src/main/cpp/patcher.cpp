@@ -45,33 +45,41 @@ void Image::patch_ramdisk(char dir) {
 #ifndef NDEBUG
     Timer tmr;
 #endif
+    unsigned int num = 0;
 
-    // Preserve /data/media
+    // Preserve /data/media by ignoring /data/.twrp instead
     repl_dir(ramdisk,
              std::string("\x00/media\x00", 8),
              std::string("\x00/.twrp\x00", 8),
-             1,
+             ++num,
              dir);
 
     // Change text in Backup screen for English
     repl_dir(ramdisk,
              "Data (excl. storage)",
              "Data (incl. storage)",
-             2,
+             ++num,
              dir);
 
     // Change orange warning text when backing up for English
     repl_dir(ramdisk,
              "Backups of {1} do not include any files in internal storage such as pictures or downloads.",
              "Backups of {1} include files in internal storage such as pictures and downloads.          ",
-             3,
+             ++num,
              dir);
 
     // Change text shown when wiping "Data"
     repl_dir(ramdisk,
              "Wiping data without wiping /data/media ...",
              "Wiping data and internal storage...       ",
-             4,
+             ++num,
+             dir);
+
+    // Change text shown on Wipe screen
+    repl_dir(ramdisk,
+             "(not including internal storage)",
+             "(including internal storage)    ",
+             ++num,
              dir);
 
 #ifndef NDEBUG
