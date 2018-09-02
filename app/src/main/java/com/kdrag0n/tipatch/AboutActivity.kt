@@ -30,7 +30,7 @@ class AboutActivity : AppCompatActivity() {
             }
         }
 
-        about_source.summary = R.string.about_src_desc()
+        about_source.summary = R.string.about_src_desc.string()
         about_source.uri = R.string.source_uri
 
         about_oss.removeSummary()
@@ -40,13 +40,13 @@ class AboutActivity : AppCompatActivity() {
         }
 
         if (resources.getBoolean(R.bool.showPaypal)) {
-            about_donate.summary = R.string.about_donate_desc()
+            about_donate.summary = R.string.about_donate_desc.string()
             about_donate.uri = R.string.donate_uri
         } else {
             about_donate.visibility = View.GONE
         }
 
-        about_author.summary = R.string.author_nick()
+        about_author.summary = R.string.author_nick.string()
         about_author.uri = R.string.website_uri
 
         about_telegram.removeSummary()
@@ -57,11 +57,11 @@ class AboutActivity : AppCompatActivity() {
 
         about_email.removeSummary()
         about_email.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + R.string.contact_mail().replace(" (at) ", "@"))))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + R.string.contact_mail.string().replace(" (at) ", "@"))))
         }
     }
 
-    private operator fun Int.invoke(vararg fmt: Any): String {
+    private fun Int.string(vararg fmt: Any): String {
         return resources.getString(this, *fmt)
     }
 }
