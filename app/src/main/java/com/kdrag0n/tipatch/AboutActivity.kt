@@ -11,8 +11,8 @@ import android.view.View
 import kotlinx.android.synthetic.main.activity_about.*
 
 class AboutActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreate(state: Bundle?) {
+        super.onCreate(state)
         setContentView(R.layout.activity_about)
 
         setSupportActionBar(toolbar_about as Toolbar?)
