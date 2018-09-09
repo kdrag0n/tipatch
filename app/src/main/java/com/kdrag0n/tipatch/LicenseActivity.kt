@@ -11,8 +11,8 @@ import com.kdrag0n.utils.AboutCardRow
 import kotlinx.android.synthetic.main.activity_license.*
 
 class LicenseActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreate(state: Bundle?) {
+        super.onCreate(state)
         setContentView(R.layout.activity_license)
 
         setSupportActionBar(toolbar_license as Toolbar?)
