@@ -10,7 +10,6 @@ import android.provider.OpenableColumns
 import android.text.Html
 import android.text.Spanned
 import android.util.Log
-import com.kdrag0n.tipatch.R
 import com.topjohnwu.superuser.Shell
 
 const val logTag = "Tipatch"
