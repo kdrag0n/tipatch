@@ -57,7 +57,7 @@ class AboutActivity : AppCompatActivity() {
 
         about_email.removeSummary()
         about_email.setOnClickListener {
-            mainParent.contactDev()
+            mainParent.contactDev(ctx = this)
         }
     }
 

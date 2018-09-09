@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -725,13 +726,13 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
     }
 
-    internal fun contactDev(extra: String = "") {
+    internal fun contactDev(extra: String = "", ctx: Context = this) {
         val addr = R.string.contact_mail.string().replace(" (at) ", "@")
 
         try {
             openUri("mailto:$addr$extra")
         } catch (e: ActivityNotFoundException) {
-            errorDialog(R.string.err_mailto_handler.string(addr))
+            errorDialog(R.string.err_mailto_handler.string(addr), ctx = ctx)
         }
     }
 
@@ -753,9 +754,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         dialog.findViewById<TextView>(android.R.id.message).movementMethod = LinkMovementMethod.getInstance()
     }
 
-    private fun errorDialog(message: String, appIssue: Boolean = false, request: String = "") {
+    private fun errorDialog(message: String, ctx: Context = this, appIssue: Boolean = false, request: String = "") {
         runOnUiThread {
-            with (AlertDialog.Builder(this, R.style.DialogTheme)) {
+            with (AlertDialog.Builder(ctx, R.style.DialogTheme)) {
                 setTitle(R.string.err_generic)
                 setMessage(message)
 
