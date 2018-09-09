@@ -5,6 +5,10 @@ import android.preference.PreferenceFragment
 import android.widget.ListView
 
 class OptionFragment : PreferenceFragment() {
+    init { // for when Android recreates this
+        MainActivity.optFrag = this
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

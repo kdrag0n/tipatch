@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     private lateinit var safInput: Uri
     private lateinit var safOutput: Uri
     private lateinit var opts: SharedPreferences
-    private lateinit var optFrag: OptionFragment
     private var firstRun = false
     private var isRooted = false
     private var slotsPatched = 0
@@ -865,6 +864,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     companion object {
+        internal lateinit var optFrag: OptionFragment
         private var task: AsyncTask<Unit, Unit, Unit>? = null
         private lateinit var patchDialog: Box<ProgressDialog>
 
