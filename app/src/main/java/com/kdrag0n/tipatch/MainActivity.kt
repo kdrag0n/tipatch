@@ -66,8 +66,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         opts = PreferenceManager.getDefaultSharedPreferences(baseContext)
         opts.registerOnSharedPreferenceChangeListener(this)
 
-        optFrag = OptionFragment()
-        optFrag.inputEvent = {
+        OptionFragment.inputEvent = {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "application/octet-stream" // no .img type
@@ -79,7 +78,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             }
         }
 
-        optFrag.outputEvent = {
+        OptionFragment.outputEvent = {
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
 
@@ -95,6 +94,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             }
         }
 
+        optFrag = OptionFragment()
         optFrag.retainInstance = true
 
         fragmentManager
