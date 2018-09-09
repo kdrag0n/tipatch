@@ -38,12 +38,14 @@ import java.lang.IndexOutOfBoundsException
 private const val REQ_SAF_INPUT = 100
 private const val REQ_SAF_OUTPUT = 101
 private const val BACKUP_PREFIX = "parti_backup"
+private const val TAG_OPT_FRAGMENT = "option_fragment"
 
-class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
+class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
     private var inputSource = ImageLocation.FILE
     private var outputDest = ImageLocation.FILE
     private lateinit var safInput: Uri
     private lateinit var safOutput: Uri
+    private lateinit var optFrag: OptionFragment
     private lateinit var opts: SharedPreferences
     private var firstRun = false
     private var isRooted = false
@@ -62,45 +64,15 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar_main as Toolbar?)
 
-        opts = PreferenceManager.getDefaultSharedPreferences(baseContext)
-        opts.registerOnSharedPreferenceChangeListener(this)
-
-        OptionFragment.inputEvent = {
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.type = "application/octet-stream" // no .img type
-
-            try {
-                startActivityForResult(intent, REQ_SAF_INPUT)
-            } catch (e: ActivityNotFoundException) {
-                errorDialog(R.string.err_no_file_handler.string())
-            }
+        val nFrag = fragmentManager.findFragmentByTag(TAG_OPT_FRAGMENT) as OptionFragment?
+        if (nFrag == null) {
+            optFrag = OptionFragment()
+            fragmentManager.beginTransaction().add(R.id.opt_container, optFrag, TAG_OPT_FRAGMENT).commit()
+        } else {
+            optFrag = nFrag
         }
 
-        OptionFragment.outputEvent = {
-            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-
-            intent.type = "application/octet-stream" // no .img type
-
-            val outName = outputFileName()
-            intent.putExtra(Intent.EXTRA_TITLE, outName)
-
-            try {
-                startActivityForResult(intent, REQ_SAF_OUTPUT)
-            } catch (e: ActivityNotFoundException) {
-                errorDialog(R.string.err_no_file_handler.string())
-            }
-        }
-
-        optFrag = OptionFragment()
-        optFrag.retainInstance = true
-
-        fragmentManager
-                .beginTransaction()
-                .add(R.id.opt_container, optFrag)
-                .commit()
-
+        opts = PreferenceManager.getDefaultSharedPreferences(this)
 
         val pDialog = ProgressDialog(this, R.style.DialogTheme)
         try {
@@ -847,24 +819,47 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
     }
 
-    override fun onSharedPreferenceChanged(pref: SharedPreferences?, key: String?) {
-        if (key == "partition") {
-            val partEnabled = pref?.getBoolean(key, false) ?: false
+    override fun onInputSelect() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = "application/octet-stream" // no .img type
 
-            optFrag.preferenceManager.findPreference("input")?.isEnabled = !partEnabled
-            optFrag.preferenceManager.findPreference("output")?.isEnabled = !partEnabled
+        try {
+            startActivityForResult(intent, REQ_SAF_INPUT)
+        } catch (e: ActivityNotFoundException) {
+            errorDialog(R.string.err_no_file_handler.string())
+        }
+    }
 
-            optFrag.preferenceManager.findPreference("backup")?.isEnabled = partEnabled
+    override fun onOutputSelect() {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
 
-            inputSource = when (partEnabled) {
-                true -> ImageLocation.PARTITION
-                false -> ImageLocation.FILE
-            }
+        intent.type = "application/octet-stream" // no .img type
+
+        val outName = outputFileName()
+        intent.putExtra(Intent.EXTRA_TITLE, outName)
+
+        try {
+            startActivityForResult(intent, REQ_SAF_OUTPUT)
+        } catch (e: ActivityNotFoundException) {
+            errorDialog(R.string.err_no_file_handler.string())
+        }
+    }
+
+    override fun onPartitionChange(state: Boolean) {
+        optFrag.preferenceManager.findPreference("input")?.isEnabled = !state
+        optFrag.preferenceManager.findPreference("output")?.isEnabled = !state
+
+        optFrag.preferenceManager.findPreference("backup")?.isEnabled = state
+
+        inputSource = when (state) {
+            true -> ImageLocation.PARTITION
+            false -> ImageLocation.FILE
         }
     }
 
     companion object {
-        internal lateinit var optFrag: OptionFragment
         private var task: AsyncTask<Unit, Unit, Unit>? = null
         private lateinit var patchDialog: Box<ProgressDialog>
 

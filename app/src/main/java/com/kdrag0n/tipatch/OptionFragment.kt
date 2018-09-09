@@ -1,27 +1,32 @@
 package com.kdrag0n.tipatch
 
+import android.content.Context
 import android.os.Bundle
+import android.preference.CheckBoxPreference
 import android.preference.PreferenceFragment
 import android.widget.ListView
 
 class OptionFragment : PreferenceFragment() {
-    init { // for when Android recreates this
-        MainActivity.optFrag = this
-    }
+    private var handler: Callbacks? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        retainInstance = true
 
         addPreferencesFromResource(R.xml.options)
 
         with (preferenceManager) {
             findPreference("input")?.setOnPreferenceClickListener {
-                inputEvent()
+                handler?.onInputSelect()
                 true
             }
 
             findPreference("output")?.setOnPreferenceClickListener {
-                outputEvent()
+                handler?.onOutputSelect()
+                true
+            }
+            findPreference("partition")?.setOnPreferenceClickListener {
+                handler?.onPartitionChange((it as CheckBoxPreference).isChecked)
                 true
             }
         }
@@ -29,12 +34,22 @@ class OptionFragment : PreferenceFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         view?.findViewById<ListView>(android.R.id.list)?.divider = null
     }
 
-    companion object {
-        lateinit var inputEvent: () -> Unit
-        lateinit var outputEvent: () -> Unit
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        handler = context as Callbacks?
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        handler = null
+    }
+
+    internal interface Callbacks {
+        fun onInputSelect()
+        fun onOutputSelect()
+        fun onPartitionChange(state: Boolean)
     }
 }
