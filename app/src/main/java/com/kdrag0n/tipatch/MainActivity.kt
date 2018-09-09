@@ -58,8 +58,8 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
     private lateinit var patchTitle: String
     private var currentPatchStep = PatchStep.BACKUP
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreate(state: Bundle?) {
+        super.onCreate(state)
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar_main as Toolbar?)
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         }
         currentStep = R.string.step0_backup.string()
 
-        if (savedInstanceState == null) {
+        if (state == null) {
             asyncExec {
                 try {
                     if (Shell.rootAccess()) {
@@ -95,21 +95,21 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                 }
             }
         } else {
-            isRooted = savedInstanceState.getBoolean("rooted", false)
-            inputSource = ImageLocation.valueOf(savedInstanceState.getString("input", "FILE"))
-            outputDest = ImageLocation.valueOf(savedInstanceState.getString("output", "FILE"))
-            success = savedInstanceState.getBoolean("success", success)
-            currentStep = savedInstanceState.getString("currentStep", currentStep)
-            currentPatchStep = PatchStep.values()[savedInstanceState.getInt("currentPatchStep", currentPatchStep.ordinal)]
-            ifName = savedInstanceState.getString("ifName")
-            patchTitle = savedInstanceState.getString("patchTitle", R.string.header_patching.string())
+            isRooted = state.getBoolean("rooted", false)
+            inputSource = ImageLocation.valueOf(state.getString("input", "FILE"))
+            outputDest = ImageLocation.valueOf(state.getString("output", "FILE"))
+            success = state.getBoolean("success", success)
+            currentStep = state.getString("currentStep", currentStep)
+            currentPatchStep = PatchStep.values()[state.getInt("currentPatchStep", currentPatchStep.ordinal)]
+            ifName = state.getString("ifName")
+            patchTitle = state.getString("patchTitle", R.string.header_patching.string())
 
-            var pcu = savedInstanceState.getParcelable<Uri>("safInput")
+            var pcu = state.getParcelable<Uri>("safInput")
             if (pcu != null) {
                 safInput = pcu
             }
 
-            pcu = savedInstanceState.getParcelable("safOutput")
+            pcu = state.getParcelable("safOutput")
             if (pcu != null) {
                 safOutput = pcu
             }
