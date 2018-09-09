@@ -725,7 +725,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
     }
 
-    private fun contactDev(extra: String = "") {
+    internal fun contactDev(extra: String = "") {
         val addr = R.string.contact_mail.string().replace(" (at) ", "@")
 
         try {
@@ -736,6 +736,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun showAboutActivity() {
+        AboutActivity.mainParent = this
+
         val intent = Intent(this, AboutActivity::class.java)
         startActivity(intent)
     }
