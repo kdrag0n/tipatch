@@ -9,8 +9,8 @@ import android.widget.ListView
 class OptionFragment : PreferenceFragment() {
     private var handler: Callbacks? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreate(state: Bundle?) {
+        super.onCreate(state)
         retainInstance = true
 
         addPreferencesFromResource(R.xml.options)
@@ -32,8 +32,8 @@ class OptionFragment : PreferenceFragment() {
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onActivityCreated(state: Bundle?) {
+        super.onActivityCreated(state)
         view?.findViewById<ListView>(android.R.id.list)?.divider = null
     }
 
