@@ -101,6 +101,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
             success = savedInstanceState.getBoolean("success", success)
             currentStep = savedInstanceState.getString("currentStep", currentStep)
             currentPatchStep = PatchStep.values()[savedInstanceState.getInt("currentPatchStep", currentPatchStep.ordinal)]
+            ifName = savedInstanceState.getString("ifName")
             patchTitle = savedInstanceState.getString("patchTitle", R.string.header_patching.string())
 
             var pcu = savedInstanceState.getParcelable<Uri>("safInput")
@@ -227,6 +228,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         outState?.putBoolean("success", success)
         outState?.putString("currentStep", currentStep)
         outState?.putInt("currentPatchStep", currentPatchStep.ordinal)
+        outState?.putString("ifName", ifName)
 
         if (task?.status == AsyncTask.Status.RUNNING) {
             outState?.putString("patchTitle", patchTitle)
