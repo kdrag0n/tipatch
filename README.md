@@ -19,8 +19,13 @@ I decided to make this tool after encountering data loss multiple times because 
  - `Data (incl. storage)` instead of `Data (excl. storage)` on Backup screen
  - `Backups of Data include...` instead of `Backups of Data do not include...` when stating backup
  - Bigger calculated Data size on Backup screen
+ - Internal storage being restored when restoring the backup
 
 **__Side effect__: wiping Data *WILL* also wipe internal storage!**
+
+If you use a theme, or a language other than English, the text **will not** change. Revert to the default theme and/or temporarily change the language back to English to confirm this. Don't worry, this is only a cosmetic effect.
+
+Restoring backups taken with a patched TWRP (i.e. those that include internal storage) does **not** require a patched recovery.
 
 ## Will it work for *device name*?
 The app supports patching the currently installed recovery in-place on rooted devices. It has been confirmed to work on Exynos, Snapdragon, Kirin, and MediaTek devices.
