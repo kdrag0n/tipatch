@@ -38,3 +38,12 @@ If you used in-place patching and your recovery doesn't boot anymore, tap `Resto
 If you don't want internal storage to be backed up anymore, tap `Undo patch` in the action menu instead of `Patch`.
 
 For other issues or feedback, you can post on the [XDA thread](https://forum.xda-developers.com/android/apps-games/app-twrp-tipatch-backup-internal-t3831217), find me on [Telegram](https://t.me/kdrag0n) or [e-mail](mailto:kdrag0n@pm.me) me.
+
+## How does it *really* work?
+It simply changes TWRP to ignore `/data/.twrp` instead of `/data/media`, where internal storage resides.
+
+The core logic is written in C++, loaded as a native library by the app. The app handles I/O, while the C++ code does the heavy lifting and actual patching, in-memory. I chose to do this in C++ instead of Kotlin because of memory usage and speed concerns.
+
+Since users are likely to get impatient waiting for the ramdisk compression to finish, I implemented parallel gzip that uses up to 4 cores at once to finish the compression faster. It's limited at 4 to prevent overloading the device and saturating memory bandwidth, thus making the process slower. LZMA compression is done in Java and is not optimized because of the minority of devices with LZMA compressed ramdisks.
+
+Unfortunately, I was not able to have the C++ piece directly read from a file descriptor obtained from Kotlin because in file patching mode, it is possible to refer to files that may be stored anywhere - Google Drive, other apps, etc. This was a major loss in terms of memory consumption during patching.
