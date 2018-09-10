@@ -17,7 +17,7 @@ I decided to make this tool after encountering data loss multiple times because 
 
 ## Effects
  - `Data (incl. storage)` instead of `Data (excl. storage)` on Backup screen
- - `Backups of Data include...` instead of `...do not include...` when stating backup
+ - `Backups of Data include...` instead of `Backups of Data do not include...` when stating backup
  - Bigger calculated Data size on Backup screen
 
 **__Side effect__: wiping Data *WILL* also wipe internal storage!**
