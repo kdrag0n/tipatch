@@ -37,4 +37,4 @@ If you used in-place patching and your recovery doesn't boot anymore, tap `Resto
 
 If you don't want internal storage to be backed up anymore, tap `Undo patch` in the action menu instead of `Patch`.
 
-You can find me on [Telegram](https://t.me/kdrag0n) or [e-mail](mailto:kdrag0n@pm.me) me.
+For other issues or feedback, you can post on the [XDA thread](https://forum.xda-developers.com/android/apps-games/app-twrp-tipatch-backup-internal-t3831217), find me on [Telegram](https://t.me/kdrag0n) or [e-mail](mailto:kdrag0n@pm.me) me.
