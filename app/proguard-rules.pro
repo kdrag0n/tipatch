@@ -114,3 +114,8 @@
 
 # C++
 -keep class com.kdrag0n.tipatch.jni.** { *; }
+
+# Kotlin: improve performance in release builds
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
+}
