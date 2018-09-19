@@ -32,6 +32,7 @@ import com.topjohnwu.superuser.io.SuProcessFileInputStream
 import com.topjohnwu.superuser.io.SuProcessFileOutputStream
 import io.sentry.Sentry
 import io.sentry.android.AndroidSentryClientFactory
+import io.sentry.android.event.helper.AndroidEventBuilderHelper
 import io.sentry.event.Breadcrumb
 import io.sentry.event.BreadcrumbBuilder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -74,6 +75,13 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         } else {
             Sentry.init("noop://localhost?async=false", AndroidSentryClientFactory(applicationContext))
         }
+
+        val sentry = Sentry.getStoredClient()
+        for (helper in sentry.builderHelpers) {
+            if (helper is AndroidEventBuilderHelper)
+                sentry.removeBuilderHelper(helper)
+        }
+        sentry.addBuilderHelper(SentryEventBuilderHelper(applicationContext))
 
         val nFrag = fragmentManager.findFragmentByTag(TAG_OPT_FRAGMENT) as OptionFragment?
         if (nFrag == null) {
