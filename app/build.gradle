@@ -69,12 +69,7 @@ dependencies {
     implementation 'org.tukaani:xz:1.8'
 
     if (!isLite) {
-        api "com.android.support:support-annotations:$supportVer"
-        api "com.android.support:support-compat:$supportVer"
-        api "com.android.support:support-core-utils:$supportVer"
-        api "com.android.support:support-core-ui:$supportVer"
-
-        implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
+        implementation 'io.sentry:sentry-android:1.7.5'
     }
 
     testImplementation 'junit:junit:4.12'
@@ -83,6 +78,5 @@ dependencies {
 }
 
 if (!isLite) {
-    apply plugin: 'io.fabric'
-    apply plugin: 'com.google.gms.google-services'
+    apply plugin: 'io.sentry.android.gradle'
 }

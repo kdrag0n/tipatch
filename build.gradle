@@ -16,8 +16,9 @@ buildscript {
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
-        classpath 'com.google.gms:google-services:3.2.0'
-        classpath 'io.fabric.tools:gradle:1.25.4'
+        if (!getGradle().getStartParameter().getTaskRequests().toString().contains("Lite")) {
+            classpath 'io.sentry:sentry-android-gradle-plugin:1.7.5'
+        }
     }
 }
 

@@ -22,7 +22,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
-import com.crashlytics.android.Crashlytics
 import com.kdrag0n.tipatch.jni.*
 import com.kdrag0n.utils.*
 import com.leinardi.android.speeddial.SpeedDialActionItem
@@ -31,6 +30,10 @@ import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuProcessFileInputStream
 import com.topjohnwu.superuser.io.SuProcessFileOutputStream
+import io.sentry.Sentry
+import io.sentry.android.AndroidSentryClientFactory
+import io.sentry.event.Breadcrumb
+import io.sentry.event.BreadcrumbBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.*
 import java.lang.IndexOutOfBoundsException
@@ -63,6 +66,9 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar_main as Toolbar?)
+
+        val sEnv = if (BuildConfig.DEBUG) "debug" else "release"
+        Sentry.init("$SENTRY_DSN?environment=$sEnv&release=${BuildConfig.VERSION_NAME}&stacktrace.app.packages=com.kdrag0n", AndroidSentryClientFactory(applicationContext))
 
         val nFrag = fragmentManager.findFragmentByTag(TAG_OPT_FRAGMENT) as OptionFragment?
         if (nFrag == null) {
@@ -394,10 +400,13 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
             override fun onPreExecute() {
                 patchTitle = when (inputSource) {
                     ImageLocation.FILE -> R.string.header_patching.string()
-                    ImageLocation.PARTITION -> when (currentSlot) {
-                        null -> R.string.header_patching_part.string()
-                        "unknown" -> R.string.header_patching_unknown_slot.string()
-                        else -> R.string.header_patching_slot.string(currentSlot)
+                    ImageLocation.PARTITION -> {
+                        Sentry.getContext().addTag("slot", slot ?: "null")
+                        when (currentSlot) {
+                            null -> R.string.header_patching_part.string()
+                            "unknown" -> R.string.header_patching_unknown_slot.string()
+                            else -> R.string.header_patching_slot.string(currentSlot)
+                        }
                     }
                 }
 
@@ -419,8 +428,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                             "Unknown error"
 
                         errorDialog(R.string.err_backup.string(errStr), appIssue = true)
-                        Crashlytics.log("Slot = $slot")
-                        Crashlytics.logException(RuntimeException("Partition backup failed: $errStr"))
+                        Sentry.capture(RuntimeException("Partition backup failed: $errStr"))
                         return
                     }
                 }
@@ -469,6 +477,13 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                                 currentStep = step
                                 currentPatchStep = patchStep
 
+                                Sentry.getContext().recordBreadcrumb(BreadcrumbBuilder()
+                                        .setType(Breadcrumb.Type.DEFAULT)
+                                        .setLevel(Breadcrumb.Level.INFO)
+                                        .setCategory("step")
+                                        .setMessage(currentPatchStep.name)
+                                        .build())
+
                                 runOnUiThread {
                                     patchDialog.value.setMessage(step)
                                 }
@@ -480,22 +495,20 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                     )
                 } catch (e: Throwable) {
                     patchDialog.value.dismiss()
-
-                    Crashlytics.log("Last step: $currentPatchStep $currentStep")
                     currentStep = ""
 
                     when (e) {
                         is ImageException -> {
-                            Crashlytics.log("Native image error: ${e.message}")
                             if (e.message == null) {
                                 errorDialog(R.string.err_native_empty.string())
-                                Crashlytics.logException(e)
+                                Sentry.capture(e)
                                 return
                             }
 
                             errorDialog(e.message!!)
                             if (inputSource == ImageLocation.PARTITION) {
-                                Crashlytics.logException(e) // should never happen if it boots
+                                // should never happen if it boots
+                                Sentry.capture(e)
                             }
                         }
                         is IOException -> {
@@ -512,7 +525,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                             }
 
                             if (inputSource == ImageLocation.PARTITION) {
-                                Crashlytics.logException(e) // should never happen
+                                Sentry.capture(e) // should never happen
                             }
                         }
                         is CompressException -> {
@@ -528,7 +541,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                                 errorDialog(R.string.err_native_decomp_empty.string())
                             }
 
-                            Crashlytics.logException(e)
+                            Sentry.capture(e)
                         }
                         is RamdiskMagicException -> {
                             val cMode = e.message!!.toByte()
@@ -546,7 +559,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                                 errorDialog(R.string.err_native_empty.string())
                             }
 
-                            Crashlytics.logException(e)
+                            Sentry.capture(e)
                         }
                         is NativeException -> {
                             if (e.message != null) {
@@ -554,12 +567,12 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                             } else {
                                 errorDialog(R.string.err_native_empty.string(), appIssue = true)
                             }
-                            Crashlytics.logException(e)
+                            Sentry.capture(e)
                         }
                         else -> {
                             errorDialog(R.string.err_java.string(e::class.java.simpleName, e.message
                                     ?: "null"), appIssue = true)
-                            Crashlytics.logException(e)
+                            Sentry.capture(e)
                         }
                     }
 

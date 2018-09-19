@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.kdrag0n.tipatch">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:name="com.topjohnwu.superuser.ContainerApp"
         android:allowBackup="false"
@@ -10,12 +13,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
         android:extractNativeLibs="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="m">
         <activity android:name=".MainActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,11 +29,13 @@
         <activity android:name=".AboutActivity"
             android:parentActivityName=".MainActivity"
             android:launchMode="singleTop"
+            android:theme="@style/AppTheme"
             android:label="@string/about"/>
 
         <activity android:name=".LicenseActivity"
             android:parentActivityName=".AboutActivity"
             android:launchMode="singleTop"
+            android:theme="@style/AppTheme"
             android:label="@string/licenses"/>
     </application>
 

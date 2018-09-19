@@ -11,3 +11,5 @@ google-services.json
 *.apk
 output.json
 redex-src-strings-map.txt
+sentry.properties
+Secrets.kt

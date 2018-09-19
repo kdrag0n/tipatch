@@ -112,10 +112,5 @@
     @android.support.annotation.Keep <init>(...);
 }
 
-# Crashlytics
--keepattributes *Annotation*
--keepattributes SourceFile,LineNumberTable
--keep public class * extends java.lang.Exception
-
 # C++
 -keep class com.kdrag0n.tipatch.jni.** { *; }
