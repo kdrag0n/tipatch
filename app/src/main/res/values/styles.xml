@@ -8,6 +8,12 @@
         <item name="cardStyle">@style/CardTheme</item>
     </style>
 
+    <style name="LaunchTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@color/background_dark</item>
+        <item name="android:navigationBarColor">@color/background_dark</item>
+        <item name="colorPrimaryDark">@color/status_dark</item>
+    </style>
+
     <style name="MenuTheme" parent="ThemeOverlay.AppCompat">
         <item name="android:colorBackground">@color/background_dark</item>
     </style>

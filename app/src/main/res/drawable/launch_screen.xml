@@ -1,0 +1,11 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:opacity="opaque">
+    <item android:drawable="@color/background_dark"/>
+
+    <item android:width="128dp"
+        android:height="128dp"
+        android:drawable="@mipmap/ic_launcher_web"
+        android:gravity="center"
+        tools:targetApi="m" />
+</layer-list>

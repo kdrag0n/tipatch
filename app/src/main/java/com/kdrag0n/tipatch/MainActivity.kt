@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
     private var currentPatchStep = PatchStep.BACKUP
 
     override fun onCreate(state: Bundle?) {
+        setTheme(R.style.AppTheme)
         super.onCreate(state)
 
         setContentView(R.layout.activity_main)
