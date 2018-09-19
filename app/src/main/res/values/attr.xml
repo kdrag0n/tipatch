@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <bool name="showPaypal">true</bool>
+    <bool name="useSentry">true</bool>
 
     <declare-styleable name="AboutCardRow">
         <attr name="icon" format="reference"/>

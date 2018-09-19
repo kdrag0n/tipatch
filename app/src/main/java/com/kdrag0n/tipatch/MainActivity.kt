@@ -68,7 +68,11 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         setSupportActionBar(toolbar_main as Toolbar?)
 
         val sEnv = if (BuildConfig.DEBUG) "debug" else "release"
-        Sentry.init("$SENTRY_DSN?environment=$sEnv&release=${BuildConfig.VERSION_NAME}&stacktrace.app.packages=com.kdrag0n", AndroidSentryClientFactory(applicationContext))
+        if (resources.getBoolean(R.bool.useSentry)) {
+            Sentry.init("$SENTRY_DSN?environment=$sEnv&release=${BuildConfig.VERSION_NAME}&stacktrace.app.packages=com.kdrag0n", AndroidSentryClientFactory(applicationContext))
+        } else {
+            Sentry.init("noop://localhost?async=false", AndroidSentryClientFactory(applicationContext))
+        }
 
         val nFrag = fragmentManager.findFragmentByTag(TAG_OPT_FRAGMENT) as OptionFragment?
         if (nFrag == null) {
