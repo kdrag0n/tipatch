@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         } catch (e: UninitializedPropertyAccessException) {
             patchDialog = Box(pDialog)
         }
-        currentStep = R.string.step0_backup.string()
+        currentStep = getString(R.string.step0_backup)
 
         if (state == null) {
             asyncExec {
@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
             currentStep = state.getString("currentStep", currentStep)
             currentPatchStep = PatchStep.values()[state.getInt("currentPatchStep", currentPatchStep.ordinal)]
             ifName = state.getString("ifName")
-            patchTitle = state.getString("patchTitle", R.string.header_patching.string())
+            patchTitle = state.getString("patchTitle", getString(R.string.header_patching))
 
             var pcu = state.getParcelable<Uri>("safInput")
             if (pcu != null) {
@@ -145,25 +145,25 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
 
         patch_dial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_patch, R.drawable.ic_apply)
                 .setFabBackgroundColor(ContextCompat.getColor(this, R.color.btn_green))
-                .setLabel(R.string.patch_btn.string())
+                .setLabel(getString(R.string.patch_btn))
                 .setLabelColor(ContextCompat.getColor(this, R.color.about_ic_color))
                 .setLabelBackgroundColor(ContextCompat.getColor(this, R.color.card_dark))
                 .create())
         patch_dial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_undo_patch, R.drawable.ic_undo)
                 .setFabBackgroundColor(ContextCompat.getColor(this, R.color.btn_red))
-                .setLabel(R.string.undo.string())
+                .setLabel(getString(R.string.undo))
                 .setLabelColor(ContextCompat.getColor(this, R.color.about_ic_color))
                 .setLabelBackgroundColor(ContextCompat.getColor(this, R.color.card_dark))
                 .create())
         patch_dial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_restore_backups, R.drawable.ic_restore)
                 .setFabBackgroundColor(ContextCompat.getColor(this, R.color.btn_blue))
-                .setLabel(R.string.restore.string())
+                .setLabel(getString(R.string.restore))
                 .setLabelColor(ContextCompat.getColor(this, R.color.about_ic_color))
                 .setLabelBackgroundColor(ContextCompat.getColor(this, R.color.card_dark))
                 .create())
         patch_dial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_delete_backups, R.drawable.ic_delete)
                 .setFabBackgroundColor(ContextCompat.getColor(this, R.color.btn_orange))
-                .setLabel(R.string.delete_backup.string())
+                .setLabel(getString(R.string.delete_backup))
                 .setLabelColor(ContextCompat.getColor(this, R.color.about_ic_color))
                 .setLabelBackgroundColor(ContextCompat.getColor(this, R.color.card_dark))
                 .create())
@@ -182,7 +182,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                 R.id.fab_restore_backups -> {
                     val dialog = ProgressDialog(this, R.style.DialogTheme)
                     with (dialog) {
-                        setMessage(R.string.restore_backup_progress.string())
+                        setMessage(getString(R.string.restore_backup_progress))
                     }
 
                     asyncExec {
@@ -232,7 +232,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
 
             R.id.aboutOpt -> showAboutActivity()
             R.id.contactOpt -> contactDev()
-            R.id.donateOpt -> openUri(R.string.donate_uri.string())
+            R.id.donateOpt -> openUri(getString(R.string.donate_uri))
         }
 
         return true
@@ -282,10 +282,6 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         }
     }
 
-    private fun Int.string(vararg fmt: Any): String {
-        return resources.getString(this, *fmt)
-    }
-
     private fun hasRoot() {
         isRooted = true
 
@@ -331,30 +327,30 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
     }
 
     private fun patch(progress: (String, PatchStep) -> Unit, fis: InputStream, fos: OutputStream, direction: Byte): Boolean {
-        progress(R.string.step1_read_unpack.string(), PatchStep.READ)
+        progress(getString(R.string.step1_read_unpack), PatchStep.READ)
         val image = Image(fis)
 
         val cMode = image.detectCompressor()
         val cName = Image.compressorName(cMode)
 
-        progress(R.string.step2_decompress.string(cName), PatchStep.DECOMPRESS)
+        progress(getString(R.string.step2_decompress, cName), PatchStep.DECOMPRESS)
         image.decompressRamdisk(cMode)
 
         if (direction == Image.REPL_REVERSE) {
-            progress(R.string.step3_patch_rev.string(), PatchStep.PATCH)
+            progress(getString(R.string.step3_patch_rev), PatchStep.PATCH)
         } else {
-            progress(R.string.step3_patch.string(), PatchStep.PATCH)
+            progress(getString(R.string.step3_patch), PatchStep.PATCH)
         }
 
         image.patchRamdisk(direction)
 
         progress(when (cMode) {
-            Image.COMP_LZMA -> R.string.step4_compress_lzma.string()
-            else -> R.string.step4_compress.string(cName)
+            Image.COMP_LZMA -> getString(R.string.step4_compress_lzma)
+            else -> getString(R.string.step4_compress, cName)
         }, PatchStep.COMPRESS)
         image.compressRamdisk(cMode)
 
-        progress(R.string.step5_pack_write.string(), PatchStep.WRITE)
+        progress(getString(R.string.step5_pack_write), PatchStep.WRITE)
         image.write(fos)
 
         return true
@@ -365,16 +361,16 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
     }
 
     private fun snack(textRes: Int): Snackbar {
-        return snack(textRes.string())
+        return snack(getString(textRes))
     }
 
     private fun asyncPatch(slot: String?, direction: Byte) {
         if (inputSource == ImageLocation.FILE) {
             if (!::safInput.isInitialized) {
-                errorDialog(R.string.file_select_input.string())
+                errorDialog(getString(R.string.file_select_input))
                 return
             } else if (!::safOutput.isInitialized) {
-                errorDialog(R.string.file_select_output.string())
+                errorDialog(getString(R.string.file_select_output))
                 return
             }
         }
@@ -383,12 +379,12 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
             val pp = try {
                 partPath(slot)
             } catch (e: IllegalStateException) {
-                errorDialog(if (e.message != null) R.string.err_part_root.string(e.message!!) else R.string.err_part_empty.string())
+                errorDialog(if (e.message != null) getString(R.string.err_part_root, e.message!!) else getString(R.string.err_part_empty))
                 return
             }
 
             if (pp == null) {
-                errorDialog(R.string.part_not_found.string())
+                errorDialog(getString(R.string.part_not_found))
                 return
             }
 
@@ -412,13 +408,13 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         object : AsyncTask<Unit, Unit, Unit>() {
             override fun onPreExecute() {
                 patchTitle = when (inputSource) {
-                    ImageLocation.FILE -> R.string.header_patching.string()
+                    ImageLocation.FILE -> getString(R.string.header_patching)
                     ImageLocation.PARTITION -> {
                         Sentry.getContext().addTag("slot", slot ?: "null")
                         when (currentSlot) {
-                            null -> R.string.header_patching_part.string()
-                            "unknown" -> R.string.header_patching_unknown_slot.string()
-                            else -> R.string.header_patching_slot.string(currentSlot)
+                            null -> getString(R.string.header_patching_part)
+                            "unknown" -> getString(R.string.header_patching_unknown_slot)
+                            else -> getString(R.string.header_patching_slot, currentSlot)
                         }
                     }
                 }
@@ -440,7 +436,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                         else
                             "Unknown error"
 
-                        errorDialog(R.string.err_backup.string(errStr), appIssue = true)
+                        errorDialog(getString(R.string.err_backup, errStr), appIssue = true)
                         Sentry.capture(RuntimeException("Partition backup failed: $errStr"))
                         return
                     }
@@ -455,9 +451,9 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                     when (e) {
                         is FileNotFoundException, is EOFException -> {
                             if (inputSource == ImageLocation.PARTITION) {
-                                errorDialog(R.string.err_open_part.string(), appIssue = true)
+                                errorDialog(getString(R.string.err_open_part), appIssue = true)
                             } else {
-                                errorDialog(R.string.err_open_file.string(R.string.err_open_file_inp.string()))
+                                errorDialog(getString(R.string.err_open_file, getString(R.string.err_open_file_inp)))
                             }
                         }
                         else -> throw e
@@ -473,9 +469,9 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                     }
                 } catch (e: FileNotFoundException) {
                     if (inputSource == ImageLocation.PARTITION) {
-                        errorDialog(R.string.err_open_part_out.string(), appIssue = true)
+                        errorDialog(getString(R.string.err_open_part_out), appIssue = true)
                     } else {
-                        errorDialog(R.string.err_open_file.string(R.string.err_open_file_out.string()))
+                        errorDialog(getString(R.string.err_open_file, getString(R.string.err_open_file_out)))
                     }
 
                     return
@@ -513,7 +509,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                     when (e) {
                         is ImageException -> {
                             if (e.message == null) {
-                                errorDialog(R.string.err_native_empty.string())
+                                errorDialog(getString(R.string.err_native_empty))
                                 Sentry.capture(e)
                                 return
                             }
@@ -527,14 +523,14 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                         is IOException -> {
                             if (currentPatchStep == PatchStep.READ) {
                                 if (e.message != null) {
-                                    errorDialog(R.string.err_native_io_read.string(e.message!!))
+                                    errorDialog(getString(R.string.err_native_io_read, e.message!!))
                                 } else {
-                                    errorDialog(R.string.err_native_io_read_empty.string())
+                                    errorDialog(getString(R.string.err_native_io_read_empty))
                                 }
                             } else if (e.message != null) {
-                                errorDialog(R.string.err_native_io_write.string(e.message!!))
+                                errorDialog(getString(R.string.err_native_io_write, e.message!!))
                             } else {
-                                errorDialog(R.string.err_native_io_write_empty.string())
+                                errorDialog(getString(R.string.err_native_io_write_empty))
                             }
 
                             if (inputSource == ImageLocation.PARTITION) {
@@ -544,14 +540,14 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                         is CompressException -> {
                             if (currentPatchStep == PatchStep.COMPRESS) {
                                 if (e.message != null) {
-                                    errorDialog(R.string.err_native_comp.string(e.message!!))
+                                    errorDialog(getString(R.string.err_native_comp, e.message!!))
                                 } else {
-                                    errorDialog(R.string.err_native_comp_empty.string())
+                                    errorDialog(getString(R.string.err_native_comp_empty))
                                 }
                             } else if (e.message != null) {
-                                errorDialog(R.string.err_native_decomp.string(e.message!!))
+                                errorDialog(getString(R.string.err_native_decomp, e.message!!))
                             } else {
-                                errorDialog(R.string.err_native_decomp_empty.string())
+                                errorDialog(getString(R.string.err_native_decomp_empty))
                             }
 
                             Sentry.capture(e)
@@ -561,29 +557,29 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                             val cName = Image.compressorName(cMode)
 
                             when (cMode) {
-                                Image.COMP_UNKNOWN -> errorDialog(R.string.err_native_comp_magic.string())
-                                else -> errorDialog(R.string.err_native_comp_method.string(cName), request = cName)
+                                Image.COMP_UNKNOWN -> errorDialog(getString(R.string.err_native_comp_magic))
+                                else -> errorDialog(getString(R.string.err_native_comp_method, cName), request = cName)
                             }
                         }
                         is IndexOutOfBoundsException -> {
                             if (e.message != null) {
-                                errorDialog(R.string.err_native_unknown.string(e.message!!))
+                                errorDialog(getString(R.string.err_native_unknown, e.message!!))
                             } else {
-                                errorDialog(R.string.err_native_empty.string())
+                                errorDialog(getString(R.string.err_native_empty))
                             }
 
                             Sentry.capture(e)
                         }
                         is NativeException -> {
                             if (e.message != null) {
-                                errorDialog(R.string.err_native_unknown.string(e.message!!), appIssue = true)
+                                errorDialog(getString(R.string.err_native_unknown, e.message!!), appIssue = true)
                             } else {
-                                errorDialog(R.string.err_native_empty.string(), appIssue = true)
+                                errorDialog(getString(R.string.err_native_empty), appIssue = true)
                             }
                             Sentry.capture(e)
                         }
                         else -> {
-                            errorDialog(R.string.err_java.string(e::class.java.simpleName, e.message
+                            errorDialog(getString(R.string.err_java, e::class.java.simpleName, e.message
                                     ?: "null"), appIssue = true)
                             Sentry.capture(e)
                         }
@@ -603,7 +599,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                             patchDialog.value.dismiss()
                         }
 
-                        errorDialog(R.string.err_close_output.string(ex.message ?: "null"))
+                        errorDialog(getString(R.string.err_close_output, ex.message ?: "null"))
                     }
                 }
             }
@@ -703,12 +699,12 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
             val partiPath = try {
                 partPath(if (slot == "") null else slot)
             } catch (e: IllegalStateException) {
-                errorDialog(if (e.message != null) R.string.err_part_root.string(e.message!!) else R.string.err_part_empty.string())
+                errorDialog(if (e.message != null) getString(R.string.err_part_root, e.message!!) else getString(R.string.err_part_empty))
                 return
             }
 
             if (partiPath == null) {
-                errorDialog(R.string.part_not_found.string())
+                errorDialog(getString(R.string.part_not_found))
                 return
             }
 
@@ -726,12 +722,12 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
     }
 
     internal fun contactDev(extra: String = "", ctx: Context = this) {
-        val addr = R.string.contact_mail.string().replace(" (at) ", "@")
+        val addr = getString(R.string.contact_mail).replace(" (at) ", "@")
 
         try {
             openUri("mailto:$addr$extra")
         } catch (e: ActivityNotFoundException) {
-            errorDialog(R.string.err_mailto_handler.string(addr), ctx = ctx)
+            errorDialog(getString(R.string.err_mailto_handler, addr), ctx = ctx)
         }
     }
 
@@ -855,7 +851,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         try {
             startActivityForResult(intent, REQ_SAF_INPUT)
         } catch (e: ActivityNotFoundException) {
-            errorDialog(R.string.err_no_file_handler.string())
+            errorDialog(getString(R.string.err_no_file_handler))
         }
     }
 
@@ -871,7 +867,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         try {
             startActivityForResult(intent, REQ_SAF_OUTPUT)
         } catch (e: ActivityNotFoundException) {
-            errorDialog(R.string.err_no_file_handler.string())
+            errorDialog(getString(R.string.err_no_file_handler))
         }
     }
 
