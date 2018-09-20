@@ -41,7 +41,7 @@ public class SentryEventBuilderHelper implements EventBuilderHelper {
     private static final String KERNEL_VERSION = getKernelVersion();
     private static String[] cachedProGuardUuids = null;
 
-    private Context ctx;
+    private final Context ctx;
 
     /**
      * Construct given the provided Android {@link Context}.
@@ -203,6 +203,10 @@ public class SentryEventBuilderHelper implements EventBuilderHelper {
     private static ActivityManager.MemoryInfo getMemInfo(Context ctx) {
         try {
             ActivityManager actManager = (ActivityManager) ctx.getSystemService(ACTIVITY_SERVICE);
+            if (actManager == null) {
+                return null;
+            }
+
             ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
             actManager.getMemoryInfo(memInfo);
             return memInfo;
@@ -513,6 +517,10 @@ public class SentryEventBuilderHelper implements EventBuilderHelper {
     private static boolean isConnected(Context ctx) {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
+            return false;
+        }
+
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
