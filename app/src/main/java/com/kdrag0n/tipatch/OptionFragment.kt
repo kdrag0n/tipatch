@@ -2,17 +2,19 @@ package com.kdrag0n.tipatch
 
 import android.content.Context
 import android.os.Bundle
-import android.preference.CheckBoxPreference
-import android.preference.PreferenceFragment
+import android.support.v7.preference.CheckBoxPreference
+import android.support.v7.preference.PreferenceFragmentCompat
 import android.widget.ListView
 
-class OptionFragment : PreferenceFragment() {
+class OptionFragment : PreferenceFragmentCompat() {
     private var handler: Callbacks? = null
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         retainInstance = true
+    }
 
+    override fun onCreatePreferences(p0: Bundle?, p1: String?) {
         addPreferencesFromResource(R.xml.options)
 
         with (preferenceManager) {
@@ -30,11 +32,6 @@ class OptionFragment : PreferenceFragment() {
                 true
             }
         }
-    }
-
-    override fun onActivityCreated(state: Bundle?) {
-        super.onActivityCreated(state)
-        view?.findViewById<ListView>(android.R.id.list)?.divider = null
     }
 
     override fun onAttach(context: Context?) {

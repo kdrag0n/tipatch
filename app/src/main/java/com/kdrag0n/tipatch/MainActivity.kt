@@ -11,11 +11,11 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
-import android.preference.CheckBoxPreference
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.preference.CheckBoxPreference
 import android.support.v7.widget.Toolbar
 import android.text.method.LinkMovementMethod
 import android.util.Log
@@ -83,10 +83,10 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         }
         sentry.addBuilderHelper(SentryEventBuilderHelper(applicationContext))
 
-        val nFrag = fragmentManager.findFragmentByTag(TAG_OPT_FRAGMENT) as OptionFragment?
+        val nFrag = supportFragmentManager.findFragmentByTag(TAG_OPT_FRAGMENT) as OptionFragment?
         if (nFrag == null) {
             optFrag = OptionFragment()
-            fragmentManager.beginTransaction().add(R.id.opt_container, optFrag, TAG_OPT_FRAGMENT).commit()
+            supportFragmentManager.beginTransaction().add(R.id.opt_container, optFrag, TAG_OPT_FRAGMENT).commit()
         } else {
             optFrag = nFrag
         }

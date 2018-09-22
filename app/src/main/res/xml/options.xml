@@ -3,17 +3,21 @@
     <Preference
         android:title="@string/pref_file_input"
         android:summary="@string/pref_file_input_desc"
+        android:icon="@drawable/ic_file"
         android:enabled="true"
         android:key="input" />
+
     <Preference
         android:title="@string/pref_file_output"
         android:summary="@string/pref_file_output_desc"
+        android:icon="@drawable/ic_folder"
         android:enabled="true"
         android:key="output" />
 
     <CheckBoxPreference
         android:title="@string/pref_partition"
         android:summary="@string/pref_partition_desc"
+        android:icon="@drawable/ic_key"
         android:defaultValue="false"
         android:enabled="false"
         android:key="partition" />
@@ -21,6 +25,7 @@
     <CheckBoxPreference
         android:title="@string/pref_backup"
         android:summary="@string/pref_backup_desc"
+        android:icon="@drawable/ic_storage"
         android:defaultValue="true"
         android:enabled="false"
         android:key="backup" />

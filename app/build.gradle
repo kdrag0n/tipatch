@@ -63,6 +63,7 @@ dependencies {
     implementation 'com.github.topjohnwu:libsu:2.0.0'
     implementation "com.android.support:cardview-v7:$supportVer"
     implementation "com.android.support:appcompat-v7:$supportVer"
+    implementation "com.android.support:preference-v7:$supportVer"
     implementation "com.android.support:design:$supportVer"
     implementation "com.leinardi.android:speed-dial:1.0.2"
     implementation 'org.tukaani:xz:1.8'
