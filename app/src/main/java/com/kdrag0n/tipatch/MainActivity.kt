@@ -453,7 +453,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                             if (inputSource == ImageLocation.PARTITION) {
                                 errorDialog(getString(R.string.err_open_part), appIssue = true)
                             } else {
-                                errorDialog(getString(R.string.err_open_file, getString(R.string.err_open_file_inp)))
+                                errorDialog(getString(R.string.err_open_file_in))
                             }
                         }
                         else -> throw e
@@ -471,7 +471,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                     if (inputSource == ImageLocation.PARTITION) {
                         errorDialog(getString(R.string.err_open_part_out), appIssue = true)
                     } else {
-                        errorDialog(getString(R.string.err_open_file, getString(R.string.err_open_file_out)))
+                        errorDialog(getString(R.string.err_open_file_out))
                     }
 
                     return
