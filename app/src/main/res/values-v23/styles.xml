@@ -1,5 +1,5 @@
 <resources>
-    <style name="LaunchTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="LaunchTheme" parent="Theme.MaterialComponents.NoActionBar">
         <item name="android:windowBackground">@drawable/launch_screen</item>
         <item name="android:navigationBarColor">@color/background_dark</item>
         <item name="colorPrimaryDark">@color/background_dark</item>
