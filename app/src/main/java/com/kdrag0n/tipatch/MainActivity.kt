@@ -365,7 +365,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
     }
 
     private fun errorBar(text: String, action: String = "", actionHandler: () -> Unit = {}) {
-        val snackbar = snack(text)
+        val snackbar = Snackbar.make(rootCoordinator, text, 5500)
         if (action != "") {
             snackbar.setAction(action) {
                 actionHandler()
