@@ -16,7 +16,7 @@ Java_com_kdrag0n_tipatch_jni_Image_init(JNIEnv *env, jobject, jobject fis) {
             auto hdr = ((boot_img_hdr *) hdr_bytes.bytes());
 
             if (memcmp(hdr->magic, BOOT_MAGIC, BOOT_MAGIC_SIZE) != 0)
-                throw img_exception("Unable to find header. Are you sure this is a TWRP image?");
+                throw img_hdr_exception("");
 
             image->hdr = *hdr;
         }

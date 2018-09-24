@@ -26,6 +26,7 @@
     <string name="author_nick">\"kdrag0n\"</string>
 
     <string name="err_generic">Something went wrong</string>
+    <string name="err_native_image_header">Error finding header, this is not a recovery image</string>
     <string name="err_native_empty">Error processing image</string>
     <string name="err_native_unknown">Error processing image: %s</string>
     <string name="err_native_io_read">Error reading image: %s</string>

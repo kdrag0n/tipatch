@@ -10,6 +10,10 @@ void rethrow(JNIEnv *env) {
         jclass clazz = env->FindClass("com/kdrag0n/tipatch/jni/ImageException");
         if (clazz)
             env->ThrowNew(clazz, e.what());
+    } catch (const img_hdr_exception &e) {
+        jclass clazz = env->FindClass("com/kdrag0n/tipatch/jni/ImageHeaderException");
+        if (clazz)
+            env->ThrowNew(clazz, e.what());
     } catch (const io_exception &e) {
         jclass clazz = env->FindClass("java/io/IOException");
         if (clazz)

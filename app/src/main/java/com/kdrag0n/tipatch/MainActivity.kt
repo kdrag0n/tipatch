@@ -376,7 +376,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
     }
 
     private fun errorBar(textRes: Int, actionRes: Int = 0, actionHandler: () -> Unit = {}) {
-        errorBar(getString(textRes), getString(actionRes), actionHandler)
+        errorBar(getString(textRes), if (actionRes == 0) "" else getString(actionRes), actionHandler)
     }
 
     private fun asyncPatch(slot: String?, direction: Byte) {
@@ -536,6 +536,9 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                                 // should never happen if it boots
                                 Sentry.capture(e)
                             }
+                        }
+                        is ImageHeaderException -> {
+                            errorBar(R.string.err_native_image_header)
                         }
                         is IOException -> {
                             if (currentPatchStep == PatchStep.READ) {

@@ -9,6 +9,11 @@ public:
     img_exception(const std::string &what) : std::runtime_error(what) {}
 };
 
+class img_hdr_exception : public std::runtime_error {
+public:
+    img_hdr_exception(const std::string &what) : std::runtime_error(what) {}
+};
+
 class Image {
 public:
     void decompress_ramdisk(char comp_mode);
