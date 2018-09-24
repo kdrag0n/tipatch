@@ -579,9 +579,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                             Sentry.capture(e)
                         }
                         else -> {
-                            errorDialog(getString(R.string.err_java, e::class.java.simpleName, e.message
-                                    ?: "null"), appIssue = true)
-                            Sentry.capture(e)
+                            throw e
                         }
                     }
 

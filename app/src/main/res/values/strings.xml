@@ -37,7 +37,6 @@
     <string name="err_native_decomp_empty">Error decompressing ramdisk.</string>
     <string name="err_native_comp_magic">Error detecting ramdisk compression.</string>
     <string name="err_native_comp_method">Compression method %s is not supported.</string>
-    <string name="err_java">Internal error of type %s occurred: %s.</string>
     <string name="err_close_output">Error cleaning up: %s.</string>
     <string name="err_backup">Recovery backup failed: %s.</string>
     <string name="err_open_file_in">Error opening input image.</string>
