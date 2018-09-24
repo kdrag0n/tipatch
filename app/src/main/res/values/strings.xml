@@ -10,8 +10,6 @@
     <string name="donate">Donate</string>
     <string name="author">Author</string>
     <string name="version">Version</string>
-    <string name="icon">Icon</string>
-    <string name="exit">Close app</string>
     <string name="fab_actions">Actions</string>
     <string name="undo">Undo patch</string>
     <string name="restore">Restore backup</string>
