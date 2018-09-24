@@ -592,13 +592,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                     try {
                         fos.flush()
                         fos.close()
-                    } catch (ex: Exception) {
-                        if (patchDialog.value.isShowing) {
-                            patchDialog.value.dismiss()
-                        }
-
-                        errorDialog(getString(R.string.err_close_output, ex.message ?: "null"))
-                    }
+                    } catch (ex: Exception) {}
                 }
             }
 
