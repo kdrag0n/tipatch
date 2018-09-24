@@ -364,13 +364,28 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         return snack(getString(textRes))
     }
 
+    private fun errorBar(text: String, action: String = "", actionHandler: () -> Unit = {}) {
+        val snackbar = snack(text)
+        if (action != "") {
+            snackbar.setAction(action) {
+                actionHandler()
+            }
+        }
+
+        snackbar.show()
+    }
+
+    private fun errorBar(textRes: Int, actionRes: Int = 0, actionHandler: () -> Unit = {}) {
+        errorBar(getString(textRes), getString(actionRes), actionHandler)
+    }
+
     private fun asyncPatch(slot: String?, direction: Byte) {
         if (inputSource == ImageLocation.FILE) {
             if (!::safInput.isInitialized) {
-                errorDialog(getString(R.string.file_select_input))
+                errorBar(R.string.file_select_input)
                 return
             } else if (!::safOutput.isInitialized) {
-                errorDialog(getString(R.string.file_select_output))
+                errorBar(R.string.file_select_output)
                 return
             }
         }
@@ -379,12 +394,12 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
             val pp = try {
                 partPath(slot)
             } catch (e: IllegalStateException) {
-                errorDialog(getString(R.string.part_not_found))
+                errorBar(R.string.part_not_found)
                 return
             }
 
             if (pp == null) {
-                errorDialog(getString(R.string.part_not_found))
+                errorBar(R.string.part_not_found)
                 return
             }
 
@@ -436,7 +451,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                         else
                             "Unknown error"
 
-                        errorDialog(getString(R.string.err_backup, errStr), appIssue = true)
+                        errorBar(getString(R.string.err_backup, errStr))
                         Sentry.capture(RuntimeException("Partition backup failed: $errStr"))
                         return
                     }
@@ -451,9 +466,10 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                     when (e) {
                         is FileNotFoundException, is EOFException -> {
                             if (inputSource == ImageLocation.PARTITION) {
-                                errorDialog(getString(R.string.err_open_part), appIssue = true)
+                                errorBar(R.string.err_open_part)
+                                Sentry.capture(e)
                             } else {
-                                errorDialog(getString(R.string.err_open_file_in))
+                                errorBar(R.string.err_open_file_in)
                             }
                         }
                         else -> throw e
@@ -469,9 +485,10 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                     }
                 } catch (e: FileNotFoundException) {
                     if (inputSource == ImageLocation.PARTITION) {
-                        errorDialog(getString(R.string.err_open_part_out), appIssue = true)
+                        errorBar(R.string.err_open_part_out)
+                        Sentry.capture(e)
                     } else {
-                        errorDialog(getString(R.string.err_open_file_out))
+                        errorBar(R.string.err_open_file_out)
                     }
 
                     return
@@ -509,12 +526,12 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                     when (e) {
                         is ImageException -> {
                             if (e.message == null) {
-                                errorDialog(getString(R.string.err_native_empty))
+                                errorBar(R.string.err_native_empty)
                                 Sentry.capture(e)
                                 return
                             }
 
-                            errorDialog(e.message!!)
+                            errorBar(e.message!!)
                             if (inputSource == ImageLocation.PARTITION) {
                                 // should never happen if it boots
                                 Sentry.capture(e)
@@ -523,14 +540,14 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                         is IOException -> {
                             if (currentPatchStep == PatchStep.READ) {
                                 if (e.message != null) {
-                                    errorDialog(getString(R.string.err_native_io_read, e.message!!))
+                                    errorBar(getString(R.string.err_native_io_read, e.message!!))
                                 } else {
-                                    errorDialog(getString(R.string.err_native_io_read_empty))
+                                    errorBar(R.string.err_native_io_read_empty)
                                 }
                             } else if (e.message != null) {
-                                errorDialog(getString(R.string.err_native_io_write, e.message!!))
+                                errorBar(getString(R.string.err_native_io_write, e.message!!))
                             } else {
-                                errorDialog(getString(R.string.err_native_io_write_empty))
+                                errorBar(R.string.err_native_io_write_empty)
                             }
 
                             if (inputSource == ImageLocation.PARTITION) {
@@ -540,14 +557,14 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                         is CompressException -> {
                             if (currentPatchStep == PatchStep.COMPRESS) {
                                 if (e.message != null) {
-                                    errorDialog(getString(R.string.err_native_comp, e.message!!))
+                                    errorBar(getString(R.string.err_native_comp, e.message!!))
                                 } else {
-                                    errorDialog(getString(R.string.err_native_comp_empty))
+                                    errorBar(R.string.err_native_comp_empty)
                                 }
                             } else if (e.message != null) {
-                                errorDialog(getString(R.string.err_native_decomp, e.message!!))
+                                errorBar(getString(R.string.err_native_decomp, e.message!!))
                             } else {
-                                errorDialog(getString(R.string.err_native_decomp_empty))
+                                errorBar(R.string.err_native_decomp_empty)
                             }
 
                             Sentry.capture(e)
@@ -557,24 +574,27 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                             val cName = Image.compressorName(cMode)
 
                             when (cMode) {
-                                Image.COMP_UNKNOWN -> errorDialog(getString(R.string.err_native_comp_magic))
-                                else -> errorDialog(getString(R.string.err_native_comp_method, cName), request = cName)
+                                Image.COMP_UNKNOWN -> errorBar(R.string.err_native_comp_magic)
+                                else -> errorBar(getString(R.string.err_native_comp_method, cName),
+                                        action = getString(R.string.request_support)) {
+                                    contactDev("?subject=$cName compression&body=I would like to request support for the $cName compression method for my device '${getProp("ro.product.device")}'.".replace(" ", "%20"))
+                                }
                             }
                         }
                         is IndexOutOfBoundsException -> {
                             if (e.message != null) {
-                                errorDialog(getString(R.string.err_native_unknown, e.message!!))
+                                errorBar(getString(R.string.err_native_unknown, e.message!!))
                             } else {
-                                errorDialog(getString(R.string.err_native_empty))
+                                errorBar(R.string.err_native_empty)
                             }
 
                             Sentry.capture(e)
                         }
                         is NativeException -> {
                             if (e.message != null) {
-                                errorDialog(getString(R.string.err_native_unknown, e.message!!), appIssue = true)
+                                errorBar(getString(R.string.err_native_unknown, e.message!!))
                             } else {
-                                errorDialog(getString(R.string.err_native_empty), appIssue = true)
+                                errorBar(R.string.err_native_empty)
                             }
                             Sentry.capture(e)
                         }
@@ -691,12 +711,12 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
             val partiPath = try {
                 partPath(if (slot == "") null else slot)
             } catch (e: IllegalStateException) {
-                errorDialog(getString(R.string.part_not_found))
+                errorBar(R.string.part_not_found)
                 return
             }
 
             if (partiPath == null) {
-                errorDialog(getString(R.string.part_not_found))
+                errorBar(R.string.part_not_found)
                 return
             }
 
@@ -741,30 +761,12 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         dialog.findViewById<TextView>(android.R.id.message).movementMethod = LinkMovementMethod.getInstance()
     }
 
-    private fun errorDialog(message: String, ctx: Context = this, appIssue: Boolean = false, request: String = "") {
+    private fun errorDialog(message: String, ctx: Context = this) {
         runOnUiThread {
             with (AlertDialog.Builder(ctx, R.style.DialogTheme)) {
                 setTitle(R.string.err_generic)
                 setMessage(message)
-
-                when {
-                    appIssue -> {
-                        setPositiveButton(android.R.string.ok) { _, _ -> }
-
-                        setNegativeButton(R.string.contact) { _, _ ->
-                            contactDev()
-                        }
-                    }
-                    request != "" -> {
-                        setPositiveButton(android.R.string.ok) { _, _ -> }
-
-                        setNegativeButton(R.string.request_support) { _, _ ->
-                            contactDev("?subject=$request compression&body=I would like to request support for the $request compression method for my device '${getProp("ro.product.device")}'. Thanks in advance.".replace(" ", "%20"))
-                        }
-                    }
-                    else -> setPositiveButton(android.R.string.ok) { _, _ -> }
-                }
-
+                setPositiveButton(android.R.string.ok) { _, _ -> }
                 setCancelable(false)
                 show()
             }
@@ -843,7 +845,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         try {
             startActivityForResult(intent, REQ_SAF_INPUT)
         } catch (e: ActivityNotFoundException) {
-            errorDialog(getString(R.string.err_no_file_handler))
+            errorBar(R.string.err_no_file_handler)
         }
     }
 
@@ -859,7 +861,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         try {
             startActivityForResult(intent, REQ_SAF_OUTPUT)
         } catch (e: ActivityNotFoundException) {
-            errorDialog(getString(R.string.err_no_file_handler))
+            errorBar(R.string.err_no_file_handler)
         }
     }
 

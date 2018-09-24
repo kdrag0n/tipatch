@@ -14,7 +14,7 @@
     <string name="restore">Restore backup</string>
     <string name="delete_backup">Delete backup</string>
     <string name="no_backups">No recovery backup saved</string>
-    <string name="request_support">Request support</string>
+    <string name="request_support">Request</string>
     <string name="patch_complete">Recovery patched</string>
 
     <string name="delete_backup_success">Recovery backup deleted</string>
@@ -26,31 +26,31 @@
     <string name="author_nick">\"kdrag0n\"</string>
 
     <string name="err_generic">Something went wrong</string>
-    <string name="err_native_empty">Error processing image.</string>
-    <string name="err_native_unknown">Error processing image: %s.</string>
-    <string name="err_native_io_read">Error reading image: %s.</string>
-    <string name="err_native_io_read_empty">Error reading image.</string>
-    <string name="err_native_io_write">Error writing image: %s.</string>
-    <string name="err_native_io_write_empty">Error writing image.</string>
-    <string name="err_native_comp">Error compressing ramdisk: %s.</string>
-    <string name="err_native_comp_empty">Error compressing ramdisk.</string>
-    <string name="err_native_decomp">Error decompressing ramdisk: %s.</string>
-    <string name="err_native_decomp_empty">Error decompressing ramdisk.</string>
-    <string name="err_native_comp_magic">Error detecting ramdisk compression.</string>
-    <string name="err_native_comp_method">Compression method %s is not supported.</string>
-    <string name="err_backup">Recovery backup failed: %s.</string>
-    <string name="err_open_file_in">Error opening input image.</string>
-    <string name="err_open_file_out">Error opening output image.</string>
-    <string name="err_open_part">Error reading from recovery partition. Use an image file instead.</string>
-    <string name="err_open_part_out">Error writing to recovery partition. Use an image file instead.</string>
+    <string name="err_native_empty">Error processing image</string>
+    <string name="err_native_unknown">Error processing image: %s</string>
+    <string name="err_native_io_read">Error reading image: %s</string>
+    <string name="err_native_io_read_empty">Error reading image</string>
+    <string name="err_native_io_write">Error writing image: %s</string>
+    <string name="err_native_io_write_empty">Error writing image</string>
+    <string name="err_native_comp">Error compressing ramdisk: %s</string>
+    <string name="err_native_comp_empty">Error compressing ramdisk</string>
+    <string name="err_native_decomp">Error decompressing ramdisk: %s</string>
+    <string name="err_native_decomp_empty">Error decompressing ramdisk</string>
+    <string name="err_native_comp_magic">Error detecting ramdisk compression</string>
+    <string name="err_native_comp_method">Compression method %s is not supported</string>
+    <string name="err_backup">Error backing up recovery: %s</string>
+    <string name="err_open_file_in">Error opening input image</string>
+    <string name="err_open_file_out">Error opening output image</string>
+    <string name="err_open_part">Error reading from recovery partition, try using an image file</string>
+    <string name="err_open_part_out">Error writing to recovery partition, try using an image file</string>
     <string name="err_mailto_handler">Email this address for help: %s</string>
-    <string name="err_no_file_handler">Install an app that supports selecting files and try again.</string>
+    <string name="err_no_file_handler">Install an app that supports selecting files and try again</string>
 
-    <string name="part_not_found">Recovery partition not found. Use an image file instead.</string>
+    <string name="part_not_found">Recovery partition not found, try using an image file</string>
     <string name="part_complete_slot">Recovery in both slots patched</string>
 
-    <string name="file_select_input">Select an image file to patch.</string>
-    <string name="file_select_output">Select an output file.</string>
+    <string name="file_select_input">Select an image file to patch</string>
+    <string name="file_select_output">Select an output file</string>
 
     <string name="header_patching">Patching image</string>
     <string name="header_patching_part">Patching recovery</string>
