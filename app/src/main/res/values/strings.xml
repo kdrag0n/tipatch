@@ -15,6 +15,7 @@
     <string name="delete_backup">Delete backup</string>
     <string name="no_backups">No recovery backup saved</string>
     <string name="request_support">Request support</string>
+    <string name="patch_complete">Recovery patched</string>
 
     <string name="delete_backup_success">Recovery backup deleted</string>
     <string name="restore_backup_progress">Restoring recovery backup</string>
@@ -47,11 +48,9 @@
 
     <string name="part_not_found">Recovery partition not found. Use an image file instead.</string>
     <string name="part_complete_slot">Recovery in both slots patched</string>
-    <string name="part_complete">Recovery patched</string>
 
     <string name="file_select_input">Select an image file to patch.</string>
     <string name="file_select_output">Select an output file.</string>
-    <string name="file_complete">Image patched</string>
 
     <string name="header_patching">Patching image</string>
     <string name="header_patching_part">Patching recovery</string>

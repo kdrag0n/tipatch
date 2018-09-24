@@ -607,7 +607,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
 
                 when (inputSource) {
                     ImageLocation.FILE -> {
-                        with (snack(R.string.file_complete)) {
+                        with (snack(R.string.patch_complete)) {
                             setAction(R.string.share) {
                                 val intent = Intent()
                                 intent.action = Intent.ACTION_SEND
@@ -640,7 +640,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                             asyncPatch(otherSlot, direction)
                             return
                         } else {
-                            snack(R.string.part_complete).show()
+                            snack(R.string.patch_complete).show()
                         }
                     }
                 }
