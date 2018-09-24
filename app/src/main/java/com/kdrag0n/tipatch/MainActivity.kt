@@ -379,7 +379,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
             val pp = try {
                 partPath(slot)
             } catch (e: IllegalStateException) {
-                errorDialog(if (e.message != null) getString(R.string.err_part_root, e.message!!) else getString(R.string.err_part_empty))
+                errorDialog(getString(R.string.part_not_found))
                 return
             }
 
@@ -699,7 +699,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
             val partiPath = try {
                 partPath(if (slot == "") null else slot)
             } catch (e: IllegalStateException) {
-                errorDialog(if (e.message != null) getString(R.string.err_part_root, e.message!!) else getString(R.string.err_part_empty))
+                errorDialog(getString(R.string.part_not_found))
                 return
             }
 

@@ -19,70 +19,68 @@
     <string name="delete_backup_success">Recovery backup deleted</string>
     <string name="restore_backup_progress">Restoring recovery backup</string>
     <string name="restore_backup_success">Recovery backup restored</string>
-    <string name="restore_backup_fail">Failed to restore recovery backup</string>
+    <string name="restore_backup_fail">Error restoring recovery backup</string>
 
     <string name="author_name">Khronodragon</string>
     <string name="author_nick">\"kdrag0n\"</string>
 
-    <string name="err_generic">Oops…</string>
-    <string name="err_native_empty">An error occurred processing the image.</string>
-    <string name="err_native_unknown">An error occurred processing the image: %s.</string>
-    <string name="err_native_io_read">An error occurred reading the image: %s.</string>
-    <string name="err_native_io_read_empty">An error occurred reading the image.</string>
-    <string name="err_native_io_write">An error occurred writing the image: %s.</string>
-    <string name="err_native_io_write_empty">An error occurred writing the image.</string>
-    <string name="err_native_comp">An error occurred compressing the ramdisk: %s.</string>
-    <string name="err_native_comp_empty">An error occurred compressing the ramdisk.</string>
-    <string name="err_native_decomp">An error occurred decompressing the ramdisk: %s.</string>
-    <string name="err_native_decomp_empty">An error occurred decompressing the ramdisk.</string>
-    <string name="err_native_comp_magic">Unable to detect ramdisk compression method. The image is probably corrupted.</string>
-    <string name="err_native_comp_method">The %s compression method is not currently supported.</string>
-    <string name="err_java">An internal error of type %s occurred: %s.</string>
-    <string name="err_close_output">An error occurred cleaning up the written image: %s.</string>
+    <string name="err_generic">Something went wrong</string>
+    <string name="err_native_empty">Error processing image.</string>
+    <string name="err_native_unknown">Error processing image: %s.</string>
+    <string name="err_native_io_read">Error reading image: %s.</string>
+    <string name="err_native_io_read_empty">Error reading image.</string>
+    <string name="err_native_io_write">Error writing image: %s.</string>
+    <string name="err_native_io_write_empty">Error writing image.</string>
+    <string name="err_native_comp">Error compressing ramdisk: %s.</string>
+    <string name="err_native_comp_empty">Error compressing ramdisk.</string>
+    <string name="err_native_decomp">Error decompressing ramdisk: %s.</string>
+    <string name="err_native_decomp_empty">Error decompressing ramdisk.</string>
+    <string name="err_native_comp_magic">Error detecting ramdisk compression.</string>
+    <string name="err_native_comp_method">Compression method %s is not supported.</string>
+    <string name="err_java">Internal error of type %s occurred: %s.</string>
+    <string name="err_close_output">Error cleaning up: %s.</string>
     <string name="err_backup">Recovery backup failed: %s.</string>
-    <string name="err_part_empty">Unknown error searching for partitions via root.</string>
-    <string name="err_part_root">Root command failed while searching for partitions: %s.</string>
-    <string name="err_open_file_in">Unable to open input image. Make sure the file exists and that you can access it.</string>
-    <string name="err_open_file_out">Unable to open output image. Make sure the file exists and that you can access it.</string>
-    <string name="err_open_part">Unable to read from recovery partition. Select an image file and flash it instead.</string>
-    <string name="err_open_part_out">Unable to write to recovery partition. Select an image file and flash it instead.</string>
-    <string name="err_mailto_handler">You don\'t have an email app. Please email this address for help: %s</string>
-    <string name="err_no_file_handler">Please install an app that supports selecting files and try again.</string>
+    <string name="err_open_file_in">Error opening input image.</string>
+    <string name="err_open_file_out">Error opening output image.</string>
+    <string name="err_open_part">Error reading from recovery partition. Use an image file instead.</string>
+    <string name="err_open_part_out">Error writing to recovery partition. Use an image file instead.</string>
+    <string name="err_mailto_handler">Email this address for help: %s</string>
+    <string name="err_no_file_handler">Install an app that supports selecting files and try again.</string>
 
-    <string name="part_not_found">Tipatch was unable to find your device\'s recovery partition. Select an image file and flash it instead.</string>
-    <string name="part_complete_slot">Recovery in both slots patched!</string>
-    <string name="part_complete">Recovery patched!</string>
+    <string name="part_not_found">Recovery partition not found. Use an image file instead.</string>
+    <string name="part_complete_slot">Recovery in both slots patched</string>
+    <string name="part_complete">Recovery patched</string>
 
-    <string name="file_select_input">Please select an image file to patch.</string>
-    <string name="file_select_output">Please select an output file.</string>
-    <string name="file_complete">Image patched!</string>
+    <string name="file_select_input">Select an image file to patch.</string>
+    <string name="file_select_output">Select an output file.</string>
+    <string name="file_complete">Image patched</string>
 
     <string name="header_patching">Patching image</string>
     <string name="header_patching_part">Patching recovery</string>
     <string name="header_patching_unknown_slot">Patching recovery (unknown slot)</string>
     <string name="header_patching_slot">Patching recovery (slot %s)</string>
 
-    <string name="step0_backup">Backing up image</string>
-    <string name="step1_read_unpack">Reading &amp; unpacking image</string>
+    <string name="step0_backup">Backing up</string>
+    <string name="step1_read_unpack">Reading and unpacking</string>
     <string name="step2_decompress">Decompressing ramdisk with %s</string>
-    <string name="step3_patch_rev">Reversing ramdisk patches</string>
+    <string name="step3_patch_rev">Reverting ramdisk patches</string>
     <string name="step3_patch">Patching ramdisk</string>
     <string name="step4_compress">Compressing ramdisk with %s</string>
     <string name="step4_compress_lzma">Compressing ramdisk with LZMA (this will take a while)</string>
-    <string name="step5_pack_write">Repacking &amp; writing image</string>
+    <string name="step5_pack_write">Repacking and writing</string>
 
     <string name="pref_file_input">Input source</string>
-    <string name="pref_file_input_desc">The recovery image to patch</string>
+    <string name="pref_file_input_desc">Recovery image to patch</string>
     <string name="pref_file_output">Output destination</string>
     <string name="pref_file_output_desc">Where to save the patched recovery image</string>
     <string name="pref_partition">In-place patching</string>
-    <string name="pref_partition_desc">Patch the current recovery in-place (requires root)</string>
+    <string name="pref_partition_desc">Patch installed recovery in-place (requires root)</string>
     <string name="pref_backup">Take backup</string>
-    <string name="pref_backup_desc">Back up the current recovery before patching (recommended)</string>
+    <string name="pref_backup_desc">Backup recovery before patching (recommended)</string>
 
     <string name="about_src">Source code</string>
     <string name="about_src_desc">On GitHub</string>
-    <string name="about_donate_desc">Support future development (apps, kernels, etc)</string>
+    <string name="about_donate_desc">Support development (apps, kernels, etc)</string>
 
     <string name="contact_mail">kdrag0n (at) pm.me</string>
     <string name="source_uri">https://github.com/kdrag0n/tipatch</string>
