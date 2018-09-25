@@ -50,8 +50,8 @@
     <string name="part_not_found">Recovery partition not found, try using an image file</string>
     <string name="part_complete_slot">Recovery in both slots patched</string>
 
-    <string name="file_select_input">Select an image file to patch</string>
-    <string name="file_select_output">Select an output file</string>
+    <string name="file_select_input">Please select an input file</string>
+    <string name="file_select_output">Please select an output file</string>
 
     <string name="header_patching">Patching image</string>
     <string name="header_patching_part">Patching recovery</string>
