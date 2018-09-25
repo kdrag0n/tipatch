@@ -168,13 +168,6 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                 .setLabelBackgroundColor(ContextCompat.getColor(this, R.color.card_dark))
                 .create())
 
-        patch_dial.setOnChangeListener(object : SpeedDialView.OnChangeListener {
-            override fun onMainActionSelected() = false
-
-            override fun onToggleChanged(isOpen: Boolean) {
-            }
-        })
-
         patch_dial.setOnActionSelectedListener { act ->
             when (act.id) {
                 R.id.fab_patch -> asyncPatch(getProp("ro.boot.slot_suffix"), Image.REPL_NORMAL)
