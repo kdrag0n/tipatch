@@ -36,7 +36,6 @@ import io.sentry.event.Breadcrumb
 import io.sentry.event.BreadcrumbBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.*
-import java.lang.IndexOutOfBoundsException
 
 private const val REQ_SAF_INPUT = 100
 private const val REQ_SAF_OUTPUT = 101
@@ -358,6 +357,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
 
     private fun errorBar(text: String, action: String = "", actionHandler: () -> Unit = {}) {
         val snackbar = Snackbar.make(rootCoordinator, text, 15000)
+                .setActionTextColor(ContextCompat.getColor(this, R.color.btn_red))
         if (action != "") {
             snackbar.setAction(action) {
                 actionHandler()
@@ -576,15 +576,6 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                                 }
                             }
                         }
-                        is IndexOutOfBoundsException -> {
-                            if (e.message != null) {
-                                errorBar(getString(R.string.err_native_unknown, e.message!!))
-                            } else {
-                                errorBar(R.string.err_native_empty)
-                            }
-
-                            Sentry.capture(e)
-                        }
                         is NativeException -> {
                             if (e.message != null) {
                                 errorBar(getString(R.string.err_native_unknown, e.message!!))
@@ -594,7 +585,12 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                             Sentry.capture(e)
                         }
                         else -> {
-                            throw e
+                            val name = e.javaClass.simpleName
+                                    .split(camelCaseRegex)
+                                    .joinToString(separator = " ") { it.toLowerCase() }
+
+                            errorDialog(getString(R.string.err_unknown, name))
+                            Sentry.capture(e)
                         }
                     }
 
@@ -873,6 +869,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
     }
 
     companion object {
+        private val camelCaseRegex = Regex("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
         private var task: AsyncTask<Unit, Unit, Unit>? = null
         private lateinit var patchDialog: Box<ProgressDialog>
 

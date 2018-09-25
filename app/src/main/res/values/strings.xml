@@ -46,6 +46,7 @@
     <string name="err_open_part_out">Error writing to recovery partition, try using an image file</string>
     <string name="err_mailto_handler">Email this address for help: %s</string>
     <string name="err_no_file_handler">Install an app that supports selecting files and try again</string>
+    <string name="err_unknown">An internal %s error occurred. This usually means your image is invalid.</string>
 
     <string name="part_not_found">Recovery partition not found, try using an image file</string>
     <string name="part_complete_slot">Recovery in both slots patched</string>
