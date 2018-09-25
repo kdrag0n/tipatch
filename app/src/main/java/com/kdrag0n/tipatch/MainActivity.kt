@@ -587,6 +587,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                         else -> {
                             val name = e.javaClass.simpleName
                                     .split(camelCaseRegex)
+                                    .dropLast(1)
                                     .joinToString(separator = " ") { it.toLowerCase() }
 
                             errorDialog(getString(R.string.err_unknown, name))
