@@ -357,7 +357,6 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
 
     private fun errorBar(text: String, action: String = "", actionHandler: () -> Unit = {}) {
         val snackbar = Snackbar.make(rootCoordinator, text, 15000)
-                .setActionTextColor(ContextCompat.getColor(this, R.color.btn_red))
         if (action != "") {
             snackbar.setAction(action) {
                 actionHandler()
