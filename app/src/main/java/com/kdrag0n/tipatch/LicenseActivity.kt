@@ -2,8 +2,8 @@ package com.kdrag0n.tipatch
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify
 import android.widget.TextView

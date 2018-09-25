@@ -2,9 +2,8 @@ package com.kdrag0n.tipatch
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v7.preference.CheckBoxPreference
-import android.support.v7.preference.PreferenceFragmentCompat
-import android.widget.ListView
+import androidx.preference.CheckBoxPreference
+import androidx.preference.PreferenceFragmentCompat
 
 class OptionFragment : PreferenceFragmentCompat() {
     private var handler: Callbacks? = null
