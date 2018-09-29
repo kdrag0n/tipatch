@@ -587,7 +587,9 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                             val name = e.javaClass.simpleName
                                     .split(camelCaseRegex)
                                     .dropLast(1)
-                                    .joinToString(separator = " ") { it.toLowerCase() }
+                                    .joinToString(separator = " ") {
+                                        if (it == "IO") "IO" else it.toLowerCase()
+                                    }
 
                             errorDialog(getString(R.string.err_unknown, name))
                             Sentry.capture(e)
