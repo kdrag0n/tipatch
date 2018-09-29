@@ -69,9 +69,9 @@
     <string name="step5_pack_write">Repacking and writing</string>
 
     <string name="pref_file_input">Input source</string>
-    <string name="pref_file_input_desc">Recovery image to patch</string>
+    <string name="pref_file_input_desc">Tap to select the recovery image to patch</string>
     <string name="pref_file_output">Output destination</string>
-    <string name="pref_file_output_desc">Where to save the patched recovery image</string>
+    <string name="pref_file_output_desc">Tap to select where to save the patched recovery image</string>
     <string name="pref_partition">In-place patching</string>
     <string name="pref_partition_desc">Patch the currently installed recovery in-place (requires root)</string>
     <string name="pref_backup">Take backup</string>
