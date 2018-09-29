@@ -213,7 +213,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.actions, menu ?: return true)
+        menuInflater.inflate(R.menu.actions, menu ?: return false)
         return true
     }
 
