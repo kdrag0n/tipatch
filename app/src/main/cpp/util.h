@@ -39,6 +39,15 @@ public:
         pos += sizeof(uint32_t);
     }
 
+    inline void skip(unsigned int offset) {
+        data += offset;
+        len -= offset;
+
+        if (pos < data) {
+            pos = data;
+        }
+    }
+
     byte *data;
     byte *pos;
     size_t len;
