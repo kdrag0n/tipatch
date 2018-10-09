@@ -4,6 +4,7 @@
 
     <color name="accent">#5e97f6</color>
     <color name="about_ic_color">#cbcbcb</color>
+    <color name="action_bg">@color/card_dark</color>
     <color name="action_fg">#f8f8f8</color>
 
     <color name="btn_red">#cb6262</color>
