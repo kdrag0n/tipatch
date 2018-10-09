@@ -14,13 +14,13 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:extractNativeLibs="true"
-        tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="m">
         <activity android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
