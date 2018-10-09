@@ -3,12 +3,13 @@
 
 byte_array::byte_array(size_t len) {
     data = (byte *) malloc(len);
+    initial_data = data;
     pos = data;
     this->len = len;
 }
 
 byte_array::~byte_array() {
-    free(data);
+    free(initial_data);
 }
 
 void byte_array::write(const void *src, size_t src_len) {
@@ -27,12 +28,13 @@ void byte_array::resize(size_t new_len) {
     if (new_len == 0)
         throw std::out_of_range("Attempting to resize byte array of length " + std::to_string(len) + " to 0 bytes");
 
-    auto ret = realloc(data, new_len);
+    auto ret = realloc(initial_data, new_len);
     if (ret == nullptr)
         throw std::bad_alloc();
 
     auto old_data = data;
     data = (byte *) ret;
+    initial_data = data;
     pos = data + (pos - old_data);
     len = new_len;
 }
@@ -53,6 +55,7 @@ byte_obj byte_array::ref(byte *data, size_t len, bool copy) {
 
 byte_obj byte_array::as_ref() {
     auto that = ref(data, len, false);
+    initial_data = nullptr;
     data = nullptr;
     pos = nullptr;
     len = 0;
