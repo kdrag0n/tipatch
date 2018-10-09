@@ -180,16 +180,19 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                     }
                 }
                 R.id.fab_delete_backups -> asyncExec {
+                    var deleted = 0
+
                     File(noBackupFilesDir.absolutePath).listFiles()?.forEach {
                         if (it.isFile && it.name.startsWith(BACKUP_PREFIX)) {
                             it.delete()
+                            deleted++
                         }
                     }
 
                     opts.edit().putStringSet("backups", setOf()).apply()
 
                     runOnUiThread {
-                        snack(R.string.delete_backup_success).show()
+                        snack(if (deleted > 0) R.string.delete_backup_success else R.string.no_backups).show()
                     }
                 }
             }
