@@ -61,6 +61,12 @@ fun Uri.getFileName(ctx: Context): String? {
 fun findPartitionDirs(): List<String> {
     // follow symlinks such as /dev/block/bootdevice
     val res = Shell.su("find -L /dev/block/ -type d -name 'by-name'").exec()
+
+    // if we got nothing, no partitions were found
+    if (res.out.size < 1) {
+        return listOf()
+    }
+
     // ignore errors because there could be *some* valid entries
     return res.out[0].split('\n').filter { it.startsWith('/') }
 }
