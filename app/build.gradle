@@ -11,7 +11,7 @@ android {
         versionCode 1063
         versionName "1.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        resConfigs "en"
+        resConfigs "en", "ar", "de", "nl", "pt", "zh"
 
         externalNativeBuild {
             cmake {

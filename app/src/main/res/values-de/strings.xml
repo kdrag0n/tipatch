@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact">Kontakt</string>
+    <string name="patch_btn">Patch</string>
+    <string name="about">Über</string>
+    <string name="licenses">Lizenzen</string>
+    <string name="oss_licenses">Open-Source-Lizenzen</string>
+    <string name="help">Hilfe</string>
+    <string name="share">Teilen</string>
+    <string name="donate">Spenden</string>
+    <string name="version">Version</string>
+    <string name="fab_actions">Aktionen</string>
+    <string name="undo">Patch rückgängig machen</string>
+    <string name="restore">Sicherung wiederherstellen</string>
+    <string name="delete_backup">Sicherung löschen</string>
+    <string name="no_backups">Keine Recovery-Sicherung gespeichert</string>
+    <string name="request_support">Anfrage</string>
+    <string name="patch_complete">Recovery gepatcht</string>
+    <string name="delete_backup_success">Recovery-Sicherung gelöscht</string>
+    <string name="restore_backup_progress">Recovery-Sicherung wiederherstellen</string>
+    <string name="restore_backup_success">Recovery-Sicherung wiederhergestellt</string>
+    <string name="restore_backup_fail">Fehler bei der Wiederherstellung des Recovery</string>
+    <string name="err_generic">Etwas ist schief gelaufen</string>
+    <string name="err_native_image_header">Fehler beim Suchen der Header, dies ist kein Recovery-Image</string>
+    <string name="err_native_empty">Fehler beim Verarbeiten des Recovery-Images</string>
+    <string name="err_native_unknown">Fehler beim Verarbeiten des Recovery-Images: %s</string>
+    <string name="err_native_io_read">Fehler beim Lesen des Recovery-Images: %s</string>
+    <string name="err_native_io_read_empty">Fehler beim Lesen des Recovery-Images</string>
+    <string name="err_native_io_write">Fehler beim Schreiben des Recovery-Images: %s</string>
+    <string name="err_native_io_write_empty">Fehler beim Schreiben des Recovery-Images</string>
+    <string name="err_native_comp">Fehler beim Komprimieren der Ramdisk: %s</string>
+    <string name="err_native_comp_empty">Fehler beim Komprimieren der Ramdisk</string>
+    <string name="err_native_decomp">Fehler beim Dekomprimieren der Ramdisk: %s</string>
+    <string name="err_native_decomp_empty">Fehler beim Dekomprimieren der Ramdisk</string>
+    <string name="err_native_comp_magic">Fehler bei Erkennung der Ramdisk-Komprimierung</string>
+    <string name="err_native_comp_method">Kompressionsmethode %s wird nicht unterstützt</string>
+    <string name="err_backup">Fehler bei Sicherung der Recovery: %s</string>
+    <string name="err_open_file_in">Fehler beim Öffnen des Eingabe-Recovery-Image</string>
+    <string name="err_open_file_out">Fehler beim Öffnen des Ausgabe-Recovery-Image</string>
+    <string name="err_open_part">Fehler beim Lesen der Recovery-Partition. Versuchen Sie, eine Recovery-Image-Datei zu verwenden.</string>
+    <string name="err_open_part_out">Fehler beim (Be-) Schreiben der Recovery-Partition. Versuchen Sie, eine Recovery-Image-Datei zu verwenden.</string>
+    <string name="err_mailto_handler">Um Unterstützung zu erhalten, schreiben Sie an diese E-Mail-Adresse: %s</string>
+    <string name="err_no_file_handler">Installieren Sie eine App, die die Auswahl von Dateien unterstützt (z.B. ein Dateimanager) und versuchen Sie es erneut</string>
+    <string name="part_not_found">Die Recovery-Partition wurde nicht gefunden. Versuchen Sie, eine Recovery-Image-Datei zu verwenden.</string>
+    <string name="part_complete_slot">Recovery in beiden Partitionen gepatcht</string>
+    <string name="header_patching">Recovery-Image patchen</string>
+    <string name="header_patching_part">Recovery patchen</string>
+    <string name="header_patching_unknown_slot">Recovery patchen (unbekannter Slot)</string>
+    <string name="header_patching_slot">Recovery patchen (slot %s)</string>
+    <string name="step0_backup">Sichern</string>
+    <string name="step1_read_unpack">Lesen und Entpacken</string>
+    <string name="step2_decompress">Dekomprimierung der Ramdisk mit %s</string>
+    <string name="step3_patch_rev">Ramdisk-Patches rückgängig machen</string>
+    <string name="step3_patch">Ramdisk Patchen</string>
+    <string name="step4_compress">Komprimierung der Ramdisk mit %s</string>
+    <string name="step4_compress_lzma">Komprimierung der Ramdisk mit LZMA (das wird eine Weile dauern)</string>
+    <string name="step5_pack_write">Neuverpacken und Schreiben</string>
+    <string name="pref_file_input">Eingangsquelle</string>
+    <string name="pref_file_input_desc">Recovery-Image, welches gepatcht werden soll</string>
+    <string name="pref_file_output">Ausgabeziel</string>
+    <string name="pref_file_output_desc">Speicherort des gepatchten Recovery-Images</string>
+    <string name="pref_partition">In-Place-Patchen</string>
+    <string name="pref_backup">Sicherung erstellen</string>
+    <string name="about_src">Quellcode</string>
+    <string name="about_src_desc">Auf GitHub</string>
+    <string name="about_donate_desc">Entwicklung unterstützen (Apps, Kernel etc.)</string>
+    <string name="email">E-Mail</string>
+
+    <!-- Line breaks and margins don't work properly in plain XML -->
+    <string name="full_info"><![CDATA[
+<h4>Was ist Tipatch?</h4>
+<p><b>Tipatch</b> patcht Ihr <a href=\"https://twrp.me/about/\">TWRP</a> Recovery, sodass auch der Interne Speicher (emulierte SD-Karte) gesichert werden kann. D.h. Ihre Fotos, Musik, Spiele, Downloads etc. werden nun mit den Sicherungen <i>gespeichert</i> und nicht mehr davon ausgeschlossen.</p>
+
+<p><b>Daten löschen löscht den internen Speicher im Gegensatz zum normalen Verhalten.</b> Du wurdest gewarnt.</p>
+
+<h4>Wie verwende ich Tipatch?</h4>
+<p>Wenn Ihr Gerät <b>gerootet</b> ist, können Sie Ihr aktuelles Recovery (beide Partitionen A/B) mit nur einem Fingertipp patchen.</p>
+
+<p>Wenn Ihr Gerät <b>nicht gerootet</b> ist, dann laden Sie Ihre Recovery-Image-Datei herunter und patchen Sie diese. Anschließend können Sie dieses gepatchte Image wie gewohnt flashen oder booten.</p>
+
+<h4>Auswirkungen</h4>
+<b>Achtung: In der lückenhaften Deutschen TWRP Übersetzung werden die veränderten Sicherungseinstellungen nicht angezeigt! Die folgenden Darstellungen beziehen sich auf TWRP in Englischer Sprache:</b><br/>
+
+&nbsp;&nbsp;&nbsp;&nbsp;• \"Data (incl. storage) \" während der Sicherung <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;• \"Backups of Data include…\" während der Sicherung<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;• Größere Sicherungsgröße als üblich wird auf dem Sicherungs-Bildschirm angezeigt<br/><br/>
+
+<p>Nebeneffekt: Ein Löschen der Partition \"Data\" <b>wird auch</b> den Internen Speicher löschen.</p>
+
+<p>Wenn Sie ein Theme oder eine andere Sprache als Englisch verwenden, wird sich der Text <b>nicht</b> ändern. Kehren Sie zum Standard-Theme zurück und/oder wechseln Sie zur Bestätigung auf Englische Sprache.</p>
+
+<p>Das Wiederherstellen von Sicherungen mit internem Speicher erfordert <b>kein</b> gepatchtes Recovery.</p>
+
+<h4>Probleme?</h4>
+<p>Falls Tipatch nicht richtig auf Ihrem Gerät funktioniert, informieren Sie mich bitte über den Menüpunkt Kontakt.</p>
+
+<h4>Hilfe, etwas ist kaputt gegangen!</h4>
+<p>Reflashen Sie Ihr Recovery-Image. Falls Sie In-Place-Patch verwendet haben, tippen Sie auf \'Sicherung wiederherstellen\' im Menü Aktionen.</p>
+        ]]></string>
+</resources>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact">Contato</string>
+    <string name="patch_btn">Patch</string>
+    <string name="about">Sobre</string>
+    <string name="licenses">Licenças</string>
+    <string name="oss_licenses">Licenças de código-aberto</string>
+    <string name="help">Ajuda</string>
+    <string name="share">Compartilhar</string>
+    <string name="donate">Doar</string>
+    <string name="version">Versão</string>
+    <string name="fab_actions">Ações</string>
+    <string name="undo">Desfazer o patch</string>
+    <string name="restore">Restaurar backup</string>
+    <string name="delete_backup">Excluir backup</string>
+    <string name="no_backups">Não há recuperação de backup salvada</string>
+    <string name="delete_backup_success">Recuperação de backup deletada</string>
+    <string name="restore_backup_progress">Restaurando o backup de recuperação</string>
+    <string name="restore_backup_success">Backup de recuperação restaurado</string>
+    <string name="header_patching">Patchiando imagem</string>
+    <string name="header_patching_part">Patchiando recuperação</string>
+    <string name="header_patching_unknown_slot">Patch de recuperação (slot desconhecido)</string>
+    <string name="header_patching_slot">Patch de recuperação (slot %s)</string>
+    <string name="step2_decompress">Descompactando o ramdisk com %s</string>
+    <string name="step3_patch">Patcheando o ramdisk</string>
+    <string name="step4_compress">Comprimindo o ramdisk com %s</string>
+    <string name="step4_compress_lzma">Comprimindo o ramdisk com LZMA (isso vai demorar um pouco)</string>
+    <string name="pref_file_input">Fonte de entrada</string>
+    <string name="pref_file_output">Destino de saída</string>
+    <string name="pref_file_output_desc">Onde salvar a imagem de recuperação corrigida</string>
+    <string name="pref_partition">Patching no local</string>
+    <string name="pref_backup">Fazer backcup</string>
+    <string name="about_src">Código fonte</string>
+    <string name="about_src_desc">No GitHub</string>
+    <string name="email">Email</string>
+</resources>

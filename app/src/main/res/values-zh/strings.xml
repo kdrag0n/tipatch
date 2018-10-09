@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact">联系人</string>
+    <string name="patch_btn">补丁</string>
+    <string name="about">关于</string>
+    <string name="licenses">授权许可</string>
+    <string name="oss_licenses">开源许可</string>
+    <string name="help">帮助</string>
+    <string name="share">分享</string>
+    <string name="donate">赞助</string>
+    <string name="version">版本</string>
+    <string name="fab_actions">操作</string>
+    <string name="undo">撤消补丁</string>
+    <string name="restore">恢复备份</string>
+    <string name="delete_backup">删除备份</string>
+    <string name="no_backups">未能保存备份</string>
+    <string name="delete_backup_success">恢复备份已删除</string>
+    <string name="restore_backup_progress">还原备份</string>
+    <string name="restore_backup_success">备份已恢复</string>
+    <string name="header_patching">正修补系统文件</string>
+    <string name="header_patching_part">正修补恢复分区</string>
+    <string name="header_patching_unknown_slot">正修补恢复分区 (未知分区)</string>
+    <string name="header_patching_slot">正修补恢复分区 (分区 %s)</string>
+    <string name="step2_decompress">使用 %s 解压 ramdisk</string>
+    <string name="step3_patch">正修补 ramdisk</string>
+    <string name="step4_compress">使用 %s 压缩 ramdisk</string>
+    <string name="step4_compress_lzma">使用LZMA压缩 ramdisk (这需要一段时间)</string>
+    <string name="pref_file_input">输入源</string>
+    <string name="pref_file_output">输出目标</string>
+    <string name="pref_file_output_desc">保存修补的系统文件的目录</string>
+    <string name="pref_partition">就地修补</string>
+    <string name="pref_backup">采取备份</string>
+    <string name="about_src">源代码</string>
+    <string name="about_src_desc">在GitHub</string>
+    <string name="email">电子邮箱</string>
+
+  <!-- Line breaks and margins don't work properly in plain XML -->
+    <string name="full_info"><![CDATA[
+<h4>Tipatch 是什么？</h4>
+<p><b>Tipatch</b> 修补 <a href=\"https://twrp.me/about/\">TWRP</a> 恢复工能以备份内部存储 (模拟 SD 卡), 这意味着您的照片、音乐、游戏数据、下载等将在备份中 <i>保存</i> 而不是被排除在外。</p>
+
+<p><b>和平常不一样删除数据也会删除内部存储.</b> 已经提醒过你了. <p>
+
+<h4>如何使用 Tipatch？</h4>
+<p>如果您的设备有 <b>根权限</b>, 您可以一点触修补当前的恢复分区 (包含 A/B分区) 。</p>
+
+<p>如果您没有 <b>根权限</b>, 请下载设备的恢复系统文件并修补。然后往常一样安装修补过的系统文件。</p>
+
+<h4>效果</h4>
+&nbsp;&nbsp;&nbsp;&nbsp;• \"Data (incl. storage)\" 会出现在备份屏幕上<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;• \"Backups of Data include…\" 在备份时会显视<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;• 备份屏幕会显视较大的数据量<br/>
+
+<p>副作用: 擦除数据 <b>也会</b> 清除内部存储。</p>
+
+<p>如果使用英语以外的主题或语言, 则文字显视 <b>不会</b> 改变。还原为默认主题和/或更改为英文就可以确认。</p>
+
+<p>恢复内部存储备份 <b>不</b> 需要修补过的恢复工能。</p>
+
+<h4>有问题？</h4>
+<p>如果 Tipatch 在您的设备上无法正常工作, 请通过 "联系人" 菜单选项让我知道。</p>
+
+<h4>有东西不工作了，请帮忙!</h4>
+<p>刷新恢复系统文件。如果使用就地修补, 请在 "操作" 菜单中点击 \"恢复备份\"。</p>
+]]>
+    </string>
+</resources>
