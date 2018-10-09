@@ -81,14 +81,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         }
         sentry.addBuilderHelper(SentryEventBuilderHelper(applicationContext))
 
-        val nFrag = supportFragmentManager.findFragmentByTag(TAG_OPT_FRAGMENT) as OptionFragment?
-        if (nFrag == null) {
-            optFrag = OptionFragment()
-            supportFragmentManager.beginTransaction().add(R.id.opt_container, optFrag, TAG_OPT_FRAGMENT).commit()
-        } else {
-            optFrag = nFrag
-        }
-
+        optFrag = optionFragment as OptionFragment
         opts = PreferenceManager.getDefaultSharedPreferences(this)
 
         val pDialog = ProgressDialog(this, R.style.DialogTheme)

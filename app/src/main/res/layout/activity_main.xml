@@ -17,6 +17,13 @@
             android:id="@+id/toolbar_main"
             layout="@layout/toolbar" />
 
+        <fragment
+            android:id="@+id/optionFragment"
+            android:name="com.kdrag0n.tipatch.OptionFragment"
+            android:tag="option_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
 
     <com.leinardi.android.speeddial.SpeedDialView
