@@ -24,7 +24,6 @@
     <string name="step2_decompress">使用 %s 解压 ramdisk</string>
     <string name="step3_patch">正修补 ramdisk</string>
     <string name="step4_compress">使用 %s 压缩 ramdisk</string>
-    <string name="step4_compress_lzma">使用LZMA压缩 ramdisk (这需要一段时间)</string>
     <string name="pref_file_input">输入源</string>
     <string name="pref_file_output">输出目标</string>
     <string name="pref_file_output_desc">保存修补的系统文件的目录</string>

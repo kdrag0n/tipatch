@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
@@ -131,6 +132,13 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
                     setCancelable(false)
                     show()
                 }
+            }
+        }
+
+        xzPath = File("${filesDir.absolutePath}/xz")
+        if (!xzPath.exists()) {
+            asyncExec {
+                setupXz()
             }
         }
 
@@ -313,6 +321,17 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         }
     }
 
+    private fun setupXz() {
+        val x86 = Build.SUPPORTED_32_BIT_ABIS.contains("x86")
+        resources.openRawResource(if (x86) R.raw.xz_x86 else R.raw.xz_armv7).use { src ->
+            FileOutputStream(xzPath).use { dest ->
+                src.copyTo(dest)
+            }
+        }
+
+        xzPath.setExecutable(true)
+    }
+
     private fun patch(progress: (String, PatchStep) -> Unit, fis: InputStream, fos: OutputStream, direction: Byte): Boolean {
         progress(getString(R.string.step1_read_unpack), PatchStep.READ)
         val image = Image(fis)
@@ -320,8 +339,14 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         val cMode = image.detectCompressor()
         val cName = Image.compressorName(cMode)
 
+        if (cMode == Image.COMP_XZ || cMode == Image.COMP_LZMA) {
+            if (!xzPath.exists() || !xzPath.canExecute()) {
+                setupXz()
+            }
+        }
+
         progress(getString(R.string.step2_decompress, cName), PatchStep.DECOMPRESS)
-        image.decompressRamdisk(cMode)
+        image.decompressRamdisk(cMode, xzPath)
 
         if (direction == Image.REPL_REVERSE) {
             progress(getString(R.string.step3_patch_rev), PatchStep.PATCH)
@@ -331,11 +356,8 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
 
         image.patchRamdisk(direction)
 
-        progress(when (cMode) {
-            Image.COMP_LZMA -> getString(R.string.step4_compress_lzma)
-            else -> getString(R.string.step4_compress, cName)
-        }, PatchStep.COMPRESS)
-        image.compressRamdisk(cMode)
+        progress(getString(R.string.step4_compress, cName), PatchStep.COMPRESS)
+        image.compressRamdisk(cMode, xzPath)
 
         progress(getString(R.string.step5_pack_write), PatchStep.WRITE)
         image.write(fos)
@@ -870,6 +892,7 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
         private val camelCaseRegex = Regex("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
         private var task: AsyncTask<Unit, Unit, Unit>? = null
         private lateinit var patchDialog: Box<ProgressDialog>
+        private lateinit var xzPath: File
 
         init {
             System.loadLibrary("tipatch")

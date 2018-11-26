@@ -65,7 +65,6 @@
     <string name="step3_patch_rev">Reverting ramdisk patches</string>
     <string name="step3_patch">Patching ramdisk</string>
     <string name="step4_compress">Compressing ramdisk with %s</string>
-    <string name="step4_compress_lzma">Compressing ramdisk with LZMA (this will take a while)</string>
     <string name="step5_pack_write">Repacking and writing</string>
 
     <string name="pref_file_input">Input source</string>

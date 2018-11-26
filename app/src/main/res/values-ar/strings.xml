@@ -55,7 +55,6 @@
     <string name="step3_patch_rev">جار التراجع عن تعديلات ramdisk</string>
     <string name="step3_patch">جار تعديل ramdisk</string>
     <string name="step4_compress">جار ضغط ramdisk بواسطة %s</string>
-    <string name="step4_compress_lzma">جار ضغط ramdisk بواسطة LZMA (سيستغرق هذا بعض الوقت)</string>
     <string name="step5_pack_write">جار إعادة التحزيم والكتابة</string>
     <string name="pref_file_input">مصدر الإدخال</string>
     <string name="pref_file_input_desc">صورة الاسترداد للتعديل</string>

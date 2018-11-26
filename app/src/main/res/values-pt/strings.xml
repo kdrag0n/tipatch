@@ -24,7 +24,6 @@
     <string name="step2_decompress">Descompactando o ramdisk com %s</string>
     <string name="step3_patch">Patcheando o ramdisk</string>
     <string name="step4_compress">Comprimindo o ramdisk com %s</string>
-    <string name="step4_compress_lzma">Comprimindo o ramdisk com LZMA (isso vai demorar um pouco)</string>
     <string name="pref_file_input">Fonte de entrada</string>
     <string name="pref_file_output">Destino de saída</string>
     <string name="pref_file_output_desc">Onde salvar a imagem de recuperação corrigida</string>

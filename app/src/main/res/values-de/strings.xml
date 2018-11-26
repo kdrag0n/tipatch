@@ -53,7 +53,6 @@
     <string name="step3_patch_rev">Ramdisk-Patches rückgängig machen</string>
     <string name="step3_patch">Ramdisk Patchen</string>
     <string name="step4_compress">Komprimierung der Ramdisk mit %s</string>
-    <string name="step4_compress_lzma">Komprimierung der Ramdisk mit LZMA (das wird eine Weile dauern)</string>
     <string name="step5_pack_write">Neuverpacken und Schreiben</string>
     <string name="pref_file_input">Eingangsquelle</string>
     <string name="pref_file_input_desc">Recovery-Image, welches gepatcht werden soll</string>

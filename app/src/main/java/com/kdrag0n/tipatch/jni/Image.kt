@@ -1,11 +1,7 @@
 package com.kdrag0n.tipatch.jni
 
-import com.kdrag0n.utils.ByteBuffer
-import org.tukaani.xz.ArrayCache
-import org.tukaani.xz.LZMA2Options
-import org.tukaani.xz.LZMAInputStream
-import org.tukaani.xz.LZMAOutputStream
 import java.io.*
+import kotlin.concurrent.thread
 
 class Image(fis: InputStream) {
     private val nativePtr = init(fis)
@@ -15,39 +11,52 @@ class Image(fis: InputStream) {
         free(nativePtr)
     }
 
+    fun callXz(inData: ByteArray, xzPath: File, vararg args: String): ByteArray {
+        val process = ProcessBuilder(xzPath.absolutePath, *args)
+                .redirectErrorStream(true)
+                .start()
+        var outData = ByteArray(0)
+        val reader = thread {
+            outData = process.inputStream.readBytes()
+        }
+
+        while (!reader.isAlive) {}
+        process.outputStream.use {
+            ByteArrayInputStream(inData).copyTo(it)
+            it.flush()
+        }
+
+        process.waitFor()
+        reader.join()
+
+        return outData
+    }
+
     fun detectCompressor(): Byte {
         return nvDetectCompressor(nativePtr)
     }
 
-    fun decompressRamdisk(compMode: Byte) {
+    fun decompressRamdisk(compMode: Byte, xzPath: File) {
         when (compMode) {
-            COMP_LZMA -> {
+            COMP_XZ, COMP_LZMA -> {
                 val cmData = nvGetRamdisk(nativePtr)
                 comprSize = cmData.size
 
-                val stream = LZMAInputStream(ByteArrayInputStream(cmData))
-
-                val dcData = stream.readBytes(cmData.size * 2)
-                stream.close()
-
+                val dcData = callXz(cmData, xzPath, "-dc")
                 nvSetRamdisk(nativePtr, dcData, dcData.size)
             }
             else -> nvDecompressRamdisk(nativePtr, compMode)
         }
     }
 
-    fun compressRamdisk(compMode: Byte) {
+    fun compressRamdisk(compMode: Byte, xzPath: File) {
         when (compMode) {
-            COMP_LZMA -> {
+            COMP_XZ, COMP_LZMA -> {
                 val dcData = nvGetRamdisk(nativePtr)
-                val bos = ByteBuffer(comprSize + 4) // better safe than sorry (oom)
-                val stream = LZMAOutputStream(bos, LZMA2Options(), -1, ArrayCache.getDefaultCache())
-                stream.write(dcData)
 
-                stream.close()
-
-                // avoid copy as it's probably already copied once for JNI access
-                nvSetRamdisk(nativePtr, bos.bytes, bos.size())
+                val format = if (compMode == COMP_LZMA) "-Flzma" else "-Fxz"
+                val cmData = callXz(dcData, xzPath, format, "-c")
+                nvSetRamdisk(nativePtr, cmData, cmData.size)
             }
             else -> nvCompressRamdisk(nativePtr, compMode)
         }
