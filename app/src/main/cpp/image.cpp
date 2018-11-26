@@ -73,14 +73,9 @@ Java_com_kdrag0n_tipatch_jni_Image_free(JNIEnv, jobject, jlong handle) {
 }
 
 extern "C" JNIEXPORT jbyte JNICALL
-Java_com_kdrag0n_tipatch_jni_Image_nvDetectCompressor(JNIEnv *, jobject dis, jlong handle) {
+Java_com_kdrag0n_tipatch_jni_Image_nvDetectCompressor(JNIEnv, jobject, jlong handle) {
     Image *image = (Image*) handle;
-
-    if (image->ramdisk->len < 20) {
-        return comp::unknown; // this is too small to be valid
-    }
-
-    byte *data = image->ramdisk->data;
+    auto data = image->ramdisk->data;
     int b1 = data[0];
     int b2 = data[1];
     int b3 = data[2];
@@ -104,15 +99,6 @@ Java_com_kdrag0n_tipatch_jni_Image_nvDetectCompressor(JNIEnv *, jobject dis, jlo
     } else if (b1 == 0x30 && b2 == 0x37 && b3 == 0x30 && b4 == 0x37 && b5 == 0x30) {
         // modern cpio: string "07070[X]" being 070701, 070702, or 070707
         return comp::none;
-    } else if (b1 == 0x88 && b2 == 0x16 && b3 == 0x88 && b4 == 0x58) { // some lenovo phones
-        // save the 512-byte custom header
-        image->lenovo_header = byte_array::ref(data, 512, true);
-
-        // skip over it
-        image->ramdisk->skip(512);
-
-        // detect again
-        return Java_com_kdrag0n_tipatch_jni_Image_nvDetectCompressor(nullptr, dis, handle);
     } else {
         return comp::unknown;
     }

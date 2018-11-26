@@ -29,8 +29,6 @@ public:
     byte_obj second;
     byte_obj device_tree;
 
-    byte_obj lenovo_header;
-
 private:
     void decompress_ramdisk_gzip();
 

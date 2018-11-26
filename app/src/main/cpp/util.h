@@ -12,7 +12,7 @@ void write_uint32be(byte *dst, unsigned int orig);
 
 class byte_array {
 public:
-    byte_array(byte *data = nullptr, size_t len = 0) : initial_data(data), data(data), pos(data), len(len) {};
+    byte_array(byte *data = nullptr, size_t len = 0) : data(data), pos(data), len(len) {};
     byte_array(size_t len);
     ~byte_array();
 
@@ -48,7 +48,6 @@ public:
         }
     }
 
-    byte *initial_data;
     byte *data;
     byte *pos;
     size_t len;
@@ -60,11 +59,9 @@ public:
     std::shared_ptr<byte_array> as_ref();
 
     byte_array(byte_array&& that) {
-        initial_data = that.initial_data;
         data = that.data;
         pos = that.data; // reset position
         len = that.len;
-        that.initial_data = nullptr;
         that.data = nullptr;
         that.pos = nullptr;
         that.len = 0;

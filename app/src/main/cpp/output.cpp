@@ -27,9 +27,6 @@ Java_com_kdrag0n_tipatch_jni_Image_nvWrite(JNIEnv *env, jobject, jlong handle, j
         write_bytes(env, fos, image->kernel->data, image->kernel->len);
         write_padding(env, fos, image->kernel->len, image->hdr.page_size);
 
-        if (image->lenovo_header.get() != nullptr) { // Lenovo's custom 512-byte header
-            write_bytes(env, fos, image->lenovo_header->data, image->lenovo_header->len);
-        }
         write_bytes(env, fos, image->ramdisk->data, image->ramdisk->len);
         write_padding(env, fos, image->ramdisk->len, image->hdr.page_size);
 
