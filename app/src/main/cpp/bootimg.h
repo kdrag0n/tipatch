@@ -20,17 +20,17 @@
 
 #pragma once
 
-typedef struct boot_img_hdr boot_img_hdr;
+namespace boot {
+    constexpr auto magic = "ANDROID!";
+    constexpr int magic_size = 8;
+    constexpr int name_size = 16;
+    constexpr int args_size = 512;
+    constexpr int extra_args_size = 1024;
+    constexpr int max_hdr_version = 4;
+}
 
-#define BOOT_MAGIC "ANDROID!"
-#define BOOT_MAGIC_SIZE 8
-#define BOOT_NAME_SIZE 16
-#define BOOT_ARGS_SIZE 512
-#define BOOT_EXTRA_ARGS_SIZE 1024
-
-struct boot_img_hdr
-{
-    uint8_t magic[BOOT_MAGIC_SIZE];
+struct boot_img_hdr_v0 {
+    uint8_t magic[boot::magic_size];
 
     uint32_t kernel_size;  /* size in bytes */
     uint32_t kernel_addr;  /* physical load addr */
@@ -43,7 +43,11 @@ struct boot_img_hdr
 
     uint32_t tags_addr;    /* physical addr for kernel tags */
     uint32_t page_size;    /* flash page size we assume */
-    uint32_t dt_size;      /* device tree in bytes */
+
+    union {
+        uint32_t dt_size;      /* device tree in bytes */
+        uint32_t header_version;
+    } v0v1;
 
     /* operating system version and security patch level; for
      * version "A.B.C" and patch level "Y-M-D":
@@ -52,13 +56,19 @@ struct boot_img_hdr
      * os_version = ver << 11 | lvl */
     uint32_t os_version;
 
-    uint8_t name[BOOT_NAME_SIZE]; /* asciiz product name */
+    uint8_t name[boot::name_size]; /* asciiz product name */
 
-    uint8_t cmdline[BOOT_ARGS_SIZE];
+    uint8_t cmdline[boot::args_size];
 
     byte id[32]; /* timestamp / checksum / sha1 / etc */
 
     /* Supplemental command line data; kept here to maintain
      * binary compatibility with older versions of mkbootimg */
-    uint8_t extra_cmdline[BOOT_EXTRA_ARGS_SIZE];
+    uint8_t extra_cmdline[boot::extra_args_size];
+} __attribute__((packed));
+
+struct boot_img_hdr_v1 : public boot_img_hdr_v0 {
+    uint32_t recovery_dtbo_size;   /* size in bytes for recovery DTBO image */
+    uint64_t recovery_dtbo_offset; /* physical load addr */
+    uint32_t header_size;
 } __attribute__((packed));

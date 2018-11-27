@@ -22,12 +22,13 @@ public:
 
     unsigned long hash();
 
-    boot_img_hdr hdr;
+    boot_img_hdr_v1 hdr;
 
     byte_obj kernel;
     byte_obj ramdisk;
     byte_obj second;
     byte_obj device_tree;
+    byte_obj recovery_dtbo;
 
 private:
     void decompress_ramdisk_gzip();
