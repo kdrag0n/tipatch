@@ -48,6 +48,11 @@
     <string name="err_no_file_handler">Install an app that supports selecting files and try again</string>
     <string name="err_unknown">An internal %s error occurred. This usually means your image is invalid.</string>
 
+    <plurals name="warn_patch_failed">
+        <item quantity="one">Warning: %d optional patch failed</item>
+        <item quantity="other">Warning: %d optional patches failed</item>
+    </plurals>
+
     <string name="part_not_found">Recovery partition not found, try using an image file</string>
     <string name="part_complete_slot">Recovery in both slots patched</string>
 

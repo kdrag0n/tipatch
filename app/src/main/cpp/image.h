@@ -18,7 +18,7 @@ class Image {
 public:
     void decompress_ramdisk(char comp_mode);
     void compress_ramdisk(char comp_mode);
-    void patch_ramdisk(char direction);
+    int patch_ramdisk(char direction);
 
     unsigned long hash();
 

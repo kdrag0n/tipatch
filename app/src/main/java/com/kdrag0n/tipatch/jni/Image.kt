@@ -62,8 +62,8 @@ class Image(fis: InputStream) {
         }
     }
 
-    fun patchRamdisk(direction: Byte) {
-        nvPatchRamdisk(nativePtr, direction)
+    fun patchRamdisk(direction: Byte): Int {
+        return nvPatchRamdisk(nativePtr, direction)
     }
 
     fun write(fos: OutputStream) {
@@ -75,7 +75,7 @@ class Image(fis: InputStream) {
     private external fun nvDetectCompressor(pointer: Long): Byte
     private external fun nvDecompressRamdisk(pointer: Long, compMode: Byte)
     private external fun nvCompressRamdisk(pointer: Long, compMode: Byte)
-    private external fun nvPatchRamdisk(pointer: Long, direction: Byte)
+    private external fun nvPatchRamdisk(pointer: Long, direction: Byte): Int
     private external fun nvGetRamdisk(pointer: Long): ByteArray
     private external fun nvSetRamdisk(pointer: Long, data: ByteArray, size: Int)
     private external fun nvWrite(pointer: Long, fos: OutputStream)

@@ -354,13 +354,17 @@ class MainActivity : AppCompatActivity(), OptionFragment.Callbacks {
             progress(getString(R.string.step3_patch), PatchStep.PATCH)
         }
 
-        image.patchRamdisk(direction)
+        val failedPatches = image.patchRamdisk(direction)
 
         progress(getString(R.string.step4_compress, cName), PatchStep.COMPRESS)
         image.compressRamdisk(cMode, xzPath)
 
         progress(getString(R.string.step5_pack_write), PatchStep.WRITE)
         image.write(fos)
+
+        if (failedPatches > 0) {
+            snack(resources.getQuantityString(R.plurals.warn_patch_failed, failedPatches, failedPatches)).show()
+        }
 
         return true
     }
